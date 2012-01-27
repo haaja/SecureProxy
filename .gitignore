@@ -1,0 +1,6 @@
+# These should be build related files used by Netbeans.
+build/
+build.xml
+nbproject/
+
+*.class
