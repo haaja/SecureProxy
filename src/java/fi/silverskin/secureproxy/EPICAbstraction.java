@@ -32,4 +32,8 @@ public abstract class EPICAbstraction {
     public void setHeaders(HashMap<String, String> headers) {
         this.headers = headers;
     }
+    
+    public String getUrl() {
+        return "";
+    }
 }
