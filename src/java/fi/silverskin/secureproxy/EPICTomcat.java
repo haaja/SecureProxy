@@ -1,21 +1,18 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package fi.silverskin.secureproxy;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-/**
- *
- * @author Iivari Äikäs
- */
-public class SecureProxy {
+public class EPICTomcat {
+    private ProxyController proxy;
+
     
+    public EPICTomcat() {
+        this.proxy = new ProxyController();
+    }
     
     public void handleGet(HttpServletRequest request, HttpServletResponse response) {
-    
+
     }
 
     public void handlePost(HttpServletRequest request, HttpServletResponse response) {
@@ -36,5 +33,5 @@ public class SecureProxy {
 
     public void handleOptions(HttpServletRequest request, HttpServletResponse response) {
 
-    }
+    }     
 }

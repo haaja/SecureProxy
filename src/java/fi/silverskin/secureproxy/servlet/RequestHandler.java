@@ -4,7 +4,7 @@
  */
 package fi.silverskin.secureproxy.servlet;
 
-import fi.silverskin.secureproxy.SecureProxy;
+import fi.silverskin.secureproxy.EPICTomcat;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -20,11 +20,11 @@ import javax.servlet.http.HttpServletResponse;
  */
 public class RequestHandler extends HttpServlet {
     
-    private SecureProxy proxy;
+    private EPICTomcat tomcatHandler;
     
     
     public RequestHandler() {
-        proxy = new SecureProxy();
+        tomcatHandler = new EPICTomcat();
     }
     
     
@@ -33,37 +33,37 @@ public class RequestHandler extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        proxy.handleGet(request, response);
+        tomcatHandler.handleGet(request, response);
     }
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        proxy.handlePost(request, response);
+        tomcatHandler.handlePost(request, response);
     }
 
     @Override
     protected void doDelete(HttpServletRequest request, HttpServletResponse response) 
             throws ServletException, IOException {
-        proxy.handleDelete(request, response);
+        tomcatHandler.handleDelete(request, response);
     }
 
     @Override
     protected void doPut(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        proxy.handlePut(request, response);
+        tomcatHandler.handlePut(request, response);
     }
 
     @Override
     protected void doHead(HttpServletRequest request, HttpServletResponse response) 
             throws ServletException, IOException {
-        proxy.handleHead(request, response);
+        tomcatHandler.handleHead(request, response);
     }
 
     @Override
     protected void doOptions(HttpServletRequest request, HttpServletResponse response) 
             throws ServletException, IOException {
-        proxy.handleOptions(request, response);
+        tomcatHandler.handleOptions(request, response);
     }
 
     @Override
