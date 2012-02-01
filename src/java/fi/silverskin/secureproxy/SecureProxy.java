@@ -29,4 +29,12 @@ public class SecureProxy {
     public void handlePut(HttpServletRequest request, HttpServletResponse response) {
 
     }
+
+    public void handleHead(HttpServletRequest request, HttpServletResponse response) {
+
+    }
+
+    public void handleOptions(HttpServletRequest request, HttpServletResponse response) {
+
+    }
 }
