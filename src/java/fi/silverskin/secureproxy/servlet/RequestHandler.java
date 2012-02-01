@@ -53,6 +53,25 @@ public class RequestHandler extends HttpServlet {
             throws ServletException, IOException {
         proxy.handlePut(request, response);
     }
+
+    @Override
+    protected void doHead(HttpServletRequest request, HttpServletResponse response) 
+            throws ServletException, IOException {
+        proxy.handleHead(request, response);
+    }
+
+    @Override
+    protected void doOptions(HttpServletRequest request, HttpServletResponse response) 
+            throws ServletException, IOException {
+        proxy.handleOptions(request, response);
+    }
+
+    @Override
+    protected void doTrace(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        super.doTrace(req, resp);
+    }
+    
+
     
 
 
