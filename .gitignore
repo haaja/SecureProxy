@@ -4,3 +4,4 @@ build.xml
 nbproject/
 
 *.class
+/web/WEB-INF/glassfish-web.xml
