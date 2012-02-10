@@ -36,8 +36,7 @@ public class FetcherUtilities {
     public static String getBody(HttpEntity e) {
         StringBuilder sb = null;
         try {
-            Reader reader = new BufferedReader(
-                    new InputStreamReader(e.getContent(), e.getContentEncoding().getName()));
+            Reader reader = new BufferedReader(new InputStreamReader(e.getContent()));
             sb = new StringBuilder((int) e.getContentLength());
 
             final char[] buffer = new char[0x10000];
@@ -74,10 +73,10 @@ public class FetcherUtilities {
     
     /**
      * Copies body content from epic to req. This method works only with
-     * HttpPost or HttpRequest instances.
+     * HttpPost or HttpPut instances. 
      * 
      * @param epic Source of body data.
-     * @param req HttpPost or HttpPost to modify
+     * @param req HttpPost or HttpPut to modify
      */
     public static void copyBody(EPICRequest epic, HttpEntityEnclosingRequestBase req) {
         try {

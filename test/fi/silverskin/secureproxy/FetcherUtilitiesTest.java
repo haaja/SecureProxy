@@ -5,12 +5,13 @@
 package fi.silverskin.secureproxy;
 
 import fi.silverskin.secureproxy.resourcefetcher.FetcherUtilities;
+import java.io.UnsupportedEncodingException;
+import java.util.HashMap;
 import org.apache.http.HttpEntity;
-import org.apache.http.HttpRequest;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
 import org.junit.*;
 
 /**
@@ -18,6 +19,9 @@ import org.junit.*;
  * @author orva
  */
 public class FetcherUtilitiesTest {
+    
+    private EPICRequest epic;
+    private final String bodyVal = "body";
     
     public FetcherUtilitiesTest() {
     }
@@ -32,38 +36,25 @@ public class FetcherUtilitiesTest {
     
     @Before
     public void setUp() {
+        HashMap<String, String> headers = new HashMap<String, String>();
+        headers.put("HEADER_1", "value 1");
+        headers.put("HEADER_2", "value 2");
+        
+        this.epic = new EPICRequest(headers, bodyVal);        
     }
     
     @After
     public void tearDown() {
     }
 
-    /**
-     * Test of responseToEPICResponse method, of class EPICUtilities.
-     */
-    @Test
-    public void testResponseToEPICResponse() {
-        System.out.println("responseToEPICResponse");
-        HttpResponse e = null;
-        EPICResponse expResult = null;
-        EPICResponse result = FetcherUtilities.responseToEPICResponse(e);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
 
     /**
      * Test of getBody method, of class EPICUtilities.
      */
     @Test
-    public void testGetBody() {
-        System.out.println("getBody");
-        HttpEntity e = null;
-        String expResult = "";
-        String result = FetcherUtilities.getBody(e);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+    public void testGetBody() throws UnsupportedEncodingException {
+        HttpEntity e = new StringEntity("Hola");
+        assertEquals(FetcherUtilities.getBody(e), "Hola");
     }
 
     /**
@@ -71,12 +62,18 @@ public class FetcherUtilitiesTest {
      */
     @Test
     public void testCopyHeaders() {
-        System.out.println("copyHeaders");
-        EPICRequest epic = null;
-        HttpRequest req = null;
+        HttpGet req = new HttpGet("http://google.com");
         FetcherUtilities.copyHeaders(epic, req);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        
+        assertEquals(1, req.getHeaders("HEADER_1").length);
+        assertEquals(1, req.getHeaders("HEADER_2").length);
+        assertEquals("value 1", req.getFirstHeader("HEADER_1").getValue());
+        
+        req = new HttpGet("http://google.com");
+        req.setHeader("ADDED_HEADER", "added header value");
+        FetcherUtilities.copyHeaders(epic, req);
+        assertEquals(3, req.getAllHeaders().length);
+        
     }
 
     /**
@@ -84,11 +81,9 @@ public class FetcherUtilitiesTest {
      */
     @Test
     public void testCopyBody() {
-        System.out.println("copyBody");
-        EPICRequest epic = null;
-        HttpEntityEnclosingRequestBase req = null;
+        HttpPost req = new HttpPost("http://google.com"); 
         FetcherUtilities.copyBody(epic, req);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        
+        assertEquals(bodyVal, FetcherUtilities.getBody(req.getEntity()));
     }
 }
