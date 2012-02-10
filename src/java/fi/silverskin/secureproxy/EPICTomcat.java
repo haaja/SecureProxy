@@ -13,14 +13,14 @@ public class EPICTomcat {
 
     
     public EPICTomcat() {
-        this.proxy = new ProxyController();
+        proxy = new ProxyController();
     }
     
     public void handleGet(HttpServletRequest request, HttpServletResponse response) {
         EPICRequest convertedRequest = convertToEPICRequest(request);
         EPICResponse convertedResponse = convertToEPICResponse(response);
         
-        this.proxy.handleGet(convertedRequest, convertedResponse);
+        proxy.handleGet(convertedRequest, convertedResponse);
 
     }
 
@@ -28,35 +28,35 @@ public class EPICTomcat {
         EPICRequest convertedRequest = convertToEPICRequest(request);
         EPICResponse convertedResponse = convertToEPICResponse(response);
         
-        this.proxy.handlePost(convertedRequest, convertedResponse);
+        proxy.handlePost(convertedRequest, convertedResponse);
     }
 
     public void handleDelete(HttpServletRequest request, HttpServletResponse response) {
         EPICRequest convertedRequest = convertToEPICRequest(request);
         EPICResponse convertedResponse = convertToEPICResponse(response);
         
-        this.proxy.handleDelete(convertedRequest, convertedResponse);
+        proxy.handleDelete(convertedRequest, convertedResponse);
     }
 
     public void handlePut(HttpServletRequest request, HttpServletResponse response) {
         EPICRequest convertedRequest = convertToEPICRequest(request);
         EPICResponse convertedResponse = convertToEPICResponse(response);
         
-        this.proxy.handlePut(convertedRequest, convertedResponse);
+        proxy.handlePut(convertedRequest, convertedResponse);
     }
 
     public void handleHead(HttpServletRequest request, HttpServletResponse response) {
         EPICRequest convertedRequest = convertToEPICRequest(request);
         EPICResponse convertedResponse = convertToEPICResponse(response);
         
-        this.proxy.handleHead(convertedRequest, convertedResponse);
+        proxy.handleHead(convertedRequest, convertedResponse);
     }
 
     public void handleOptions(HttpServletRequest request, HttpServletResponse response) {
         EPICRequest convertedRequest = convertToEPICRequest(request);
         EPICResponse convertedResponse = convertToEPICResponse(response);
         
-        this.proxy.handleOptions(convertedRequest, convertedResponse);
+        proxy.handleOptions(convertedRequest, convertedResponse);
     }
     
     public EPICRequest convertToEPICRequest(HttpServletRequest request) {
@@ -78,7 +78,8 @@ public class EPICTomcat {
             
             String line = reader.readLine();
             while (line != null) {
-                sb.append(line + "\n");
+                line = line + "\n";
+                sb.append(line);
                 line = reader.readLine();
             }
             
@@ -97,7 +98,7 @@ public class EPICTomcat {
     
     public EPICResponse convertToEPICResponse(HttpServletResponse response) {
         HashMap<String, String> headers = new HashMap();
-        String body = new String();
+        String body = null;
         
         Collection<String> headerNames = response.getHeaderNames();
         Iterator headerIterator = headerNames.iterator();
@@ -109,6 +110,6 @@ public class EPICTomcat {
             headers.put(name, value);    
         }
 
-        return new EPICResponse(headers, null);
+        return new EPICResponse(headers, body);
     }
 }
