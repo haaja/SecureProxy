@@ -5,3 +5,4 @@ nbproject/
 
 *.class
 /web/WEB-INF/glassfish-web.xml
+/dist/
