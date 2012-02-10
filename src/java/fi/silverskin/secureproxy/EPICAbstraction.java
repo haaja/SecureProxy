@@ -38,11 +38,11 @@ public abstract class EPICAbstraction {
         this.headers = headers;
     }
 
-    public String getUrl() {
+    public String getUri() {
         return uri.toString();
     }
 
-    public void setUrl(String uri) {
+    public void setUri(String uri) {
         try {
             this.uri = new URI(uri);
         } catch (URISyntaxException ex) {
