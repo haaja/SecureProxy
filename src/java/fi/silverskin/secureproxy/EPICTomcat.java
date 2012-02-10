@@ -62,7 +62,6 @@ public class EPICTomcat {
     public EPICRequest convertToEPICRequest(HttpServletRequest request) {
         HashMap<String, String> headers = new HashMap();
         String body = new String();
-        EPICRequest convertedRequest = new EPICRequest();
         
         Enumeration<String> headerNames = request.getHeaderNames();
         
@@ -92,17 +91,13 @@ public class EPICTomcat {
         } catch (java.io.IOException e) {
             e.printStackTrace();
         }
-        
-        convertedRequest.setBody(body);
-        convertedRequest.setHeaders(headers);
 
-        return convertedRequest;
+        return new EPICRequest(headers, body);
     }
     
     public EPICResponse convertToEPICResponse(HttpServletResponse response) {
         HashMap<String, String> headers = new HashMap();
         String body = new String();
-        EPICResponse convertedResponse = new EPICResponse();
         
         Collection<String> headerNames = response.getHeaderNames();
         Iterator headerIterator = headerNames.iterator();
@@ -113,10 +108,7 @@ public class EPICTomcat {
             
             headers.put(name, value);    
         }
-        
-        convertedResponse.setHeaders(headers);
-        convertedResponse.setBody(null);
-        
-        return convertedResponse;
+
+        return new EPICResponse(headers, null);
     }
 }
