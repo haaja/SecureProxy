@@ -3,6 +3,8 @@ package fi.silverskin.secureproxy;
 import java.io.BufferedReader;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -43,26 +45,27 @@ public class EPICTomcat {
         try {
             BufferedReader reader = request.getReader();
             StringBuilder sb = new StringBuilder();
-            
-            String line = reader.readLine();
-            while (line != null) {
-                line = line + "\n";
-                sb.append(line);
-                line = reader.readLine();
+
+            char[] buffer = new char[4*1024];
+            int length;
+
+            while ((length = reader.read(buffer, 0, buffer.length)) != -1) {
+                sb.append(buffer, 0, length);
             }
             
             reader.close();
             body = sb.toString();
         } catch (java.io.UnsupportedEncodingException e) {
-            e.printStackTrace();
+            Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, null, e);
         } catch (IllegalStateException e) {
-            e.printStackTrace();
+            Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, null, e);
         } catch (java.io.IOException e) {
-            e.printStackTrace();
+            Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, null, e);
         }
         
         EPICRequest e = new EPICRequest(request.getMethod(), headers, body);
         e.setUri(request.getRequestURL() + request.getQueryString());
+        
         return e;
     }
 }
