@@ -40,7 +40,7 @@ public class FetcherUtilitiesTest {
         headers.put("HEADER_1", "value 1");
         headers.put("HEADER_2", "value 2");
         
-        this.epic = new EPICRequest(headers, bodyVal);        
+        this.epic = new EPICRequest("get", headers, bodyVal);        
     }
     
     @After

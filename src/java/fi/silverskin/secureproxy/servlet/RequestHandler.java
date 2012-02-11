@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package fi.silverskin.secureproxy.servlet;
 
 import fi.silverskin.secureproxy.EPICTomcat;
@@ -14,10 +10,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-/**
- *
- * @author orva
- */
+
+
 public class RequestHandler extends HttpServlet {
     
     private EPICTomcat tomcatHandler;
@@ -33,37 +27,37 @@ public class RequestHandler extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        tomcatHandler.handleGet(request, response);
+        tomcatHandler.handleRequest(request, response);
     }
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        tomcatHandler.handlePost(request, response);
+        tomcatHandler.handleRequest(request, response);
     }
 
     @Override
     protected void doDelete(HttpServletRequest request, HttpServletResponse response) 
             throws ServletException, IOException {
-        tomcatHandler.handleDelete(request, response);
+        tomcatHandler.handleRequest(request, response);
     }
 
     @Override
     protected void doPut(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        tomcatHandler.handlePut(request, response);
+        tomcatHandler.handleRequest(request, response);
     }
 
     @Override
     protected void doHead(HttpServletRequest request, HttpServletResponse response) 
             throws ServletException, IOException {
-        tomcatHandler.handleHead(request, response);
+        tomcatHandler.handleRequest(request, response);
     }
 
     @Override
     protected void doOptions(HttpServletRequest request, HttpServletResponse response) 
             throws ServletException, IOException {
-        tomcatHandler.handleOptions(request, response);
+        tomcatHandler.handleRequest(request, response);
     }
 
     @Override

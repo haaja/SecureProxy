@@ -16,7 +16,23 @@ public class ResourceFetcher {
         httpclient.getParams().removeParameter("http.useragent");
     }
 
-    public EPICResponse handleGet(EPICRequest req) {
+    
+    
+    public EPICResponse handleRequest(EPICRequest req) {
+        switch (req.getType()) {
+            case POST: return handlePost(req);
+            case PUT: return handlePut(req);
+            case GET: return handleGet(req);
+            case DELETE: return handleDelete(req);
+            case HEAD: return handleHead(req);
+            default: return new EPICResponse();
+        }
+    }
+    
+    
+    
+    
+    private EPICResponse handleGet(EPICRequest req) {
         try {
             HttpGet get = new HttpGet(req.getUri());
             FetcherUtilities.copyHeaders(req, get);
@@ -25,8 +41,8 @@ public class ResourceFetcher {
             return new EPICResponse();
         }
     }
-
-    public EPICResponse handlePost(EPICRequest req) {
+    
+    private EPICResponse handlePost(EPICRequest req) {
 
         try {
             HttpPost post = new HttpPost(req.getUri());
@@ -38,7 +54,7 @@ public class ResourceFetcher {
         }
     }
 
-    public EPICResponse handlePut(EPICRequest req) {
+    private EPICResponse handlePut(EPICRequest req) {
 
         try {
             HttpPut put = new HttpPut(req.getUri());
@@ -50,7 +66,7 @@ public class ResourceFetcher {
         }
     }
 
-    public EPICResponse handleDelete(EPICRequest req) {
+    private EPICResponse handleDelete(EPICRequest req) {
         try {
             HttpDelete delete = new HttpDelete(req.getUri());
             FetcherUtilities.copyHeaders(req, delete);
@@ -60,7 +76,7 @@ public class ResourceFetcher {
         }
     }
 
-    public EPICResponse handleHead(EPICRequest req) {
+    private EPICResponse handleHead(EPICRequest req) {
         try {
             HttpHead head = new HttpHead(req.getUri());
             FetcherUtilities.copyHeaders(req, head);

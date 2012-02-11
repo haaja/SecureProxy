@@ -1,10 +1,8 @@
 package fi.silverskin.secureproxy;
 
 import java.io.BufferedReader;
-import java.util.Collection;
 import java.util.Enumeration;
 import java.util.HashMap;
-import java.util.Iterator;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -16,55 +14,25 @@ public class EPICTomcat {
         proxy = new ProxyController();
     }
     
-    public void handleGet(HttpServletRequest request, HttpServletResponse response) {
-        EPICRequest convertedRequest = convertToEPICRequest(request);
-        EPICResponse convertedResponse = convertToEPICResponse(response);
-        
-        proxy.handleGet(convertedRequest, convertedResponse);
 
-    }
-
-    public void handlePost(HttpServletRequest request, HttpServletResponse response) {
+    public void handleRequest(HttpServletRequest request, HttpServletResponse response) {
         EPICRequest convertedRequest = convertToEPICRequest(request);
-        EPICResponse convertedResponse = convertToEPICResponse(response);
+        EPICResponse epic = proxy.handleRequest(convertedRequest);
         
-        proxy.handlePost(convertedRequest, convertedResponse);
-    }
-
-    public void handleDelete(HttpServletRequest request, HttpServletResponse response) {
-        EPICRequest convertedRequest = convertToEPICRequest(request);
-        EPICResponse convertedResponse = convertToEPICResponse(response);
-        
-        proxy.handleDelete(convertedRequest, convertedResponse);
-    }
-
-    public void handlePut(HttpServletRequest request, HttpServletResponse response) {
-        EPICRequest convertedRequest = convertToEPICRequest(request);
-        EPICResponse convertedResponse = convertToEPICResponse(response);
-        
-        proxy.handlePut(convertedRequest, convertedResponse);
-    }
-
-    public void handleHead(HttpServletRequest request, HttpServletResponse response) {
-        EPICRequest convertedRequest = convertToEPICRequest(request);
-        EPICResponse convertedResponse = convertToEPICResponse(response);
-        
-        proxy.handleHead(convertedRequest, convertedResponse);
-    }
-
-    public void handleOptions(HttpServletRequest request, HttpServletResponse response) {
-        EPICRequest convertedRequest = convertToEPICRequest(request);
-        EPICResponse convertedResponse = convertToEPICResponse(response);
-        
-        proxy.handleOptions(convertedRequest, convertedResponse);
+        fillResponse(response, epic);
     }
     
-    public EPICRequest convertToEPICRequest(HttpServletRequest request) {
+    
+    private void fillResponse(HttpServletResponse response, EPICResponse r) {
+        // TODO: extract data drom epicresonse and fill it into httpserletresponse
+    }
+    
+    
+    private EPICRequest convertToEPICRequest(HttpServletRequest request) {
         HashMap<String, String> headers = new HashMap();
         String body = new String();
         
-        Enumeration<String> headerNames = request.getHeaderNames();
-        
+        Enumeration<String> headerNames = request.getHeaderNames();        
         while (headerNames.hasMoreElements()) {
             String name = headerNames.nextElement();
             String value = request.getHeader(name);
@@ -92,24 +60,9 @@ public class EPICTomcat {
         } catch (java.io.IOException e) {
             e.printStackTrace();
         }
-
-        return new EPICRequest(headers, body);
-    }
-    
-    public EPICResponse convertToEPICResponse(HttpServletResponse response) {
-        HashMap<String, String> headers = new HashMap();
-        String body = null;
         
-        Collection<String> headerNames = response.getHeaderNames();
-        Iterator headerIterator = headerNames.iterator();
-        
-        while (headerIterator.hasNext()) {
-            String name = (String)headerIterator.next();
-            String value = response.getHeader(name);
-            
-            headers.put(name, value);    
-        }
-
-        return new EPICResponse(headers, body);
+        EPICRequest e = new EPICRequest(request.getMethod(), headers, body);
+        e.setUri(request.getRequestURL() + request.getQueryString());
+        return e;
     }
 }
