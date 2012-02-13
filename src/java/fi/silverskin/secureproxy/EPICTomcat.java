@@ -44,7 +44,8 @@ public class EPICTomcat {
             Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, null, e);
         }
 
-        String contentType = epic.getHeaders().get("Content-Type:");
+        //TODO: null-check for header
+        String contentType = epic.getHeaders().get("Content-Type");
         Pattern pattern = Pattern.compile("text/.*");
         Matcher isText = pattern.matcher(contentType);
 
