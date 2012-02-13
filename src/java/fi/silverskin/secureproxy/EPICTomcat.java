@@ -32,7 +32,6 @@ public class EPICTomcat {
     
     
     private void fillResponse(HttpServletResponse response, EPICResponse epic) {
-        
         try {
             response.reset();
 
@@ -89,7 +88,7 @@ public class EPICTomcat {
             BufferedReader reader = request.getReader();
             StringBuilder sb = new StringBuilder();
 
-            char[] buffer = new char[4*1024];
+            char[] buffer = new char[0x10000];
             int length;
 
             while ((length = reader.read(buffer, 0, buffer.length)) != -1) {
