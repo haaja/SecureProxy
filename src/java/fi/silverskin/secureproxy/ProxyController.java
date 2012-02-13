@@ -1,30 +1,16 @@
 package fi.silverskin.secureproxy;
 
+import fi.silverskin.secureproxy.resourcefetcher.ResourceFetcher;
+
 
 public class ProxyController {
+    private ResourceFetcher fetcher;
     
+    public ProxyController() {
+        fetcher = new ResourceFetcher();
+    }
     
-    public void handleGet(EPICRequest request, EPICResponse response) {
-    
-    }
-
-    public void handlePost(EPICRequest request, EPICResponse response) {
-
-    }
-
-    public void handleDelete(EPICRequest request, EPICResponse response) {
-
-    }
-
-    public void handlePut(EPICRequest request, EPICResponse response) {
-
-    }
-
-    public void handleHead(EPICRequest request, EPICResponse response) {
-
-    }
-
-    public void handleOptions(EPICRequest request, EPICResponse response) {
-
+    public EPICResponse handleRequest(EPICRequest request) {
+        return fetcher.handleRequest(request);
     }
 }

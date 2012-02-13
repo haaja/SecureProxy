@@ -1,10 +1,10 @@
 package fi.silverskin.secureproxy;
 
 import java.io.BufferedReader;
-import java.util.Collection;
 import java.util.Enumeration;
 import java.util.HashMap;
-import java.util.Iterator;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -13,59 +13,28 @@ public class EPICTomcat {
 
     
     public EPICTomcat() {
-        this.proxy = new ProxyController();
+        proxy = new ProxyController();
     }
     
-    public void handleGet(HttpServletRequest request, HttpServletResponse response) {
-        EPICRequest convertedRequest = convertToEPICRequest(request);
-        EPICResponse convertedResponse = convertToEPICResponse(response);
-        
-        this.proxy.handleGet(convertedRequest, convertedResponse);
 
-    }
-
-    public void handlePost(HttpServletRequest request, HttpServletResponse response) {
+    public void handleRequest(HttpServletRequest request, HttpServletResponse response) {
         EPICRequest convertedRequest = convertToEPICRequest(request);
-        EPICResponse convertedResponse = convertToEPICResponse(response);
+        EPICResponse epic = proxy.handleRequest(convertedRequest);
         
-        this.proxy.handlePost(convertedRequest, convertedResponse);
-    }
-
-    public void handleDelete(HttpServletRequest request, HttpServletResponse response) {
-        EPICRequest convertedRequest = convertToEPICRequest(request);
-        EPICResponse convertedResponse = convertToEPICResponse(response);
-        
-        this.proxy.handleDelete(convertedRequest, convertedResponse);
-    }
-
-    public void handlePut(HttpServletRequest request, HttpServletResponse response) {
-        EPICRequest convertedRequest = convertToEPICRequest(request);
-        EPICResponse convertedResponse = convertToEPICResponse(response);
-        
-        this.proxy.handlePut(convertedRequest, convertedResponse);
-    }
-
-    public void handleHead(HttpServletRequest request, HttpServletResponse response) {
-        EPICRequest convertedRequest = convertToEPICRequest(request);
-        EPICResponse convertedResponse = convertToEPICResponse(response);
-        
-        this.proxy.handleHead(convertedRequest, convertedResponse);
-    }
-
-    public void handleOptions(HttpServletRequest request, HttpServletResponse response) {
-        EPICRequest convertedRequest = convertToEPICRequest(request);
-        EPICResponse convertedResponse = convertToEPICResponse(response);
-        
-        this.proxy.handleOptions(convertedRequest, convertedResponse);
+        fillResponse(response, epic);
     }
     
-    public EPICRequest convertToEPICRequest(HttpServletRequest request) {
+    
+    private void fillResponse(HttpServletResponse response, EPICResponse r) {
+        // TODO: extract data drom epicresonse and fill it into httpserletresponse
+    }
+    
+    
+    private EPICRequest convertToEPICRequest(HttpServletRequest request) {
         HashMap<String, String> headers = new HashMap();
         String body = new String();
-        EPICRequest convertedRequest = new EPICRequest();
         
-        Enumeration<String> headerNames = request.getHeaderNames();
-        
+        Enumeration<String> headerNames = request.getHeaderNames();        
         while (headerNames.hasMoreElements()) {
             String name = headerNames.nextElement();
             String value = request.getHeader(name);
@@ -76,47 +45,27 @@ public class EPICTomcat {
         try {
             BufferedReader reader = request.getReader();
             StringBuilder sb = new StringBuilder();
-            
-            String line = reader.readLine();
-            while (line != null) {
-                sb.append(line + "\n");
-                line = reader.readLine();
+
+            char[] buffer = new char[4*1024];
+            int length;
+
+            while ((length = reader.read(buffer, 0, buffer.length)) != -1) {
+                sb.append(buffer, 0, length);
             }
             
             reader.close();
             body = sb.toString();
         } catch (java.io.UnsupportedEncodingException e) {
-            e.printStackTrace();
+            Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, null, e);
         } catch (IllegalStateException e) {
-            e.printStackTrace();
+            Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, null, e);
         } catch (java.io.IOException e) {
-            e.printStackTrace();
+            Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, null, e);
         }
         
-        convertedRequest.setBody(body);
-        convertedRequest.setHeaders(headers);
-
-        return convertedRequest;
-    }
-    
-    public EPICResponse convertToEPICResponse(HttpServletResponse response) {
-        HashMap<String, String> headers = new HashMap();
-        String body = new String();
-        EPICResponse convertedResponse = new EPICResponse();
+        EPICRequest e = new EPICRequest(request.getMethod(), headers, body);
+        e.setUri(request.getRequestURL() + request.getQueryString());
         
-        Collection<String> headerNames = response.getHeaderNames();
-        Iterator headerIterator = headerNames.iterator();
-        
-        while (headerIterator.hasNext()) {
-            String name = (String)headerIterator.next();
-            String value = response.getHeader(name);
-            
-            headers.put(name, value);    
-        }
-        
-        convertedResponse.setHeaders(headers);
-        convertedResponse.setBody(null);
-        
-        return convertedResponse;
+        return e;
     }
 }
