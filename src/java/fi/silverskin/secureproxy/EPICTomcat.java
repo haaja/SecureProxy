@@ -1,10 +1,16 @@
 package fi.silverskin.secureproxy;
 
 import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -25,11 +31,47 @@ public class EPICTomcat {
     }
     
     
-    private void fillResponse(HttpServletResponse response, EPICResponse r) {
-        // TODO: extract data drom epicresonse and fill it into httpserletresponse
+    private void fillResponse(HttpServletResponse response, EPICResponse epic) {
+        
+        try {
+            response.reset();
+
+            for (Map.Entry<String, String> header : epic.getHeaders().entrySet()) {
+                response.addHeader(header.getKey(), header.getValue());
+            }
+        }
+        catch (IllegalStateException e) {
+            Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, null, e);
+        }
+
+        String contentType = epic.getHeaders().get("Content-Type:");
+        Pattern pattern = Pattern.compile("text/.*");
+        Matcher isText = pattern.matcher(contentType);
+
+        // if text
+        if (isText.matches()) {
+            try {
+                PrintWriter out = response.getWriter();
+                out.print(epic.getBody());
+                out.close();
+            } catch (IOException e) {
+                Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, null, e);
+            }
+
+        }
+        // if binary
+        else {
+            try {
+                ServletOutputStream out = response.getOutputStream();
+                out.print(epic.getBody());
+                out.close();
+            } catch (IOException e) {
+                Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, null, e);
+            }
+        }
     }
-    
-    
+
+
     private EPICRequest convertToEPICRequest(HttpServletRequest request) {
         HashMap<String, String> headers = new HashMap();
         String body = new String();
