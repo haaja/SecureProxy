@@ -18,9 +18,11 @@ public class EPICTomcat {
 
     private ProxyController proxy;
 
+    
     public EPICTomcat() {
         proxy = new ProxyController();
     }
+    
 
     public void handleRequest(HttpServletRequest request, HttpServletResponse response) {
         EPICRequest convertedRequest = convertToEPICRequest(request);
@@ -49,12 +51,10 @@ public class EPICTomcat {
         Pattern pattern = Pattern.compile("text/.*");
         Matcher isText = pattern.matcher(contentType);
 
-
         // if text
         if (isText.matches()) {
             try {
                 PrintWriter out = response.getWriter();
-                System.err.println("getBody: \"" + epic.getBody() + "\"");
                 out.print(epic.getBody());
                 out.flush();
                 out.close();
@@ -62,7 +62,8 @@ public class EPICTomcat {
                 Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, null, e);
             }
 
-        } // if binary
+        }
+        // if binary
         else {
             try {
                 ServletOutputStream out = response.getOutputStream();                
@@ -91,7 +92,7 @@ public class EPICTomcat {
             BufferedReader reader = request.getReader();
             StringBuilder sb = new StringBuilder();
 
-            char[] buffer = new char[4 * 1024];
+            char[] buffer = new char[0x10000];
             int length;
 
             while ((length = reader.read(buffer, 0, buffer.length)) != -1) {
