@@ -4,13 +4,17 @@
  */
 package fi.silverskin.secureproxy.resourcefetcher;
 
+import fi.silverskin.secureproxy.EPICBinaryResponse;
 import fi.silverskin.secureproxy.EPICRequest;
 import fi.silverskin.secureproxy.EPICResponse;
+import fi.silverskin.secureproxy.EPICTextResponse;
 import java.io.*;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpRequest;
@@ -24,15 +28,43 @@ import org.apache.http.entity.StringEntity;
  */
 public class FetcherUtilities {
 
-   
+  
+    public static boolean contentIsText(HttpResponse response) {
+        Header contentType = response.getFirstHeader("Content-Type");
+        Pattern pattern = Pattern.compile("text/.*");
+        Matcher isText = pattern.matcher(contentType.getValue());
+        
+        if (isText == null || isText.matches())
+            return true;
+        else
+            return false;
+    }
+    
 
-    public static EPICResponse responseToEPICResponse(HttpResponse e) {
-        EPICResponse response = new EPICResponse();
-        response.setBody(getBody(e.getEntity()));
-        response.setHeaders(getHeaders(e));
-        return response;
+    public static EPICTextResponse toEPICText(HttpResponse response) {
+        EPICTextResponse e = new EPICTextResponse();
+        e.setBody(getBody(response.getEntity()));
+        e.setHeaders(getHeaders(response));
+        return e;
     }
 
+    
+    public static EPICBinaryResponse toEPICBinary(HttpResponse response) {
+        EPICBinaryResponse e = new EPICBinaryResponse();
+        
+        try {
+            e.setBody(response.getEntity().getContent());
+            e.setHeaders(getHeaders(response));
+            return e;
+        } catch (IOException ex) {
+            Logger.getLogger(FetcherUtilities.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IllegalStateException ex) {
+            Logger.getLogger(FetcherUtilities.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        return e;
+    }  
+    
     public static String getBody(HttpEntity e) {
         StringBuilder sb = null;
         try {

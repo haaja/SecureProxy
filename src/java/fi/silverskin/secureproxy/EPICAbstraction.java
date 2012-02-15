@@ -11,23 +11,14 @@ import java.util.logging.Logger;
 public abstract class EPICAbstraction {
 
     private HashMap<String, String> headers;
-    private String body;
     private URI uri;
 
-    public EPICAbstraction(HashMap<String, String> headers, String body) {
-        this.headers = headers;
-        this.body = body;
+    public EPICAbstraction(HashMap<String, String> header) {
+        this.headers = header;
     }
 
     public EPICAbstraction() {
-    }
-
-    public String getBody() {
-        return body;
-    }
-
-    public void setBody(String body) {
-        this.body = body;
+        this.headers = new HashMap<String, String>();
     }
 
     public Map<String, String> getHeaders() {

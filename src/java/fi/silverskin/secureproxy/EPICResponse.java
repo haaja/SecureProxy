@@ -7,7 +7,7 @@ public class EPICResponse extends EPICAbstraction {
     public EPICResponse() {
     }
 
-    public EPICResponse(HashMap<String, String> headers, String body) {
-        super(headers, body);
+    public EPICResponse(HashMap<String, String> headers) {
+        super(headers);
     }
 }

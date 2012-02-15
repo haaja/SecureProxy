@@ -3,6 +3,15 @@ package fi.silverskin.secureproxy;
 import java.util.HashMap;
 
 public class EPICRequest extends EPICAbstraction {
+    private String body;
+
+    public String getBody() {
+        return body;
+    }
+
+    public void setBody(String body) {
+        this.body = body;
+    }
 
     
     public enum RequestType {
@@ -17,12 +26,14 @@ public class EPICRequest extends EPICAbstraction {
 
    
     public EPICRequest(String type, HashMap<String, String> headers, String body) {
-        super(headers, body);
+        super(headers);
+        this.body = body;
         this.type = matchType(type);
     }
     
     public EPICRequest(RequestType type, HashMap<String, String> headers, String body) {
-        super(headers, body);
+        super(headers);
+        this.body = body;
     }
 
     public RequestType getType() {
