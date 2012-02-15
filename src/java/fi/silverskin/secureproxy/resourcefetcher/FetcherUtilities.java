@@ -1,12 +1,7 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package fi.silverskin.secureproxy.resourcefetcher;
 
 import fi.silverskin.secureproxy.EPICBinaryResponse;
 import fi.silverskin.secureproxy.EPICRequest;
-import fi.silverskin.secureproxy.EPICResponse;
 import fi.silverskin.secureproxy.EPICTextResponse;
 import java.io.*;
 import java.util.HashMap;
@@ -22,10 +17,7 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
 import org.apache.http.entity.StringEntity;
 
-/**
- *
- * @author orva
- */
+
 public class FetcherUtilities {
 
   
@@ -69,7 +61,7 @@ public class FetcherUtilities {
         StringBuilder sb = null;
         try {
             Reader reader = new BufferedReader(new InputStreamReader(e.getContent()));
-            sb = new StringBuilder((int) e.getContentLength());
+            sb = new StringBuilder();
 
             final char[] buffer = new char[0x10000];
             int read = reader.read(buffer, 0, buffer.length);

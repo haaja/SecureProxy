@@ -10,7 +10,7 @@ import java.util.logging.Logger;
 
 public abstract class EPICAbstraction {
 
-    private HashMap<String, String> headers;
+    protected HashMap<String, String> headers;
     private URI uri;
 
     public EPICAbstraction(HashMap<String, String> header) {
@@ -30,6 +30,9 @@ public abstract class EPICAbstraction {
     }
 
     public String getUri() {
+        if (uri == null) {
+            return "";
+        }
         return uri.toString();
     }
 

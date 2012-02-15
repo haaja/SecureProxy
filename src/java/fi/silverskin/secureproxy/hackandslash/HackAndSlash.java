@@ -2,6 +2,11 @@ package fi.silverskin.secureproxy.hackandslash;
 
 import fi.silverskin.secureproxy.EPICRequest;
 import fi.silverskin.secureproxy.EPICResponse;
+import fi.silverskin.secureproxy.EPICTextResponse;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
@@ -10,10 +15,9 @@ public class HackAndSlash {
 
     private EPICRequest request;
     private EPICResponse response;
-    //To be replaced with proper settings
-    private String remoteUrl = "localhost";
-    private String remotePort = "8084";
-    
+    //TODO: To be replaced with proper settings
+    private String remoteUrl = "corvus.kapsi.fi";
+    private String remotePort = "80";
 
     public HackAndSlash() {
         this.request = null;
@@ -21,8 +25,15 @@ public class HackAndSlash {
     }
 
     public EPICRequest hackAndSlashIn(EPICRequest request) {
+        try {
+            URI uri = new URI(request.getUri());
+            request.setUri("http://" + remoteUrl + ":" + remotePort + uri.getPath());
+            Logger.getLogger(HackAndSlash.class.getName()).log(Level.INFO, request.getUri().toString());
 
-        throw new NotImplementedException();
+        } catch (URISyntaxException ex) {
+            Logger.getLogger(HackAndSlash.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return request;
     }
 
     public EPICResponse hackAndSlashIn(EPICResponse response) {
@@ -35,16 +46,17 @@ public class HackAndSlash {
         throw new NotImplementedException();
     }
 
-    public EPICResponse hackAndSlashOut(EPICResponse response) {
+    public EPICResponse hackAndSlashOut(EPICTextResponse response) {
         Pattern tagPattern = Pattern.compile("<(\\s)*img[^>]*>");
-        String oldResponse = response.getBody(), 
-               newResponse = "";
+        String oldResponse = response.getBody(),
+                newResponse = "";
         Matcher tagMatcher = tagPattern.matcher(oldResponse);
 
         int index = 0;
         while (tagMatcher.find()) {
-            if (tagMatcher.start() > index)
+            if (tagMatcher.start() > index) {
                 newResponse += oldResponse.substring(index, tagMatcher.start());
+            }
 
             index = tagMatcher.end();
             Pattern sourcePattern = Pattern.compile("src(\\s)*=(\\s)*\"[^\"]*\"");
@@ -52,14 +64,14 @@ public class HackAndSlash {
             newResponse += sourceMatcher.replaceFirst("src=\"http://upload.wikimedia.org/wikipedia/"
                     + "commons/thumb/a/af/Tux.png/220px-Tux.png\"");
         }
-        
-        if (index == 0)
+
+        if (index == 0) {
             newResponse = oldResponse;
-        else if (index < oldResponse.length())
+        } else if (index < oldResponse.length()) {
             newResponse += oldResponse.substring(index);
-        
+        }
+
         response.setBody(newResponse);
         return response;
     }
-    
 }
