@@ -20,6 +20,8 @@ public abstract class EPICAbstraction {
     }
 
     public EPICAbstraction() {
+        headers = new HashMap<String, String>();
+        body = "";
     }
 
     public String getBody() {
@@ -39,6 +41,9 @@ public abstract class EPICAbstraction {
     }
 
     public String getUri() {
+        if (uri == null) {
+            return "";
+        }
         return uri.toString();
     }
 

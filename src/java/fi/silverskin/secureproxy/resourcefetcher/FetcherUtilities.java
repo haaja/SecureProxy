@@ -37,7 +37,7 @@ public class FetcherUtilities {
         StringBuilder sb = null;
         try {
             Reader reader = new BufferedReader(new InputStreamReader(e.getContent()));
-            sb = new StringBuilder((int) e.getContentLength());
+            sb = new StringBuilder();
 
             final char[] buffer = new char[0x10000];
             int read = reader.read(buffer, 0, buffer.length);

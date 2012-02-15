@@ -3,6 +3,9 @@ package fi.silverskin.secureproxy.resourcefetcher;
 import fi.silverskin.secureproxy.EPICRequest;
 import fi.silverskin.secureproxy.EPICResponse;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.*;
 import org.apache.http.impl.client.DefaultHttpClient;
@@ -19,6 +22,7 @@ public class ResourceFetcher {
     
     
     public EPICResponse handleRequest(EPICRequest req) {
+        Logger.getLogger(ResourceFetcher.class.getName()).log(Level.INFO, req.toString());
         switch (req.getType()) {
             case POST: return handlePost(req);
             case PUT: return handlePut(req);
@@ -30,14 +34,16 @@ public class ResourceFetcher {
     }
     
     
-    
-    
     private EPICResponse handleGet(EPICRequest req) {
+        //return new EPICResponse(new HashMap<String,String>(req.getHeaders()), "ASDFASDF\n");
         try {
+            Logger.getLogger("log").log(Level.INFO, "GET Request \"" + req.getUri() +"\"");           
             HttpGet get = new HttpGet(req.getUri());
             FetcherUtilities.copyHeaders(req, get);
             return FetcherUtilities.responseToEPICResponse(httpclient.execute(get));
-        } catch (IOException ex) {
+        } catch (Throwable ex) {
+            Logger.getLogger("log").log(Level.SEVERE, "Exception in GET:{0}", ex);
+            System.err.println("Exception in GET: " + ex);
             return new EPICResponse();
         }
     }
