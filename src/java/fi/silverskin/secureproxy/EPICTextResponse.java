@@ -17,18 +17,30 @@ public class EPICTextResponse extends EPICResponse {
         super(headers);
         this.body = body;
     }
-    
-    
 
+    /**
+     * Returns the body of the response.
+     *
+     * @return Body of the response.
+     */
     public String getBody() {
         return body;
     }
 
+    /**
+     * Sets the body of the response.
+     *
+     * @param body Body of the response.
+     */
     public void setBody(String body) {
         this.body = body;
     }
   
-
+    /**
+     * Returns a string representation of the response.
+     * 
+     * @return A string representation of the response.
+     */
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();

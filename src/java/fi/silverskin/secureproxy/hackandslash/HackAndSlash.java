@@ -24,6 +24,12 @@ public class HackAndSlash {
         this.response = null;
     }
 
+    /**
+     * Modifies requests to contain the real URI of the service.
+     *
+     * @param request HTTP request.
+     * @return HTTP request containing the real URI of the service.
+     */
     public EPICRequest hackAndSlashIn(EPICRequest request) {
         try {
             URI uri = new URI(request.getUri());
@@ -36,16 +42,32 @@ public class HackAndSlash {
         return request;
     }
 
+    /**
+     * 
+     * @param response
+     * @return
+     */
     public EPICResponse hackAndSlashIn(EPICResponse response) {
 
         throw new NotImplementedException();
     }
 
+    /**
+     *
+     * @param request
+     * @return
+     */
     public EPICRequest hackAndSlashOut(EPICRequest request) {
 
         throw new NotImplementedException();
     }
 
+    /**
+     * Modifies HTTP response to hide traces of the real service.
+     * 
+     * @param response HTTP response with real data.
+     * @return Modified HTTP response.
+     */
     public EPICResponse hackAndSlashOut(EPICTextResponse response) {
         Pattern tagPattern = Pattern.compile("<(\\s)*img[^>]*>");
         String oldResponse = response.getBody(),

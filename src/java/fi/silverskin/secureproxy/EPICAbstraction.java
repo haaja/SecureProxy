@@ -25,10 +25,20 @@ public abstract class EPICAbstraction {
         return Collections.unmodifiableMap(headers);
     }
 
+    /**
+     * Sets the headers of the request or response.
+     *
+     * @param headers Headers of the request or response.
+     */
     public void setHeaders(HashMap<String, String> headers) {
         this.headers = headers;
     }
 
+    /**
+     * Returns the URI of the request or response.
+     *
+     * @return A string representation of the URI.
+     */
     public String getUri() {
         if (uri == null) {
             return "";
@@ -36,6 +46,11 @@ public abstract class EPICAbstraction {
         return uri.toString();
     }
 
+    /**
+     * Sets the URI of the request or response.
+     *
+     * @param uri A string representation of the URI.
+     */
     public void setUri(String uri) {
         try {
             this.uri = new URI(uri);

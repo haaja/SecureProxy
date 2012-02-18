@@ -14,13 +14,18 @@ public class ProxyController {
         fetcher = new ResourceFetcher();
         hackAndSlash = new HackAndSlash();
     }
-    
+
+    /**
+     * Control logic for handling requests within SecureProxy.
+     * 
+     * @param request HTTP request.
+     * @return Modified HTTP response.
+     */
     public EPICResponse handleRequest(EPICRequest request) {
         request = hackAndSlash.hackAndSlashIn(request);
-
         
         EPICResponse response = fetcher.handleRequest(request);
-        Logger.getLogger(ProxyController.class.getName()).log(Level.INFO, response.toString());
+        Logger.getLogger(this.getClass().getName()).log(Level.INFO, response.toString());
         return response;
     }
 }

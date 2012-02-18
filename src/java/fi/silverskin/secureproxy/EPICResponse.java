@@ -12,7 +12,12 @@ public class EPICResponse extends EPICAbstraction {
     public EPICResponse(HashMap<String, String> headers) {
         super(headers);
     }
-    
+
+    /**
+     * Checks if HTTP response contains just text data or not.
+     *
+     * @return true if request contains only text data, otherwise false.
+     */
     public boolean isText() {
         String contentType = headers.get("Content-Type");
         if (contentType == null)

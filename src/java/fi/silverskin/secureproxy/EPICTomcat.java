@@ -21,6 +21,12 @@ public class EPICTomcat {
         proxy = new ProxyController();
     }
 
+    /**
+     * Handles requests coming from servlet.
+     *
+     * @param request HTTP request coming from servlet.
+     * @param response HTTP response coming from servlet.
+     */
     public void handleRequest(HttpServletRequest request, HttpServletResponse response) {
         EPICRequest convertedRequest = convertToEPICRequest(request);
         EPICResponse epic = proxy.handleRequest(convertedRequest);
@@ -28,6 +34,12 @@ public class EPICTomcat {
         fillResponse(response, epic);
     }
 
+    /**
+     * Fills HttpServletResponse with data from EPICResponse.
+     * 
+     * @param response HttpServeltResponse used by tomcat.
+     * @param epic Internal response used by SecureProxy.
+     */
     private void fillResponse(HttpServletResponse response, EPICResponse epic) {
 
         try {
@@ -35,8 +47,8 @@ public class EPICTomcat {
             for (Map.Entry<String, String> header : epic.getHeaders().entrySet()) {
                 response.addHeader(header.getKey(), header.getValue());
             }
-        } catch (IllegalStateException e) {
-            Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, null, e);
+        } catch (IllegalStateException ex) {
+            Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, null, ex);
         }
 
 
@@ -46,18 +58,30 @@ public class EPICTomcat {
             fillBinary(response, epic);
     }
 
+    /**
+     * Fills HttpServletResponse with text data from EPICResponse
+     * 
+     * @param response HttpServeltResponse used by tomcat.
+     * @param epic Internal response used by SecureProxy.
+     */
     private void fillText(HttpServletResponse response, EPICResponse epic) {
         try {
             PrintWriter in = response.getWriter();
             in.print(((EPICTextResponse) epic).getBody());
             in.flush();
             in.close();
-        } catch (IOException e) {
-            Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, null, e);
+        } catch (IOException ex) {
+            Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, null, ex);
         }
 
     }
 
+    /**
+     * Fills HttpServletResponse with binary data from EPICResponse.
+     * 
+     * @param response HttpServeltResponse used by tomcat.
+     * @param epic Internal response used by SecureProxy.
+     */
     private void fillBinary(HttpServletResponse response, EPICResponse epic) {
         try {
             ServletOutputStream in = response.getOutputStream();
@@ -72,11 +96,17 @@ public class EPICTomcat {
             
             in.flush();
             in.close();
-        } catch (IOException e) {
-            Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, null, e);
+        } catch (IOException ex) {
+            Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, null, ex);
         }
     }
 
+    /**
+     * Converts HttpServletRequest to EPICRequest.
+     * 
+     * @param request HTTP request coming from servlet.
+     * @return HTTP request converted to internal EPICRequest.
+     */
     private EPICRequest convertToEPICRequest(HttpServletRequest request) {
         HashMap<String, String> headers = new HashMap();
         String body = new String();
@@ -102,12 +132,12 @@ public class EPICTomcat {
 
             reader.close();
             body = sb.toString();
-        } catch (java.io.UnsupportedEncodingException e) {
-            Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, null, e);
-        } catch (IllegalStateException e) {
-            Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, null, e);
-        } catch (java.io.IOException e) {
-            Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, null, e);
+        } catch (java.io.UnsupportedEncodingException ex) {
+            Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, null, ex);
+        } catch (IllegalStateException ex) {
+            Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, null, ex);
+        } catch (java.io.IOException ex) {
+            Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, null, ex);
         }
 
         EPICRequest e = new EPICRequest(request.getMethod(), headers, body);

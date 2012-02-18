@@ -16,58 +16,107 @@ public class RequestHandler extends HttpServlet {
     
     private EPICTomcat tomcatHandler;
     
-    
     public RequestHandler() {
         tomcatHandler = new EPICTomcat();
     }
-    
-    
 
-
+    /**
+     * Handles HTTP GET requests.
+     * 
+     * @param request HTTP request coming from the client.
+     * @param response HTTP response to be sent to the client.
+     * @throws ServletException
+     * @throws IOException
+     */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         tomcatHandler.handleRequest(request, response);
     }
 
+    /**
+     * Handles HTTP POST requests.
+     *
+     * @param request HTTP request coming from the client.
+     * @param response HTTP response to be sent to the client.
+     * @throws ServletException
+     * @throws IOException
+     */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         tomcatHandler.handleRequest(request, response);
     }
 
+    /**
+     * Handles HTTP DELETE requests.
+     *
+     * @param request HTTP request coming from the client.
+     * @param response HTTP response to be sent to the client.
+     * @throws ServletException
+     * @throws IOException
+     */
     @Override
     protected void doDelete(HttpServletRequest request, HttpServletResponse response) 
             throws ServletException, IOException {
         tomcatHandler.handleRequest(request, response);
     }
 
+    /**
+     * Handles HTTP PUT requests.
+     *
+     * @param request HTTP request coming from the client.
+     * @param response HTTP response to be sent to the client.
+     * @throws ServletException
+     * @throws IOException
+     */
     @Override
     protected void doPut(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         tomcatHandler.handleRequest(request, response);
     }
 
+    /**
+     * Handles HTTP HEAD requests.
+     *
+     * @param request HTTP request coming from the client.
+     * @param response HTTP response to be sent to the client.
+     * @throws ServletException
+     * @throws IOException
+     */
     @Override
     protected void doHead(HttpServletRequest request, HttpServletResponse response) 
             throws ServletException, IOException {
         tomcatHandler.handleRequest(request, response);
     }
 
+    /**
+     * Handles HTTP OPTIONS requests.
+     * 
+     * @param request HTTP request coming from the client.
+     * @param response HTTP response to be sent to the client.
+     * @throws ServletException
+     * @throws IOException
+     */
     @Override
     protected void doOptions(HttpServletRequest request, HttpServletResponse response) 
             throws ServletException, IOException {
         tomcatHandler.handleRequest(request, response);
     }
 
+    /**
+     * Handles HTTP TRACE requests.
+     *
+     * @param req HTTP request coming from the client.
+     * @param resp HTTP response to be sent to the client.
+     * @throws ServletException
+     * @throws IOException
+     */
     @Override
-    protected void doTrace(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doTrace(HttpServletRequest req, HttpServletResponse resp)
+            throws ServletException, IOException {
         super.doTrace(req, resp);
     }
-    
-
-    
-
 
     /**
      * Returns a short description of the servlet.
@@ -80,10 +129,12 @@ public class RequestHandler extends HttpServlet {
     }
 
     
-    
-    
-    // These methods are just for demonstrating how to handle request data.
-    
+    /*
+     * These methods are just for demonstrating how to handle request data.
+     *
+     * To be removed later.
+     */
+
     private void printHeaders(PrintWriter out, HttpServletRequest req) {
         Enumeration<String> headerNames = req.getHeaderNames();
         out.println("<h1> Request headers were: </h1>");
@@ -159,3 +210,4 @@ public class RequestHandler extends HttpServlet {
         }
     }    
 }
+

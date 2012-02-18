@@ -2,6 +2,8 @@ package fi.silverskin.secureproxy;
 
 import java.util.HashMap;
 import java.util.Map.Entry;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class EPICRequest extends EPICAbstraction {
     public enum RequestType {
@@ -10,14 +12,6 @@ public class EPICRequest extends EPICAbstraction {
     
     private String body;
     private RequestType type;
-    
-    public String getBody() {
-        return body;
-    }
-
-    public void setBody(String body) {
-        this.body = body;
-    }
 
     public EPICRequest(RequestType type) {
         this.type = type;
@@ -28,18 +22,45 @@ public class EPICRequest extends EPICAbstraction {
         this.body = body;
         this.type = matchType(type);
     }
-    
+
     public EPICRequest(RequestType type, HashMap<String, String> headers, String body) {
         super(headers);
         this.body = body;
     }
 
-    
-    
+    /**
+     * Returns the body of the request.
+     *
+     * @return A string representation of the body.
+     */
+    public String getBody() {
+        return body;
+    }
+
+    /**
+     * Sets the body of the request.
+     *
+     * @param body A string representation of the body.
+     */
+    public void setBody(String body) {
+        this.body = body;
+    }
+
+    /**
+     * Returns the type of the request.
+     *
+     * @return Type of the request.
+     */
     public RequestType getType() {
         return type;
     }
-    
+
+    /**
+     * Matches the HTTP request type with right RequestType.
+     *
+     * @param type A string representation of the HTTP request type.
+     * @return Matching RequestType.
+     */
     private RequestType matchType(String type) {
         if (type.equalsIgnoreCase("post"))
             return RequestType.POST;
@@ -52,10 +73,16 @@ public class EPICRequest extends EPICAbstraction {
         else if (type.equalsIgnoreCase("put"))
             return RequestType.HEAD;
         else
+            Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, "Invalid request type: " +type);
             throw new RuntimeException("Invalid request type '"+type+"'");
                     
     }    
-    
+
+    /**
+     * Returns a string representation of the request.
+     *
+     * @return A string representation of the request.
+     */
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();

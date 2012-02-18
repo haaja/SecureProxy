@@ -22,15 +22,29 @@ public class EPICBinaryResponse extends EPICResponse {
         this.body = body;
     }
 
+    /**
+     * Returns the body of the response.
+     *
+     * @return Body of the response.
+     */
     public InputStream getBody() {
         return body;
     }
 
+    /**
+     * Returns the body of the response.
+     *
+     * @param body Body of the response.
+     */
     public void setBody(InputStream body) {
         this.body = body;
     }
-    
 
+    /**
+     * Returns a string representation of the response.
+     *
+     * @return A string representation of the response.
+     */
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();

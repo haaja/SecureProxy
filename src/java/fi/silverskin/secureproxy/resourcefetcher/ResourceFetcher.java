@@ -18,9 +18,13 @@ public class ResourceFetcher {
         httpclient = new DefaultHttpClient();
         httpclient.getParams().removeParameter("http.useragent");
     }
-
     
-    
+    /**
+     * Handle methods coming from ProxyController.
+     *
+     * @param req EPICRequest to be handled.
+     * @return Response for the request or empty response.
+     */
     public EPICResponse handleRequest(EPICRequest req) {
         Logger.getLogger(ResourceFetcher.class.getName()).log(Level.INFO, req.toString());
         switch (req.getType()) {
@@ -31,9 +35,14 @@ public class ResourceFetcher {
             case HEAD: return handleHead(req);
             default: return new EPICResponse();
         }
-    }
-    
-    
+    } 
+
+    /**
+     * Handle HTTP GET requests.
+     * 
+     * @param req EPICRequest containing HTTP GET request.
+     * @return Response for the handled request or empty response.
+     */
     private EPICResponse handleGet(EPICRequest req) {
         try {
             Logger.getLogger("log").log(Level.INFO, "GET Request \"" + req.getUri() +"\"");           
@@ -50,8 +59,14 @@ public class ResourceFetcher {
             System.err.println("Exception in GET: " + exception);
             return new EPICResponse();
         }
-    }
+    }    
     
+    /**
+     * Handle HTTP POST request.
+     * 
+     * @param req EPICRequest containing HTTP POST request.
+     * @return Response for the handled request or empty response.
+     */
     private EPICResponse handlePost(EPICRequest req) {
 
         try {
@@ -70,6 +85,12 @@ public class ResourceFetcher {
         }
     }
 
+    /**
+     * Handle HTTP PUT request.
+     * 
+     * @param req EPICRequest containing HTTP PUT request.
+     * @return Response for the handled request or empty response.
+     */
     private EPICResponse handlePut(EPICRequest req) {
 
         try {
@@ -88,6 +109,12 @@ public class ResourceFetcher {
         }
     }
 
+    /**
+     * Handle HTTP DELETE request.
+     * 
+     * @param req EPICRequest containing HTTP DELETE request.
+     * @return Response for the handled request or empty response.
+     */
     private EPICResponse handleDelete(EPICRequest req) {
         try {
             Logger.getLogger("log").log(Level.INFO, "DELETE Request \"" + req.getUri() +"\"");
@@ -105,6 +132,12 @@ public class ResourceFetcher {
         }
     }
 
+    /**
+     * Handle HTTP HEAD request.
+     * 
+     * @param req EPICRequest containing HTTP HEAD request.
+     * @return Response for the handled request or empty response.
+     */
     private EPICResponse handleHead(EPICRequest req) {
         try {
             Logger.getLogger("log").log(Level.INFO, "HEAD Request \"" + req.getUri() +"\"");
