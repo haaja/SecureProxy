@@ -45,9 +45,9 @@ public class ResourceFetcher {
             } else {
                 return (EPICResponse) FetcherUtilities.toEPICBinary(res);
             }
-        }  catch (Throwable ex) {
-            Logger.getLogger("log").log(Level.SEVERE, "Exception in GET:{0}", ex);
-            System.err.println("Exception in GET: " + ex);
+        }  catch (Throwable exception) {
+            Logger.getLogger("log").log(Level.SEVERE, "Exception in GET:{0}", exception);
+            System.err.println("Exception in GET: " + exception);
             return new EPICResponse();
         }
     }
@@ -55,6 +55,7 @@ public class ResourceFetcher {
     private EPICResponse handlePost(EPICRequest req) {
 
         try {
+            Logger.getLogger("log").log(Level.INFO, "POST Request \"" + req.getUri() +"\"");
             HttpPost post = new HttpPost(req.getUri());
             FetcherUtilities.copyHeaders(req, post);
             HttpResponse res = httpclient.execute(post);
@@ -63,7 +64,8 @@ public class ResourceFetcher {
             } else {
                 return (EPICResponse) FetcherUtilities.toEPICBinary(res);
             }            
-        } catch (IOException ex) {
+        } catch (IOException exception) {
+            Logger.getLogger("log").log(Level.SEVERE, "Exception in POST:{0}", exception);
             return new EPICResponse();
         }
     }
@@ -71,6 +73,7 @@ public class ResourceFetcher {
     private EPICResponse handlePut(EPICRequest req) {
 
         try {
+            Logger.getLogger("log").log(Level.INFO, "PUT Request \"" + req.getUri() +"\"");
             HttpPut put = new HttpPut(req.getUri());
             FetcherUtilities.copyHeaders(req, put);
             HttpResponse res = httpclient.execute(put);
@@ -79,13 +82,15 @@ public class ResourceFetcher {
             } else {
                 return (EPICResponse) FetcherUtilities.toEPICBinary(res);
             }
-        } catch (IOException ex) {
+        } catch (IOException exception) {
+            Logger.getLogger("log").log(Level.SEVERE, "Exception in PUT:{0}", exception);
             return new EPICResponse();
         }
     }
 
     private EPICResponse handleDelete(EPICRequest req) {
         try {
+            Logger.getLogger("log").log(Level.INFO, "DELETE Request \"" + req.getUri() +"\"");
             HttpDelete delete = new HttpDelete(req.getUri());
             FetcherUtilities.copyHeaders(req, delete);
             HttpResponse res = httpclient.execute(delete);
@@ -94,13 +99,15 @@ public class ResourceFetcher {
             } else {
                 return (EPICResponse) FetcherUtilities.toEPICBinary(res);
             }            
-        } catch (IOException ex) {
+        } catch (IOException exception) {
+            Logger.getLogger("log").log(Level.SEVERE, "Exception in DELETE:{0}", exception);
             return new EPICResponse();
         }
     }
 
     private EPICResponse handleHead(EPICRequest req) {
         try {
+            Logger.getLogger("log").log(Level.INFO, "HEAD Request \"" + req.getUri() +"\"");
             HttpHead head = new HttpHead(req.getUri());
             FetcherUtilities.copyHeaders(req, head);
             HttpResponse res = httpclient.execute(head);
@@ -109,7 +116,8 @@ public class ResourceFetcher {
             } else {
                 return (EPICResponse) FetcherUtilities.toEPICBinary(res);
             } 
-        } catch (IOException ex) {
+        } catch (IOException exception) {
+            Logger.getLogger("log").log(Level.SEVERE, "Exception in HEAD:{0}", exception);
             return new EPICResponse();
         }
     }
