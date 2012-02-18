@@ -4,5 +4,6 @@ build.xml
 nbproject/
 
 *.class
+*.rdb
 /web/WEB-INF/glassfish-web.xml
 /dist/
