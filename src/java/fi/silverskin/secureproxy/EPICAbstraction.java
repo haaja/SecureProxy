@@ -6,12 +6,12 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public abstract class EPICAbstraction {
 
     protected HashMap<String, String> headers;
     private URI uri;
+    private static final ProxyLogger logger = new ProxyLogger(EPICAbstraction.class.getName(), null);
 
     public EPICAbstraction(HashMap<String, String> header) {
         this.headers = header;
@@ -56,7 +56,7 @@ public abstract class EPICAbstraction {
             this.uri = new URI(uri);
         } catch (URISyntaxException ex) {
             //TODO: proper error handling
-            Logger.getLogger(EPICAbstraction.class.getName()).log(Level.SEVERE, null, ex);
+            logger.log(Level.SEVERE, null, ex);
         }
     }
 }

@@ -3,11 +3,11 @@ package fi.silverskin.secureproxy.resourcefetcher;
 import fi.silverskin.secureproxy.EPICBinaryResponse;
 import fi.silverskin.secureproxy.EPICRequest;
 import fi.silverskin.secureproxy.EPICTextResponse;
+import fi.silverskin.secureproxy.ProxyLogger;
 import java.io.*;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.apache.http.Header;
@@ -20,6 +20,7 @@ import org.apache.http.entity.StringEntity;
 
 public class FetcherUtilities {
 
+    private static final ProxyLogger logger = new ProxyLogger(FetcherUtilities.class.getName(), null);
   
     public static boolean contentIsText(HttpResponse response) {
         Header contentType = response.getFirstHeader("Content-Type");
@@ -49,9 +50,9 @@ public class FetcherUtilities {
             e.setHeaders(getHeaders(response));
             return e;
         } catch (IOException ex) {
-            Logger.getLogger(FetcherUtilities.class.getName()).log(Level.SEVERE, null, ex);
+            logger.log(Level.SEVERE, null, ex);
         } catch (IllegalStateException ex) {
-            Logger.getLogger(FetcherUtilities.class.getName()).log(Level.SEVERE, null, ex);
+            logger.log(Level.SEVERE, null, ex);
         }
         
         return e;
@@ -72,9 +73,9 @@ public class FetcherUtilities {
                 read = reader.read(buffer, 0, buffer.length);
             }
         } catch (IOException ex) {
-            Logger.getLogger(ResourceFetcher.class.getName()).log(Level.SEVERE, null, ex);
+            logger.log(Level.SEVERE, null, ex);
         } catch (IllegalStateException ex) {
-            Logger.getLogger(ResourceFetcher.class.getName()).log(Level.SEVERE, null, ex);
+            logger.log(Level.SEVERE, null, ex);
         }
 
         return sb.toString();
@@ -106,7 +107,7 @@ public class FetcherUtilities {
         try {
             req.setEntity(new StringEntity(epic.getBody()));
         } catch (UnsupportedEncodingException ex) {
-            Logger.getLogger(ResourceFetcher.class.getName()).log(Level.SEVERE, null, ex);
+            logger.log(Level.SEVERE, null, ex);
         }
     }
 }

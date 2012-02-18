@@ -3,7 +3,6 @@ package fi.silverskin.secureproxy;
 import java.util.HashMap;
 import java.util.Map.Entry;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class EPICRequest extends EPICAbstraction {
     public enum RequestType {
@@ -12,6 +11,7 @@ public class EPICRequest extends EPICAbstraction {
     
     private String body;
     private RequestType type;
+    private static final ProxyLogger logger = new ProxyLogger(EPICRequest.class.getName(), null);
 
     public EPICRequest(RequestType type) {
         this.type = type;
@@ -73,7 +73,7 @@ public class EPICRequest extends EPICAbstraction {
         else if (type.equalsIgnoreCase("put"))
             return RequestType.HEAD;
         else
-            Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, "Invalid request type: " +type);
+            logger.log(Level.SEVERE, "Invalid request type: " +type);
             throw new RuntimeException("Invalid request type '"+type+"'");
                     
     }    

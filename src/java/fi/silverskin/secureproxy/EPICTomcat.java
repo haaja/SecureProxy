@@ -8,7 +8,6 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -16,6 +15,7 @@ import javax.servlet.http.HttpServletResponse;
 public class EPICTomcat {
 
     private ProxyController proxy;
+    private static final ProxyLogger logger = new ProxyLogger(EPICTomcat.class.getName(), null);
 
     public EPICTomcat() {
         proxy = new ProxyController();
@@ -48,9 +48,8 @@ public class EPICTomcat {
                 response.addHeader(header.getKey(), header.getValue());
             }
         } catch (IllegalStateException ex) {
-            Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, null, ex);
+            logger.log(Level.SEVERE, null, ex);
         }
-
 
         if (epic.isText())
             fillText(response, epic);
@@ -71,7 +70,7 @@ public class EPICTomcat {
             in.flush();
             in.close();
         } catch (IOException ex) {
-            Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, null, ex);
+            logger.log(Level.SEVERE, null, ex);
         }
 
     }
@@ -97,7 +96,7 @@ public class EPICTomcat {
             in.flush();
             in.close();
         } catch (IOException ex) {
-            Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, null, ex);
+            logger.log(Level.SEVERE, null, ex);
         }
     }
 
@@ -133,11 +132,11 @@ public class EPICTomcat {
             reader.close();
             body = sb.toString();
         } catch (java.io.UnsupportedEncodingException ex) {
-            Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, null, ex);
+            logger.log(Level.SEVERE, null, ex);
         } catch (IllegalStateException ex) {
-            Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, null, ex);
+            logger.log(Level.SEVERE, null, ex);
         } catch (java.io.IOException ex) {
-            Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, null, ex);
+            logger.log(Level.SEVERE, null, ex);
         }
 
         EPICRequest e = new EPICRequest(request.getMethod(), headers, body);

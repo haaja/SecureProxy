@@ -3,13 +3,13 @@ package fi.silverskin.secureproxy;
 import fi.silverskin.secureproxy.hackandslash.HackAndSlash;
 import fi.silverskin.secureproxy.resourcefetcher.ResourceFetcher;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 
 public class ProxyController {
     private ResourceFetcher fetcher;
     private HackAndSlash hackAndSlash;
-    
+    private static final ProxyLogger logger = new ProxyLogger(ProxyController.class.getName(), null);
+ 
     public ProxyController() {
         fetcher = new ResourceFetcher();
         hackAndSlash = new HackAndSlash();
@@ -25,7 +25,7 @@ public class ProxyController {
         request = hackAndSlash.hackAndSlashIn(request);
         
         EPICResponse response = fetcher.handleRequest(request);
-        Logger.getLogger(this.getClass().getName()).log(Level.INFO, response.toString());
+        logger.log(Level.INFO, response.toString());
         return response;
     }
 }
