@@ -3,13 +3,14 @@ package fi.silverskin.secureproxy;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 
-public class EPICBinaryResponse extends EPICResponse {
+public class EPICBinaryResponse extends EPICResponse implements Serializable {
     private byte[] body;
 
     public EPICBinaryResponse() {
