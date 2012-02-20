@@ -17,7 +17,7 @@ public class HackAndSlash {
     private EPICResponse response;
     private static final ProxyLogger logger = new ProxyLogger(HackAndSlash.class.getName(), null);
     //TODO: To be replaced with proper settings
-    private String remoteUrl = "corvus.kapsi.fi";
+    private String remoteUrl = "128.214.9.12";
     private String remotePort = "80";
 
     public HackAndSlash() {

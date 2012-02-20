@@ -10,7 +10,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 
-public class EPICBinaryResponse extends EPICResponse implements Serializable {
+public class EPICBinaryResponse extends EPICResponse {
     private byte[] body;
 
     public EPICBinaryResponse() {

@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 
-public class EPICTextResponse extends EPICResponse implements Serializable {
+public class EPICTextResponse extends EPICResponse {
     private String body;
 
     
