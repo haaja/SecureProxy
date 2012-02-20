@@ -1,12 +1,16 @@
 package fi.silverskin.secureproxy;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 public class EPICBinaryResponse extends EPICResponse {
-    private InputStream body;
+    private byte[] body;
 
     public EPICBinaryResponse() {
         super();
@@ -14,12 +18,12 @@ public class EPICBinaryResponse extends EPICResponse {
     
     public EPICBinaryResponse(InputStream body) {
         super();
-        this.body = body;
+        this.body = fromInputStream(body);
     }
     
     public EPICBinaryResponse(HashMap<String, String> headers, InputStream body) {
         super(headers);
-        this.body = body;
+        this.body = fromInputStream(body);
     }
 
     /**
@@ -27,7 +31,7 @@ public class EPICBinaryResponse extends EPICResponse {
      *
      * @return Body of the response.
      */
-    public InputStream getBody() {
+    public byte[] getBody() {
         return body;
     }
 
@@ -37,6 +41,10 @@ public class EPICBinaryResponse extends EPICResponse {
      * @param body Body of the response.
      */
     public void setBody(InputStream body) {
+        this.body = fromInputStream(body);
+    }
+    
+    public void setBody(byte[] body) {
         this.body = body;
     }
 
@@ -57,4 +65,24 @@ public class EPICBinaryResponse extends EPICResponse {
         sb.append("Body:\n").append(getBody());
         return sb.toString();
     }    
+    
+    
+    
+    private byte[] fromInputStream(InputStream in) {
+        try {
+            ByteArrayOutputStream buff = new ByteArrayOutputStream();
+            
+            byte[] b = new byte[0x1000];
+            int read = in.read(b);
+            while(read > -1)
+                buff.write(b, 0, read);
+            
+            buff.flush();
+            in.close();
+            return buff.toByteArray();
+        } catch (IOException ex) {
+            Logger.getLogger(EPICBinaryResponse.class.getName()).log(Level.SEVERE, null, ex);
+            return new byte[0];
+        }
+    }
 }

@@ -52,9 +52,9 @@ public class EPICTomcat {
         }
 
         if (epic.isText())
-            fillText(response, epic);
+            fillText(response, (EPICTextResponse) epic);
         else 
-            fillBinary(response, epic);
+            fillBinary(response, (EPICBinaryResponse) epic);
     }
 
     /**
@@ -63,10 +63,10 @@ public class EPICTomcat {
      * @param response HttpServeltResponse used by tomcat.
      * @param epic Internal response used by SecureProxy.
      */
-    private void fillText(HttpServletResponse response, EPICResponse epic) {
+    private void fillText(HttpServletResponse response, EPICTextResponse epic) {
         try {
             PrintWriter in = response.getWriter();
-            in.print(((EPICTextResponse) epic).getBody());
+            in.print(epic.getBody());
             in.flush();
             in.close();
         } catch (IOException ex) {
@@ -81,17 +81,13 @@ public class EPICTomcat {
      * @param response HttpServeltResponse used by tomcat.
      * @param epic Internal response used by SecureProxy.
      */
-    private void fillBinary(HttpServletResponse response, EPICResponse epic) {
+    private void fillBinary(HttpServletResponse response, EPICBinaryResponse epic) {
         try {
             ServletOutputStream in = response.getOutputStream();
-            InputStream out = ((EPICBinaryResponse) epic).getBody();
+            byte[] data = epic.getBody();
             
-            byte[] buff = new byte[1024];
-            int len = out.read(buff);
-            while(len != -1) {
-                for (int i=0; i<len; i++)
-                    in.print(buff[i]);
-            }
+            for (int i=0; i<data.length; i++)
+                in.print(data[i]);
             
             in.flush();
             in.close();
