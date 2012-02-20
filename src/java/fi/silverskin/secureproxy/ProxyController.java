@@ -23,6 +23,7 @@ public class ProxyController {
      */
     public EPICResponse handleRequest(EPICRequest request) {
         request = hackAndSlash.hackAndSlashIn(request);
+        request = HostMutilator.mutilateRequest(request);
         
         EPICResponse response = fetcher.handleRequest(request);
         logger.log(Level.INFO, response.toString());

@@ -2,12 +2,12 @@ package fi.silverskin.secureproxy;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.PrintWriter;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -15,7 +15,8 @@ import javax.servlet.http.HttpServletResponse;
 public class EPICTomcat {
 
     private ProxyController proxy;
-    private static final ProxyLogger logger = new ProxyLogger(EPICTomcat.class.getName(), null);
+    //private static final Logger logger = new ProxyLogger(EPICTomcat.class.getName(), null);
+    private static final Logger logger = Logger.getLogger(EPICTomcat.class.getName(), null);
 
     public EPICTomcat() {
         proxy = new ProxyController();
@@ -42,8 +43,10 @@ public class EPICTomcat {
      */
     private void fillResponse(HttpServletResponse response, EPICResponse epic) {
 
+        //logger.log(Level.INFO, "Headers before: {0}", response.getHeaderNames());        
+        
         try {
-            response.reset();
+            //response.reset();
             for (Map.Entry<String, String> header : epic.getHeaders().entrySet()) {
                 response.addHeader(header.getKey(), header.getValue());
             }
@@ -55,6 +58,7 @@ public class EPICTomcat {
             fillText(response, (EPICTextResponse) epic);
         else 
             fillBinary(response, (EPICBinaryResponse) epic);
+        //logger.log(Level.INFO, "Headers After: {0}", response.getHeaderNames());
     }
 
     /**

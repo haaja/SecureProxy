@@ -8,6 +8,7 @@ import java.io.*;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.apache.http.Header;
@@ -20,7 +21,8 @@ import org.apache.http.entity.StringEntity;
 
 public class FetcherUtilities {
 
-    private static final ProxyLogger logger = new ProxyLogger(FetcherUtilities.class.getName(), null);
+    //private static final Logger logger = new ProxyLogger(FetcherUtilities.class.getName(), null);
+    private static final Logger logger = Logger.getLogger(FetcherUtilities.class.getName(), null);
   
     public static boolean contentIsText(HttpResponse response) {
         Header contentType = response.getFirstHeader("Content-Type");
