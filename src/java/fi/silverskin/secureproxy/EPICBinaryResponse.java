@@ -3,7 +3,6 @@ package fi.silverskin.secureproxy;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
@@ -12,6 +11,7 @@ import java.util.logging.Logger;
 
 public class EPICBinaryResponse extends EPICResponse {
     private byte[] body;
+    private static final Logger LOGGER = Logger.getLogger(EPICBinaryResponse.class.getName());
 
     public EPICBinaryResponse() {
         super();
@@ -82,7 +82,7 @@ public class EPICBinaryResponse extends EPICResponse {
             in.close();
             return buff.toByteArray();
         } catch (IOException ex) {
-            Logger.getLogger(EPICBinaryResponse.class.getName()).log(Level.SEVERE, null, ex);
+            LOGGER.log(Level.SEVERE, null, ex);
             return new byte[0];
         }
     }

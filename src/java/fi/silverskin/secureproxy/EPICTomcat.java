@@ -2,12 +2,12 @@ package fi.silverskin.secureproxy;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.PrintWriter;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -15,7 +15,7 @@ import javax.servlet.http.HttpServletResponse;
 public class EPICTomcat {
 
     private ProxyController proxy;
-    private static final ProxyLogger logger = new ProxyLogger(EPICTomcat.class.getName(), null);
+    private static final Logger LOGGER = Logger.getLogger(EPICTomcat.class.getName());
 
     public EPICTomcat() {
         proxy = new ProxyController();
@@ -48,7 +48,7 @@ public class EPICTomcat {
                 response.addHeader(header.getKey(), header.getValue());
             }
         } catch (IllegalStateException ex) {
-            logger.log(Level.SEVERE, null, ex);
+            LOGGER.log(Level.SEVERE, null, ex);
         }
 
         if (epic.isText())
@@ -70,7 +70,7 @@ public class EPICTomcat {
             in.flush();
             in.close();
         } catch (IOException ex) {
-            logger.log(Level.SEVERE, null, ex);
+            LOGGER.log(Level.SEVERE, null, ex);
         }
 
     }
@@ -92,7 +92,7 @@ public class EPICTomcat {
             in.flush();
             in.close();
         } catch (IOException ex) {
-            logger.log(Level.SEVERE, null, ex);
+            LOGGER.log(Level.SEVERE, null, ex);
         }
     }
 
@@ -105,7 +105,7 @@ public class EPICTomcat {
     private EPICRequest convertToEPICRequest(HttpServletRequest request) {
         HashMap<String, String> headers = new HashMap();
         String body = new String();
-
+        
         Enumeration<String> headerNames = request.getHeaderNames();
         while (headerNames.hasMoreElements()) {
             String name = headerNames.nextElement();
@@ -128,11 +128,11 @@ public class EPICTomcat {
             reader.close();
             body = sb.toString();
         } catch (java.io.UnsupportedEncodingException ex) {
-            logger.log(Level.SEVERE, null, ex);
+            LOGGER.log(Level.SEVERE, null, ex);
         } catch (IllegalStateException ex) {
-            logger.log(Level.SEVERE, null, ex);
+            LOGGER.log(Level.SEVERE, null, ex);
         } catch (java.io.IOException ex) {
-            logger.log(Level.SEVERE, null, ex);
+            LOGGER.log(Level.SEVERE, null, ex);
         }
 
         EPICRequest e = new EPICRequest(request.getMethod(), headers, body);
