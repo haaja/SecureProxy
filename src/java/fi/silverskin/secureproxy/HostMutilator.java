@@ -11,6 +11,8 @@ public class HostMutilator {
 
         headers.put("host", remoteHost);
         headers.remove("accept-encoding");
+        headers.remove("connection");
+        headers.remove("keep-alive");
         
         request.setHeaders(headers);
         return request;

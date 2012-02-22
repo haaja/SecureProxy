@@ -2,10 +2,10 @@ package fi.silverskin.secureproxy.resourcefetcher;
 
 import fi.silverskin.secureproxy.EPICRequest;
 import fi.silverskin.secureproxy.EPICResponse;
-import fi.silverskin.secureproxy.ProxyLogger;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.apache.http.Header;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.*;
@@ -53,22 +53,35 @@ public class ResourceFetcher {
      * @return Response for the handled request or empty response.
      */
     private EPICResponse handleGet(EPICRequest req) {
+        EPICResponse retVal = null;
         try {
             logger.log(Level.INFO, "GET Request \"{0}\"", req.getUri());
-            logger.log(Level.INFO, "Headers {0}", req.getHeaders());
+            logger.log(Level.INFO, "Request Headers {0}", req.getHeaders());
+
             HttpGet get = new HttpGet(req.getUri());
             FetcherUtilities.copyHeaders(req, get);
+
             HttpResponse res = httpclient.execute(get);
-            if (FetcherUtilities.contentIsText(res)) {
-                return (EPICResponse) FetcherUtilities.toEPICText(res);
-            } else {
-                return (EPICResponse) FetcherUtilities.toEPICBinary(res);
+
+            logger.log(Level.INFO, "Response Headers Before Anything: {0}", res.getAllHeaders().length);
+
+            for (Header h : res.getAllHeaders()) {
+                System.err.println("\t" + h);
             }
-        } catch (Throwable ex) {
-            logger.log(Level.SEVERE, "Exception in GET:{0}", ex);
+
+            if (FetcherUtilities.contentIsText(res)) {
+                retVal = FetcherUtilities.toEPICText(res);
+            } else {
+                retVal = FetcherUtilities.toEPICBinary(res);
+            }
+
+        } catch (IOException ex) {
+            logger.log(Level.SEVERE, "Exception in GET: {0}", ex);
             System.err.println("Exception in GET: " + ex);
-            return new EPICResponse();
+        } finally {
+            //httpclient.getConnectionManager().shutdown();
         }
+        return retVal;
     }
 
     /**
