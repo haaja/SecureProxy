@@ -15,12 +15,9 @@ public class HackAndSlash {
 
     private EPICRequest request;
     private EPICResponse response;
-<<<<<<< HEAD
 
 
-=======
     private static final Logger LOGGER = Logger.getLogger(HackAndSlash.class.getName(), null);
->>>>>>> 64609725e8e5d1f4783d4ac08b4a8e8a4967259d
     //TODO: To be replaced with proper settings
     private String remoteUrl = "128.214.9.12";
     private String remotePort = "80";
@@ -69,9 +66,8 @@ public class HackAndSlash {
         throw new NotImplementedException();
     }
 
-<<<<<<< HEAD
- public EPICResponse hackAndSlashOut(EPICResponse response) {
-=======
+
+ 
     /**
      * Modifies HTTP response to hide traces of the real service.
      * 
@@ -79,12 +75,6 @@ public class HackAndSlash {
      * @return Modified HTTP response.
      */
     public EPICResponse hackAndSlashOut(EPICTextResponse response) {
-        Pattern tagPattern = Pattern.compile("<(\\s)*img[^>]*>");
-        String oldResponse = response.getBody(),
-                newResponse = "";
-        Matcher tagMatcher = tagPattern.matcher(oldResponse);
->>>>>>> 64609725e8e5d1f4783d4ac08b4a8e8a4967259d
-
         String[][] tagsAndAttributes = new String[2][];
         String[] tags = {"img", "a", "area", "iframe", "frame", "script","form", "base", "link",
         "input", "object", "object","object","object","input", "ins"};
@@ -142,13 +132,5 @@ public class HackAndSlash {
         }
         return tag;
     }
-    
-    
-    public static void main(String[] args){
-        HackAndSlash hack = new HackAndSlash();
-        String test = "jfhjfh<img  src=\"hkhgdkjgk\">tt<img src=\"  s\">yy<a href=\" y\">";
-        EPICResponse res = new EPICResponse();
-        res.setBody(test);
-        System.out.println(hack.hackAndSlashOut(res).getBody());
-    }
+   
 }
