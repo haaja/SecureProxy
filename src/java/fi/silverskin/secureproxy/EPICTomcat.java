@@ -36,14 +36,16 @@ public class EPICTomcat {
 
     /**
      * Fills HttpServletResponse with data from EPICResponse.
-     * 
+     *
      * @param response HttpServeltResponse used by tomcat.
      * @param epic Internal response used by SecureProxy.
      */
     private void fillResponse(HttpServletResponse response, EPICResponse epic) {
 
+        LOGGER.log(Level.INFO, "Headers before");
+
         try {
-            response.reset();
+            //response.reset();
             for (Map.Entry<String, String> header : epic.getHeaders().entrySet()) {
                 response.addHeader(header.getKey(), header.getValue());
             }
@@ -51,15 +53,24 @@ public class EPICTomcat {
             LOGGER.log(Level.SEVERE, null, ex);
         }
 
-        if (epic.isText())
+        LOGGER.log(Level.INFO, "epic class: {0}", epic.getClass().getName());
+
+        if (epic.getClass() == EPICTextResponse.class) {
             fillText(response, (EPICTextResponse) epic);
-        else 
+        } else {
             fillBinary(response, (EPICBinaryResponse) epic);
+        }
+
+//        if (epic.isText())
+//            fillText(response, (EPICTextResponse) epic);
+//        else 
+//            fillBinary(response, (EPICBinaryResponse) epic);
+        //LOGGER.log(Level.INFO, "Headers After: {0}", response.getHeaderNames());
     }
 
     /**
      * Fills HttpServletResponse with text data from EPICResponse
-     * 
+     *
      * @param response HttpServeltResponse used by tomcat.
      * @param epic Internal response used by SecureProxy.
      */
@@ -77,7 +88,7 @@ public class EPICTomcat {
 
     /**
      * Fills HttpServletResponse with binary data from EPICResponse.
-     * 
+     *
      * @param response HttpServeltResponse used by tomcat.
      * @param epic Internal response used by SecureProxy.
      */
@@ -85,10 +96,11 @@ public class EPICTomcat {
         try {
             ServletOutputStream in = response.getOutputStream();
             byte[] data = epic.getBody();
-            
-            for (int i=0; i<data.length; i++)
+
+            for (int i = 0; i < data.length; i++) {
                 in.print(data[i]);
-            
+            }
+
             in.flush();
             in.close();
         } catch (IOException ex) {
@@ -98,7 +110,7 @@ public class EPICTomcat {
 
     /**
      * Converts HttpServletRequest to EPICRequest.
-     * 
+     *
      * @param request HTTP request coming from servlet.
      * @return HTTP request converted to internal EPICRequest.
      */

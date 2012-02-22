@@ -75,8 +75,10 @@ public class EPICBinaryResponse extends EPICResponse {
             
             byte[] b = new byte[0x1000];
             int read = in.read(b);
-            while(read > -1)
+            while(read > -1) {
                 buff.write(b, 0, read);
+                read = in.read(b);
+            }
             
             buff.flush();
             in.close();
