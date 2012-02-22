@@ -2,6 +2,10 @@ package fi.silverskin.secureproxy.hackandslash;
 
 import fi.silverskin.secureproxy.EPICRequest;
 import fi.silverskin.secureproxy.EPICResponse;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
@@ -10,9 +14,12 @@ public class HackAndSlash {
 
     private EPICRequest request;
     private EPICResponse response;
-    //To be replaced with proper settings
-    private String remoteUrl = "localhost";
-    private String remotePort = "8084";
+
+
+    //TODO: To be replaced with proper settings
+    private String remoteUrl = "corvus.kapsi.fi";
+    private String remotePort = "80";
+
 
     public HackAndSlash() {
         this.request = null;
@@ -20,8 +27,15 @@ public class HackAndSlash {
     }
 
     public EPICRequest hackAndSlashIn(EPICRequest request) {
+        try {
+            URI uri = new URI(request.getUri());
+            request.setUri("http://" + remoteUrl + ":" + remotePort + uri.getPath());
+            Logger.getLogger(HackAndSlash.class.getName()).log(Level.INFO, request.getUri().toString());
 
-        throw new NotImplementedException();
+        } catch (URISyntaxException ex) {
+            Logger.getLogger(HackAndSlash.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return request;
     }
 
     public EPICResponse hackAndSlashIn(EPICResponse response) {
@@ -34,12 +48,14 @@ public class HackAndSlash {
         throw new NotImplementedException();
     }
 
-    public EPICResponse hackAndSlashOut(EPICResponse response) {
+ public EPICResponse hackAndSlashOut(EPICResponse response) {
 
         String[][] tagsAndAttributes = new String[2][];
-        String[] tags = {"img", "a", "iframe", "frame", "script","form", "base", "link"};
+        String[] tags = {"img", "a", "area", "iframe", "frame", "script","form", "base", "link",
+        "input", "object", "object","object","object","input", "ins"};
         tagsAndAttributes[0] = tags;
-        String[] attributes = {"src", "href", "src", "src","src","action", "href", "href"};
+        String[] attributes = {"src", "href", "href", "src", "src","src","action", "href", "href", 
+        "src", "data", "classid","codebase","usemap", "usemap", "cite"};
         tagsAndAttributes[1] = attributes;
         String oldResponse = response.getBody(), newResponse = "";
         for (int i = 0; i < tagsAndAttributes[0].length; i++) {
@@ -91,6 +107,7 @@ public class HackAndSlash {
         }
         return tag;
     }
+    
     
     public static void main(String[] args){
         HackAndSlash hack = new HackAndSlash();

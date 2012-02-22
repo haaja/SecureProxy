@@ -1,6 +1,7 @@
 package fi.silverskin.secureproxy;
 
 import java.util.HashMap;
+import java.util.Map.Entry;
 
 public class EPICRequest extends EPICAbstraction {
 
@@ -45,4 +46,22 @@ public class EPICRequest extends EPICAbstraction {
             throw new RuntimeException("Invalid request type '"+type+"'");
                     
     }    
+    
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        
+        sb.append("Type: ").append(type).append('\n');
+        
+        sb.append("URI : ").append(getUri()).append('\n');
+        
+        sb.append("Headers:\n");
+        for(Entry entry : getHeaders().entrySet()) {
+            sb.append('\t').append(entry.getKey()).append(":").append(entry.getValue()).append('\n');
+        }
+        
+        sb.append("Body:\n").append(getBody());
+        
+        return sb.toString();
+    }
 }
