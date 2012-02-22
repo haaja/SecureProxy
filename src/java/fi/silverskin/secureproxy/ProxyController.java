@@ -9,18 +9,26 @@ import java.util.logging.Logger;
 public class ProxyController {
     private ResourceFetcher fetcher;
     private HackAndSlash hackAndSlash;
-    
+    private static final Logger LOGGER = Logger.getLogger(ProxyController.class.getName(), null);
+ 
     public ProxyController() {
         fetcher = new ResourceFetcher();
         hackAndSlash = new HackAndSlash();
     }
-    
+
+    /**
+     * Control logic for handling requests within SecureProxy.
+     * 
+     * @param request HTTP request.
+     * @return Modified HTTP response.
+     */
     public EPICResponse handleRequest(EPICRequest request) {
         request = hackAndSlash.hackAndSlashIn(request);
-
-        
+        request = HostMutilator.mutilateRequest(request);
+       
         EPICResponse response = fetcher.handleRequest(request);
-        Logger.getLogger(ProxyController.class.getName()).log(Level.INFO, response.toString());
+        LOGGER.log(Level.INFO, response.toString());
+
         return response;
     }
 }

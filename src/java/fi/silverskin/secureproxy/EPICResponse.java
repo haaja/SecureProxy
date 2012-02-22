@@ -1,30 +1,30 @@
 package fi.silverskin.secureproxy;
 
 import java.util.HashMap;
-import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class EPICResponse extends EPICAbstraction {
 
     public EPICResponse() {
     }
 
-    public EPICResponse(HashMap<String, String> headers, String body) {
-        super(headers, body);
+    public EPICResponse(HashMap<String, String> headers) {
+        super(headers);
     }
 
-    @Override
-    public String toString() {
-        StringBuilder sb = new StringBuilder();
+    /**
+     * Checks if HTTP response contains just text data or not.
+     *
+     * @return true if request contains only text data, otherwise false.
+     */
+    public boolean isText() {
+        String contentType = headers.get("content-type");
+        if (contentType == null)
+            contentType = "text/text";
 
-        sb.append("URI : ").append(getUri()).append('\n');
-
-        sb.append("Headers:\n");
-        for (Map.Entry entry : getHeaders().entrySet()) {
-            sb.append('\t').append(entry.getKey()).append(":").append(entry.getValue()).append('\n');
-        }
-
-        sb.append("Body:\n").append(getBody());
-
-        return sb.toString();
+        Pattern pattern = Pattern.compile("text/.*");
+        Matcher isText = pattern.matcher(contentType);
+        return isText.matches();
     }
 }

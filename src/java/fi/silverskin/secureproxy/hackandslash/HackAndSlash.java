@@ -2,6 +2,7 @@ package fi.silverskin.secureproxy.hackandslash;
 
 import fi.silverskin.secureproxy.EPICRequest;
 import fi.silverskin.secureproxy.EPICResponse;
+import fi.silverskin.secureproxy.EPICTextResponse;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.logging.Level;
@@ -14,10 +15,14 @@ public class HackAndSlash {
 
     private EPICRequest request;
     private EPICResponse response;
+<<<<<<< HEAD
 
 
+=======
+    private static final Logger LOGGER = Logger.getLogger(HackAndSlash.class.getName(), null);
+>>>>>>> 64609725e8e5d1f4783d4ac08b4a8e8a4967259d
     //TODO: To be replaced with proper settings
-    private String remoteUrl = "corvus.kapsi.fi";
+    private String remoteUrl = "128.214.9.12";
     private String remotePort = "80";
 
 
@@ -26,29 +31,59 @@ public class HackAndSlash {
         this.response = null;
     }
 
+    /**
+     * Modifies requests to contain the real URI of the service.
+     *
+     * @param request HTTP request.
+     * @return HTTP request containing the real URI of the service.
+     */
     public EPICRequest hackAndSlashIn(EPICRequest request) {
         try {
             URI uri = new URI(request.getUri());
             request.setUri("http://" + remoteUrl + ":" + remotePort + uri.getPath());
-            Logger.getLogger(HackAndSlash.class.getName()).log(Level.INFO, request.getUri().toString());
+            LOGGER.log(Level.INFO, request.getUri().toString());
 
         } catch (URISyntaxException ex) {
-            Logger.getLogger(HackAndSlash.class.getName()).log(Level.SEVERE, null, ex);
+            LOGGER.log(Level.SEVERE, null, ex);
         }
         return request;
     }
 
+    /**
+     * 
+     * @param response
+     * @return
+     */
     public EPICResponse hackAndSlashIn(EPICResponse response) {
 
         throw new NotImplementedException();
     }
 
+    /**
+     *
+     * @param request
+     * @return
+     */
     public EPICRequest hackAndSlashOut(EPICRequest request) {
 
         throw new NotImplementedException();
     }
 
+<<<<<<< HEAD
  public EPICResponse hackAndSlashOut(EPICResponse response) {
+=======
+    /**
+     * Modifies HTTP response to hide traces of the real service.
+     * 
+     * @param response HTTP response with real data.
+     * @return Modified HTTP response.
+     */
+    public EPICResponse hackAndSlashOut(EPICTextResponse response) {
+        Pattern tagPattern = Pattern.compile("<(\\s)*img[^>]*>");
+        String oldResponse = response.getBody(),
+                newResponse = "";
+        Matcher tagMatcher = tagPattern.matcher(oldResponse);
+>>>>>>> 64609725e8e5d1f4783d4ac08b4a8e8a4967259d
 
         String[][] tagsAndAttributes = new String[2][];
         String[] tags = {"img", "a", "area", "iframe", "frame", "script","form", "base", "link",

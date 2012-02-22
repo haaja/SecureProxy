@@ -10,36 +10,36 @@ import java.util.logging.Logger;
 
 public abstract class EPICAbstraction {
 
-    private HashMap<String, String> headers;
-    private String body;
+    protected HashMap<String, String> headers;
     private URI uri;
+    private static final Logger LOGGER = Logger.getLogger(EPICAbstraction.class.getName(), null);
 
-    public EPICAbstraction(HashMap<String, String> headers, String body) {
-        this.headers = headers;
-        this.body = body;
+    public EPICAbstraction(HashMap<String, String> header) {
+        this.headers = header;
     }
 
     public EPICAbstraction() {
-        headers = new HashMap<String, String>();
-        body = "";
-    }
-
-    public String getBody() {
-        return body;
-    }
-
-    public void setBody(String body) {
-        this.body = body;
+        this.headers = new HashMap<String, String>();
     }
 
     public Map<String, String> getHeaders() {
         return Collections.unmodifiableMap(headers);
     }
 
+    /**
+     * Sets the headers of the request or response.
+     *
+     * @param headers Headers of the request or response.
+     */
     public void setHeaders(HashMap<String, String> headers) {
         this.headers = headers;
     }
 
+    /**
+     * Returns the URI of the request or response.
+     *
+     * @return A string representation of the URI.
+     */
     public String getUri() {
         if (uri == null) {
             return "";
@@ -47,12 +47,17 @@ public abstract class EPICAbstraction {
         return uri.toString();
     }
 
+    /**
+     * Sets the URI of the request or response.
+     *
+     * @param uri A string representation of the URI.
+     */
     public void setUri(String uri) {
         try {
             this.uri = new URI(uri);
         } catch (URISyntaxException ex) {
             //TODO: proper error handling
-            Logger.getLogger(EPICAbstraction.class.getName()).log(Level.SEVERE, null, ex);
+            LOGGER.log(Level.SEVERE, null, ex);
         }
     }
 }

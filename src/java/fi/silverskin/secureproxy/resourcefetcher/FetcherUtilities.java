@@ -1,11 +1,8 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package fi.silverskin.secureproxy.resourcefetcher;
 
+import fi.silverskin.secureproxy.EPICBinaryResponse;
 import fi.silverskin.secureproxy.EPICRequest;
-import fi.silverskin.secureproxy.EPICResponse;
+import fi.silverskin.secureproxy.EPICTextResponse;
 import java.io.*;
 import java.util.HashMap;
 import java.util.Map;
@@ -17,20 +14,54 @@ import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
 import org.apache.http.entity.StringEntity;
+import org.apache.http.util.EntityUtils;
 
-/**
- *
- * @author orva
- */
 public class FetcherUtilities {
 
-   
+    private static final Logger LOGGER = Logger.getLogger(FetcherUtilities.class.getName(), null);
+  
+    public static boolean contentIsText(HttpResponse response) {
+        Header contentType = response.getFirstHeader("content-type");
 
-    public static EPICResponse responseToEPICResponse(HttpResponse e) {
-        EPICResponse response = new EPICResponse();
-        response.setBody(getBody(e.getEntity()));
-        response.setHeaders(getHeaders(e));
-        return response;
+        Header[] contenttypes = response.getHeaders("Content-Type");
+        LOGGER.log(Level.INFO, "Content-Type: {0}", (contenttypes == null ? null : contenttypes.length));
+
+        if (contentType == null || contentType.getValue().matches("text/.*")) {
+            return true;
+        }
+        
+        return false;
+    }
+
+    public static EPICTextResponse toEPICText(HttpResponse response) {
+        EPICTextResponse e = new EPICTextResponse();
+        try {
+            //        e.setBody(getBody(response.getEntity()));
+            e.setBody(EntityUtils.toString(response.getEntity()));
+            e.setHeaders(getHeaders(response));
+            EntityUtils.consume(response.getEntity());
+        } catch (IOException ex) {
+            Logger.getLogger(FetcherUtilities.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        return e;
+    }
+
+    
+    public static EPICBinaryResponse toEPICBinary(HttpResponse response) {
+        EPICBinaryResponse e = new EPICBinaryResponse();
+
+        try {
+            e.setBody(EntityUtils.toByteArray(response.getEntity()));
+            e.setHeaders(getHeaders(response));
+            EntityUtils.consume(response.getEntity());
+        } catch (IOException ex) {
+            LOGGER.log(Level.SEVERE, null, ex);
+        } catch (IllegalStateException ex) {
+            LOGGER.log(Level.SEVERE, null, ex);
+        }
+        
+        return e;
     }
 
     public static String getBody(HttpEntity e) {
@@ -41,16 +72,17 @@ public class FetcherUtilities {
 
             final char[] buffer = new char[0x10000];
             int read = reader.read(buffer, 0, buffer.length);
-            
-            while(read >= 0) {
-                if (read > 0)
+
+            while (read >= 0) {
+                if (read > 0) {
                     sb.append(buffer, 0, read);
+                }
                 read = reader.read(buffer, 0, buffer.length);
             }
         } catch (IOException ex) {
-            Logger.getLogger(ResourceFetcher.class.getName()).log(Level.SEVERE, null, ex);
+            LOGGER.log(Level.SEVERE, null, ex);
         } catch (IllegalStateException ex) {
-            Logger.getLogger(ResourceFetcher.class.getName()).log(Level.SEVERE, null, ex);
+            LOGGER.log(Level.SEVERE, null, ex);
         }
 
         return sb.toString();
@@ -62,6 +94,7 @@ public class FetcherUtilities {
         for (Header header : headers) {
             map.put(header.getName(), header.getValue());
         }
+
         return map;
     }
 
@@ -70,11 +103,11 @@ public class FetcherUtilities {
             req.addHeader(k.getKey(), k.getValue());
         }
     }
-    
+
     /**
      * Copies body content from epic to req. This method works only with
-     * HttpPost or HttpPut instances. 
-     * 
+     * HttpPost or HttpPut instances.
+     *
      * @param epic Source of body data.
      * @param req HttpPost or HttpPut to modify
      */
@@ -82,7 +115,7 @@ public class FetcherUtilities {
         try {
             req.setEntity(new StringEntity(epic.getBody()));
         } catch (UnsupportedEncodingException ex) {
-            Logger.getLogger(ResourceFetcher.class.getName()).log(Level.SEVERE, null, ex);
+            LOGGER.log(Level.SEVERE, null, ex);
         }
     }
 }
