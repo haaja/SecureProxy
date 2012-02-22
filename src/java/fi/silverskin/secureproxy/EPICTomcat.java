@@ -60,12 +60,7 @@ public class EPICTomcat {
         } else {
             fillBinary(response, (EPICBinaryResponse) epic);
         }
-
-//        if (epic.isText())
-//            fillText(response, (EPICTextResponse) epic);
-//        else 
-//            fillBinary(response, (EPICBinaryResponse) epic);
-        //LOGGER.log(Level.INFO, "Headers After: {0}", response.getHeaderNames());
+        
     }
 
     /**
@@ -76,10 +71,10 @@ public class EPICTomcat {
      */
     private void fillText(HttpServletResponse response, EPICTextResponse epic) {
         try {
-            PrintWriter in = response.getWriter();
-            in.print(epic.getBody());
-            in.flush();
-            in.close();
+            PrintWriter out = response.getWriter();
+            out.print(epic.getBody());
+            out.flush();
+            out.close();
         } catch (IOException ex) {
             LOGGER.log(Level.SEVERE, null, ex);
         }
@@ -94,15 +89,10 @@ public class EPICTomcat {
      */
     private void fillBinary(HttpServletResponse response, EPICBinaryResponse epic) {
         try {
-            ServletOutputStream in = response.getOutputStream();
-            byte[] data = epic.getBody();
-
-            for (int i = 0; i < data.length; i++) {
-                in.print(data[i]);
-            }
-
-            in.flush();
-            in.close();
+            ServletOutputStream out = response.getOutputStream();
+            out.write(epic.getBody());
+            out.flush();
+            out.close();
         } catch (IOException ex) {
             LOGGER.log(Level.SEVERE, null, ex);
         }
