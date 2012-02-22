@@ -15,9 +15,8 @@ import org.apache.http.util.EntityUtils;
 
 public class FetcherUtilities {
 
-    //private static final Logger logger = new ProxyLogger(FetcherUtilities.class.getName(), null);
-    private static final Logger logger = Logger.getLogger(FetcherUtilities.class.getName(), null);
-
+    private static final Logger LOGGER = Logger.getLogger(FetcherUtilities.class.getName(), null);
+  
     public static boolean contentIsText(HttpResponse response) {
         Header contentType = response.getFirstHeader("content-type");
 
@@ -45,6 +44,7 @@ public class FetcherUtilities {
         return e;
     }
 
+    
     public static EPICBinaryResponse toEPICBinary(HttpResponse response) {
         EPICBinaryResponse e = new EPICBinaryResponse();
 
@@ -54,9 +54,9 @@ public class FetcherUtilities {
             e.setHeaders(getHeaders(response));
             return e;
         } catch (IOException ex) {
-            logger.log(Level.SEVERE, null, ex);
+            LOGGER.log(Level.SEVERE, null, ex);
         } catch (IllegalStateException ex) {
-            logger.log(Level.SEVERE, null, ex);
+            LOGGER.log(Level.SEVERE, null, ex);
         }
 
         return e;
@@ -80,11 +80,9 @@ public class FetcherUtilities {
 
 
         } catch (IOException ex) {
-            logger.log(Level.SEVERE, null, ex);
-            System.err.println(ex);
+            LOGGER.log(Level.SEVERE, null, ex);
         } catch (IllegalStateException ex) {
-            logger.log(Level.SEVERE, null, ex);
-            System.err.println(ex);
+            LOGGER.log(Level.SEVERE, null, ex);
         }
 
         return sb.toString();
@@ -116,7 +114,7 @@ public class FetcherUtilities {
         try {
             req.setEntity(new StringEntity(epic.getBody()));
         } catch (UnsupportedEncodingException ex) {
-            logger.log(Level.SEVERE, null, ex);
+            LOGGER.log(Level.SEVERE, null, ex);
         }
     }
 }

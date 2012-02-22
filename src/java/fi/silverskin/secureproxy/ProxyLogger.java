@@ -7,31 +7,24 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
 
-public class ProxyLogger extends Logger {
+public class ProxyLogger {
 
     private static FileHandler logFileHandler;
     private static ConsoleHandler logConsoleHandler;
     private static SimpleFormatter logFormatter;
 
     //these should be eventually read from config
-    private Level logLevel = Level.INFO;
-    private String logFile = "secureproxy.log";
+    private static Level logLevel = Level.INFO;
+    private static String logFile = "secureproxy.log";
 
+    /**
+     * Initializes logger.
+     *
+     * @throws IOException In case it cannot create log file.
+     */
+    public static void setup() throws IOException {
 
-    public ProxyLogger(String loggerName, String resourceBundleName) {
-        super(loggerName, resourceBundleName);
-
-        try {
-            setup(loggerName);
-        } catch (IOException ex) {
-            ex.printStackTrace();
-            throw new RuntimeException("Unable to create log file.");
-        }
-    }
-
-    public void setup(String loggerName) throws IOException {
-
-        Logger logger = getLogger(loggerName);
+        Logger logger = Logger.getLogger("fi.silverskin");
         logger.setLevel(logLevel);
 
         logFileHandler = new FileHandler(logFile);

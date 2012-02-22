@@ -3,10 +3,10 @@ package fi.silverskin.secureproxy.hackandslash;
 import fi.silverskin.secureproxy.EPICRequest;
 import fi.silverskin.secureproxy.EPICResponse;
 import fi.silverskin.secureproxy.EPICTextResponse;
-import fi.silverskin.secureproxy.ProxyLogger;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
@@ -15,7 +15,7 @@ public class HackAndSlash {
 
     private EPICRequest request;
     private EPICResponse response;
-    private static final ProxyLogger logger = new ProxyLogger(HackAndSlash.class.getName(), null);
+    private static final Logger LOGGER = Logger.getLogger(HackAndSlash.class.getName(), null);
     //TODO: To be replaced with proper settings
     private String remoteUrl = "128.214.9.12";
     private String remotePort = "80";
@@ -35,10 +35,10 @@ public class HackAndSlash {
         try {
             URI uri = new URI(request.getUri());
             request.setUri("http://" + remoteUrl + ":" + remotePort + uri.getPath());
-            logger.log(Level.INFO, request.getUri().toString());
+            LOGGER.log(Level.INFO, request.getUri().toString());
 
         } catch (URISyntaxException ex) {
-            logger.log(Level.SEVERE, null, ex);
+            LOGGER.log(Level.SEVERE, null, ex);
         }
         return request;
     }

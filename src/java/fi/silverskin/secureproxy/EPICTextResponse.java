@@ -1,6 +1,5 @@
 package fi.silverskin.secureproxy;
 
-import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 

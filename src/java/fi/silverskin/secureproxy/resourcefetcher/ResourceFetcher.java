@@ -14,8 +14,7 @@ import org.apache.http.impl.client.DefaultHttpClient;
 public class ResourceFetcher {
 
     HttpClient httpclient;
-    //private static final ProxyLogger logger = new ProxyLogger(ResourceFetcher.class.getName(), null);
-    private static final Logger logger = Logger.getLogger(FetcherUtilities.class.getName(), null);
+    private static final Logger LOGGER = Logger.getLogger(ResourceFetcher.class.getName(), null);
 
     public ResourceFetcher() {
         httpclient = new DefaultHttpClient();
@@ -29,7 +28,7 @@ public class ResourceFetcher {
      * @return Response for the request or empty response.
      */
     public EPICResponse handleRequest(EPICRequest req) {
-        logger.log(Level.INFO, req.toString());
+        LOGGER.log(Level.INFO, req.toString());
         switch (req.getType()) {
             case POST:
                 return handlePost(req);
@@ -93,7 +92,7 @@ public class ResourceFetcher {
     private EPICResponse handlePost(EPICRequest req) {
 
         try {
-            logger.log(Level.INFO, "POST Request \"" + req.getUri() + "\"");
+            LOGGER.log(Level.INFO, "POST Request \"" + req.getUri() +"\"");
             HttpPost post = new HttpPost(req.getUri());
             FetcherUtilities.copyHeaders(req, post);
             HttpResponse res = httpclient.execute(post);
@@ -103,7 +102,7 @@ public class ResourceFetcher {
                 return (EPICResponse) FetcherUtilities.toEPICBinary(res);
             }
         } catch (IOException ex) {
-            logger.log(Level.SEVERE, "Exception in POST:{0}", ex);
+            LOGGER.log(Level.SEVERE, "Exception in POST:{0}", ex);
             return new EPICResponse();
         }
     }
@@ -117,7 +116,7 @@ public class ResourceFetcher {
     private EPICResponse handlePut(EPICRequest req) {
 
         try {
-            logger.log(Level.INFO, "PUT Request \"" + req.getUri() + "\"");
+            LOGGER.log(Level.INFO, "PUT Request \"" + req.getUri() +"\"");
             HttpPut put = new HttpPut(req.getUri());
             FetcherUtilities.copyHeaders(req, put);
             HttpResponse res = httpclient.execute(put);
@@ -127,7 +126,7 @@ public class ResourceFetcher {
                 return (EPICResponse) FetcherUtilities.toEPICBinary(res);
             }
         } catch (IOException ex) {
-            logger.log(Level.SEVERE, "Exception in PUT:{0}", ex);
+            LOGGER.log(Level.SEVERE, "Exception in PUT:{0}", ex);
             return new EPICResponse();
         }
     }
@@ -140,7 +139,7 @@ public class ResourceFetcher {
      */
     private EPICResponse handleDelete(EPICRequest req) {
         try {
-            logger.log(Level.INFO, "DELETE Request \"" + req.getUri() + "\"");
+            LOGGER.log(Level.INFO, "DELETE Request \"" + req.getUri() +"\"");
             HttpDelete delete = new HttpDelete(req.getUri());
             FetcherUtilities.copyHeaders(req, delete);
             HttpResponse res = httpclient.execute(delete);
@@ -150,7 +149,7 @@ public class ResourceFetcher {
                 return (EPICResponse) FetcherUtilities.toEPICBinary(res);
             }
         } catch (IOException ex) {
-            logger.log(Level.SEVERE, "Exception in DELETE:{0}", ex);
+            LOGGER.log(Level.SEVERE, "Exception in DELETE:{0}", ex);
             return new EPICResponse();
         }
     }
@@ -163,7 +162,7 @@ public class ResourceFetcher {
      */
     private EPICResponse handleHead(EPICRequest req) {
         try {
-            logger.log(Level.INFO, "HEAD Request \"" + req.getUri() + "\"");
+            LOGGER.log(Level.INFO, "HEAD Request \"" + req.getUri() +"\"");
             HttpHead head = new HttpHead(req.getUri());
             FetcherUtilities.copyHeaders(req, head);
             HttpResponse res = httpclient.execute(head);
@@ -173,7 +172,7 @@ public class ResourceFetcher {
                 return (EPICResponse) FetcherUtilities.toEPICBinary(res);
             }
         } catch (IOException ex) {
-            logger.log(Level.SEVERE, "Exception in HEAD:{0}", ex);
+            LOGGER.log(Level.SEVERE, "Exception in HEAD:{0}", ex);
             return new EPICResponse();
         }
     }

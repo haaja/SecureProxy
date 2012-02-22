@@ -15,8 +15,7 @@ import javax.servlet.http.HttpServletResponse;
 public class EPICTomcat {
 
     private ProxyController proxy;
-    //private static final Logger logger = new ProxyLogger(EPICTomcat.class.getName(), null);
-    private static final Logger logger = Logger.getLogger(EPICTomcat.class.getName(), null);
+    private static final Logger LOGGER = Logger.getLogger(EPICTomcat.class.getName());
 
     public EPICTomcat() {
         proxy = new ProxyController();
@@ -51,7 +50,7 @@ public class EPICTomcat {
                 response.addHeader(header.getKey(), header.getValue());
             }
         } catch (IllegalStateException ex) {
-            logger.log(Level.SEVERE, null, ex);
+            LOGGER.log(Level.SEVERE, null, ex);
         }
 
         logger.log(Level.INFO, "epic class: {0}", epic.getClass().getName());
@@ -82,7 +81,7 @@ public class EPICTomcat {
             in.flush();
             in.close();
         } catch (IOException ex) {
-            logger.log(Level.SEVERE, null, ex);
+            LOGGER.log(Level.SEVERE, null, ex);
         }
 
     }
@@ -105,7 +104,7 @@ public class EPICTomcat {
             in.flush();
             in.close();
         } catch (IOException ex) {
-            logger.log(Level.SEVERE, null, ex);
+            LOGGER.log(Level.SEVERE, null, ex);
         }
     }
 
@@ -118,7 +117,7 @@ public class EPICTomcat {
     private EPICRequest convertToEPICRequest(HttpServletRequest request) {
         HashMap<String, String> headers = new HashMap();
         String body = new String();
-
+        
         Enumeration<String> headerNames = request.getHeaderNames();
         while (headerNames.hasMoreElements()) {
             String name = headerNames.nextElement();
@@ -141,11 +140,11 @@ public class EPICTomcat {
             reader.close();
             body = sb.toString();
         } catch (java.io.UnsupportedEncodingException ex) {
-            logger.log(Level.SEVERE, null, ex);
+            LOGGER.log(Level.SEVERE, null, ex);
         } catch (IllegalStateException ex) {
-            logger.log(Level.SEVERE, null, ex);
+            LOGGER.log(Level.SEVERE, null, ex);
         } catch (java.io.IOException ex) {
-            logger.log(Level.SEVERE, null, ex);
+            LOGGER.log(Level.SEVERE, null, ex);
         }
 
         EPICRequest e = new EPICRequest(request.getMethod(), headers, body);
