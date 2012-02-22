@@ -9,7 +9,7 @@ import org.apache.http.Header;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.*;
-import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.client.cache.CachingHttpClient;
 
 public class ResourceFetcher {
 
@@ -17,7 +17,7 @@ public class ResourceFetcher {
     private static final Logger LOGGER = Logger.getLogger(ResourceFetcher.class.getName(), null);
 
     public ResourceFetcher() {
-        httpclient = new DefaultHttpClient();
+        httpclient = new CachingHttpClient();
         httpclient.getParams().removeParameter("http.useragent");
     }
 
@@ -61,8 +61,8 @@ public class ResourceFetcher {
             FetcherUtilities.copyHeaders(req, get);
 
             HttpResponse res = httpclient.execute(get);
-
-            LOGGER.log(Level.INFO, "Response Headers Before Anything: {0}", res.getAllHeaders().length);
+            LOGGER.info("HTTP response status line: "+res.getStatusLine());
+            LOGGER.log(Level.INFO, "HTTP response Headers Before Anything: {0}", res.getAllHeaders().length);
 
             for (Header h : res.getAllHeaders()) {
                 System.err.println("\t" + h);
@@ -77,9 +77,8 @@ public class ResourceFetcher {
         } catch (IOException ex) {
             LOGGER.log(Level.SEVERE, "Exception in GET: {0}", ex);
             System.err.println("Exception in GET: " + ex);
-        } finally {
-            //httpclient.getConnectionManager().shutdown();
         }
+        
         return retVal;
     }
 

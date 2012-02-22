@@ -13,8 +13,12 @@ public class HostMutilator {
         headers.remove("accept-encoding");
         headers.remove("connection");
         headers.remove("keep-alive");
+        headers.remove("if-none-match");
+        headers.remove("if-modified-since");
+        headers.remove("etag");
         
         request.setHeaders(headers);
+        
         return request;
     }
 }

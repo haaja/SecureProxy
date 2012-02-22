@@ -21,11 +21,12 @@ public class FetcherUtilities {
         Header contentType = response.getFirstHeader("content-type");
 
         Header[] contenttypes = response.getHeaders("Content-Type");
-        logger.log(Level.INFO, "Content-Type: {0}", (contenttypes == null ? null : contenttypes.length));
+        LOGGER.log(Level.INFO, "Content-Type: {0}", (contenttypes == null ? null : contenttypes.length));
 
         if (contentType == null || contentType.getValue().matches("text/.*")) {
             return true;
         }
+        
         return false;
     }
 
@@ -34,13 +35,14 @@ public class FetcherUtilities {
         try {
             //        e.setBody(getBody(response.getEntity()));
             e.setBody(EntityUtils.toString(response.getEntity()));
-            response.getEntity().getContent().close();
+            e.setHeaders(getHeaders(response));
+            EntityUtils.consume(response.getEntity());
         } catch (IOException ex) {
             Logger.getLogger(FetcherUtilities.class.getName()).log(Level.SEVERE, null, ex);
         } catch (ParseException ex) {
             Logger.getLogger(FetcherUtilities.class.getName()).log(Level.SEVERE, null, ex);
         }
-        e.setHeaders(getHeaders(response));
+        
         return e;
     }
 
@@ -50,15 +52,14 @@ public class FetcherUtilities {
 
         try {
             e.setBody(EntityUtils.toByteArray(response.getEntity()));
-            response.getEntity().getContent().close();
             e.setHeaders(getHeaders(response));
-            return e;
+            EntityUtils.consume(response.getEntity());
         } catch (IOException ex) {
             LOGGER.log(Level.SEVERE, null, ex);
         } catch (IllegalStateException ex) {
             LOGGER.log(Level.SEVERE, null, ex);
         }
-
+        
         return e;
     }
 
@@ -77,8 +78,6 @@ public class FetcherUtilities {
                 }
                 read = reader.read(buffer, 0, buffer.length);
             }
-
-
         } catch (IOException ex) {
             LOGGER.log(Level.SEVERE, null, ex);
         } catch (IllegalStateException ex) {
@@ -94,6 +93,7 @@ public class FetcherUtilities {
         for (Header header : headers) {
             map.put(header.getName(), header.getValue());
         }
+
         return map;
     }
 
