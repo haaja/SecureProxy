@@ -6,6 +6,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Enumeration;
+import java.util.logging.Logger;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -16,10 +17,18 @@ import javax.servlet.http.HttpServletResponse;
 public class RequestHandler extends HttpServlet {
     
     private EPICTomcat tomcatHandler;
-    private static final ProxyLogger logger = new ProxyLogger(RequestHandler.class.getName(), null);
+    private static final Logger LOGGER = Logger.getLogger(RequestHandler.class.getName(), null);
     
     public RequestHandler() {
         tomcatHandler = new EPICTomcat();
+
+        //initialize logger settings for SecureProxy
+        try {
+            ProxyLogger.setup();
+        } catch (IOException ex) {
+            ex.printStackTrace();
+            throw new RuntimeException("Problems creating the log files.");
+        }
     }
 
     /**
@@ -33,7 +42,7 @@ public class RequestHandler extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        logger.info("Received HTTP GET request.");
+        LOGGER.info("Received HTTP GET request.");
         tomcatHandler.handleRequest(request, response);
     }
 
@@ -48,7 +57,7 @@ public class RequestHandler extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        logger.info("Received HTTP POST request.");
+        LOGGER.info("Received HTTP POST request.");
         tomcatHandler.handleRequest(request, response);
     }
 
@@ -63,7 +72,7 @@ public class RequestHandler extends HttpServlet {
     @Override
     protected void doDelete(HttpServletRequest request, HttpServletResponse response) 
             throws ServletException, IOException {
-        logger.info("Received HTTP DELETE request.");
+        LOGGER.info("Received HTTP DELETE request.");
         tomcatHandler.handleRequest(request, response);
     }
 
@@ -78,7 +87,7 @@ public class RequestHandler extends HttpServlet {
     @Override
     protected void doPut(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        logger.info("Received HTTP DELETE request.");
+        LOGGER.info("Received HTTP DELETE request.");
         tomcatHandler.handleRequest(request, response);
     }
 
@@ -93,7 +102,7 @@ public class RequestHandler extends HttpServlet {
     @Override
     protected void doHead(HttpServletRequest request, HttpServletResponse response) 
             throws ServletException, IOException {
-        logger.info("Received HTTP HEAD request.");
+        LOGGER.info("Received HTTP HEAD request.");
         tomcatHandler.handleRequest(request, response);
     }
 
@@ -108,7 +117,7 @@ public class RequestHandler extends HttpServlet {
     @Override
     protected void doOptions(HttpServletRequest request, HttpServletResponse response) 
             throws ServletException, IOException {
-        logger.info("Received HTTP OPTIONS request.");
+        LOGGER.info("Received HTTP OPTIONS request.");
         tomcatHandler.handleRequest(request, response);
     }
 
@@ -123,7 +132,7 @@ public class RequestHandler extends HttpServlet {
     @Override
     protected void doTrace(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
-        logger.info("Received HTTP TRACE request.");
+        LOGGER.info("Received HTTP TRACE request.");
         super.doTrace(req, resp);
     }
 
