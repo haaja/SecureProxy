@@ -42,7 +42,7 @@ public class EPICTomcat {
      */
     private void fillResponse(HttpServletResponse response, EPICResponse epic) {
 
-        logger.log(Level.INFO, "Headers before");
+        LOGGER.log(Level.INFO, "Headers before");
 
         try {
             //response.reset();
@@ -53,7 +53,7 @@ public class EPICTomcat {
             LOGGER.log(Level.SEVERE, null, ex);
         }
 
-        logger.log(Level.INFO, "epic class: {0}", epic.getClass().getName());
+        LOGGER.log(Level.INFO, "epic class: {0}", epic.getClass().getName());
 
         if (epic.getClass() == EPICTextResponse.class) {
             fillText(response, (EPICTextResponse) epic);
@@ -65,7 +65,7 @@ public class EPICTomcat {
 //            fillText(response, (EPICTextResponse) epic);
 //        else 
 //            fillBinary(response, (EPICBinaryResponse) epic);
-        //logger.log(Level.INFO, "Headers After: {0}", response.getHeaderNames());
+        //LOGGER.log(Level.INFO, "Headers After: {0}", response.getHeaderNames());
     }
 
     /**

@@ -54,15 +54,15 @@ public class ResourceFetcher {
     private EPICResponse handleGet(EPICRequest req) {
         EPICResponse retVal = null;
         try {
-            logger.log(Level.INFO, "GET Request \"{0}\"", req.getUri());
-            logger.log(Level.INFO, "Request Headers {0}", req.getHeaders());
+            LOGGER.log(Level.INFO, "GET Request \"{0}\"", req.getUri());
+            LOGGER.log(Level.INFO, "Request Headers {0}", req.getHeaders());
 
             HttpGet get = new HttpGet(req.getUri());
             FetcherUtilities.copyHeaders(req, get);
 
             HttpResponse res = httpclient.execute(get);
 
-            logger.log(Level.INFO, "Response Headers Before Anything: {0}", res.getAllHeaders().length);
+            LOGGER.log(Level.INFO, "Response Headers Before Anything: {0}", res.getAllHeaders().length);
 
             for (Header h : res.getAllHeaders()) {
                 System.err.println("\t" + h);
@@ -75,7 +75,7 @@ public class ResourceFetcher {
             }
 
         } catch (IOException ex) {
-            logger.log(Level.SEVERE, "Exception in GET: {0}", ex);
+            LOGGER.log(Level.SEVERE, "Exception in GET: {0}", ex);
             System.err.println("Exception in GET: " + ex);
         } finally {
             //httpclient.getConnectionManager().shutdown();
