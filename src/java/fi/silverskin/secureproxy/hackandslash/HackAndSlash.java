@@ -5,6 +5,7 @@ import fi.silverskin.secureproxy.EPICResponse;
 import fi.silverskin.secureproxy.EPICTextResponse;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
@@ -21,8 +22,8 @@ public class HackAndSlash {
     //TODO: To be replaced with proper settings
     private String remoteUrl = "128.214.9.12";
     private String remotePort = "80";
-
-
+    private String basePseudoURI = "http://t-tkt_palo.users.cs.helsinki.fi";
+    
     public HackAndSlash() {
         this.request = null;
         this.response = null;
@@ -39,7 +40,7 @@ public class HackAndSlash {
             URI uri = new URI(request.getUri());
             request.setUri("http://" + remoteUrl + ":" + remotePort + uri.getPath());
             LOGGER.log(Level.INFO, request.getUri().toString());
-
+            
         } catch (URISyntaxException ex) {
             LOGGER.log(Level.SEVERE, null, ex);
         }
@@ -66,8 +67,6 @@ public class HackAndSlash {
         throw new NotImplementedException();
     }
 
-
- 
     /**
      * Modifies HTTP response to hide traces of the real service.
      * 
@@ -75,13 +74,15 @@ public class HackAndSlash {
      * @return Modified HTTP response.
      */
     public EPICResponse hackAndSlashOut(EPICTextResponse response) {
+
         String[][] tagsAndAttributes = new String[2][];
-        String[] tags = {"img", "a", "area", "iframe", "frame", "script","form", "base", "link",
-        "input", "object", "object","object","object","input", "ins"};
+        String[] tags = {"img", "a", "area", "iframe", "frame", "script", "form",
+                         "base", "link", "input", "object", "ins"};
         tagsAndAttributes[0] = tags;
-        String[] attributes = {"src", "href", "href", "src", "src","src","action", "href", "href", 
-        "src", "data", "classid","codebase","usemap", "usemap", "cite"};
+        String[] attributes = {"src", "href", "src", "action", "src", "data",
+                               "classid", "codebase", "usemap", "cite"};
         tagsAndAttributes[1] = attributes;
+
         String oldResponse = response.getBody(), newResponse = "";
         for (int i = 0; i < tagsAndAttributes[0].length; i++) {
             newResponse = "";
@@ -104,23 +105,63 @@ public class HackAndSlash {
             oldResponse = newResponse;
         }
         response.setBody(newResponse);
+
+        /* Update Content-Lenght with new size */
+        HashMap<String, String> headers = new HashMap<String, String>(response.getHeaders());
+        headers.put("Content-Length", Integer.toString(response.getBody().getBytes().length));
+        response.setHeaders(headers);
+
         return response;
     }
 
-    public String getPseudoUrl(String URL) {
-        return "pseudoURL";
+    /**
+     * Generates the pseudo URI from original URI
+     *
+     * TODO: Actual masking of the url and filesystem.
+     *
+     * @param url Original URI
+     * @return Masked URI
+     */
+    public String getPseudoUrl(String url) {
+
+        URI parsedUri = null;
+        String pseudoUri = null;
+
+        try {
+            parsedUri = new URI(url);
+        } catch (URISyntaxException ex) {
+            LOGGER.log(Level.SEVERE, null, ex);
+        }
+
+        if (parsedUri.isAbsolute()) {
+            pseudoUri = basePseudoURI+parsedUri.getPath();
+        } else {
+            pseudoUri = basePseudoURI+"/"+url;
+        }
+
+        LOGGER.info("Returning pseudourl: "+pseudoUri);
+       
+        return pseudoUri;
     }
 
+    /**
+     * Changes original URI in HTML tag to a masked one.
+     * @param tag HTML tag
+     * @param attributeName HTML tags attribute
+     * @return HTML tag with masked URI
+     */
     public String convertUrlInTag(String tag, String attributeName) {
 
         Pattern sourcePattern = Pattern.compile(attributeName + "(\\s)*=(\\s)*\"[^\"]*\"");
         Matcher sourceMatcher = sourcePattern.matcher(tag.toLowerCase());
+        
         if (sourceMatcher.find()) {
             int attributeStart = sourceMatcher.start();
             int attributeEnd = sourceMatcher.end();
             String temp = tag.substring(attributeStart, attributeEnd);
             Pattern urlPattern = Pattern.compile("\"[^\"]+\"");
             Matcher urlMatcher = urlPattern.matcher(temp);
+            
             if ((urlMatcher.find())) {
                 String url = urlMatcher.group();
                 url = url.substring(1, url.length() - 1).trim();
@@ -130,6 +171,7 @@ public class HackAndSlash {
                 }
             }
         }
+
         return tag;
     }
    

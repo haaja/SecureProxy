@@ -10,7 +10,6 @@ import java.util.logging.SimpleFormatter;
 public class ProxyLogger {
 
     private static FileHandler logFileHandler;
-    private static ConsoleHandler logConsoleHandler;
     private static SimpleFormatter logFormatter;
 
     //these should be eventually read from config
@@ -28,12 +27,10 @@ public class ProxyLogger {
         logger.setLevel(logLevel);
 
         logFileHandler = new FileHandler(logFile);
-        logConsoleHandler = new ConsoleHandler();
 
         logFormatter = new SimpleFormatter();
         logFileHandler.setFormatter(logFormatter);
 
-        logger.addHandler(logConsoleHandler);
         logger.addHandler(logFileHandler);
     }
 }

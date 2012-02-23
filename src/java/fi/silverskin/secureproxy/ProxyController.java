@@ -29,6 +29,13 @@ public class ProxyController {
         EPICResponse response = fetcher.handleRequest(request);
         LOGGER.log(Level.INFO, response.toString());
 
+        if (response.isText()) {
+            LOGGER.info("Sending response to HackAndSlash");
+            response = hackAndSlash.hackAndSlashOut((EPICTextResponse)response);
+            LOGGER.info("Mutilated response:");
+            LOGGER.log(Level.INFO, response.toString());
+        }
+
         return response;
     }
 }

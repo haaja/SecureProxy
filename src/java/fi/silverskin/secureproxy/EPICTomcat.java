@@ -55,7 +55,7 @@ public class EPICTomcat {
 
         LOGGER.log(Level.INFO, "epic class: {0}", epic.getClass().getName());
 
-        if (epic.getClass() == EPICTextResponse.class) {
+        if (epic.isText()) {
             fillText(response, (EPICTextResponse) epic);
         } else {
             fillBinary(response, (EPICBinaryResponse) epic);
@@ -142,7 +142,7 @@ public class EPICTomcat {
             e.setUri(request.getRequestURL() + "?" + request.getQueryString());
         } else {
             e.setUri(request.getRequestURI());
-        }
+        }        
         return e;
     }
 }

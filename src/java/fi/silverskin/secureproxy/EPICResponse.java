@@ -19,7 +19,7 @@ public class EPICResponse extends EPICAbstraction {
      * @return true if request contains only text data, otherwise false.
      */
     public boolean isText() {
-        String contentType = headers.get("content-type");
+        String contentType = headers.get("Content-Type");
         if (contentType == null)
             contentType = "text/text";
 
