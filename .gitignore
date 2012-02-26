@@ -6,5 +6,6 @@ nbproject/
 *.class
 *.rdb
 *.log
-/web/WEB-INF/glassfish-web.xml
+src/main/webapp/WEB-INF/glassfish-web.xml
 /dist/
+/target/
