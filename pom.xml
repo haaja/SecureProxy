@@ -43,6 +43,11 @@
             <artifactId>httpclient</artifactId>
             <version>4.2-beta1</version>
         </dependency>
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient-cache</artifactId>
+            <version>4.2-beta1</version>
+        </dependency>
 
 
     </dependencies>
