@@ -22,7 +22,7 @@ public class HackAndSlash {
     //TODO: To be replaced with proper settings
     private String remoteUrl = "128.214.9.12";
     private String remotePort = "80";
-    private String basePseudoURI = "http://t-tkt_palo.users.cs.helsinki.fi";
+    private String basePseudoURI = "palomuuri.users.cs.helsinki.fi";
     
     public HackAndSlash() {
         this.request = null;
@@ -132,6 +132,10 @@ public class HackAndSlash {
         } catch (URISyntaxException ex) {
             LOGGER.log(Level.SEVERE, null, ex);
         }
+        
+        if (!ourOwnUrl(parsedUri)) {
+            return url;
+        }
 
         if (parsedUri.isAbsolute()) {
             pseudoUri = basePseudoURI+parsedUri.getPath();
@@ -142,6 +146,13 @@ public class HackAndSlash {
         LOGGER.info("Returning pseudourl: "+pseudoUri);
        
         return pseudoUri;
+    }
+    
+    private boolean ourOwnUrl(URI url) {
+        String hostname = url.getHost();
+        if (hostname.equals(basePseudoURI))
+            return true;
+        else return false;
     }
 
     /**
