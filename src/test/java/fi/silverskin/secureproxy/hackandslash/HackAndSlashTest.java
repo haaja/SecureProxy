@@ -5,13 +5,13 @@
 package fi.silverskin.secureproxy.hackandslash;
 
 import fi.silverskin.secureproxy.EPICRequest;
-import fi.silverskin.secureproxy.EPICResponse;
 import fi.silverskin.secureproxy.EPICTextResponse;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.HashMap;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 import org.junit.*;
-import static org.junit.Assert.*;
 
 /**
  *
@@ -25,13 +25,14 @@ public class HackAndSlashTest {
 
     private HackAndSlashConfig conf;
 
-    // From the class. Replace if modified.
-    private String remoteUrl = "tkt_palo.users.cs.helsinki.fi";
-    private String remotePort = "80";
-    private String basePseudoURI = "http://palomuuri.users.cs.helsinki.fi";
+    // From the class. Replace if modified.    private EPICRequest request;
+    //private String privateURI = "tkt_palo.users.cs.helsinki.fi";
+    private String privateURI = "128.214.9.12";
+    private String privatePort = "80";
+    private String publicURI = "http://palomuuri.users.cs.helsinki.fi";
     
     public HackAndSlashTest() throws URISyntaxException {
-        conf = new HackAndSlashConfig(remoteUrl, remotePort, basePseudoURI);
+        conf = new HackAndSlashConfig(privateURI, privatePort, publicURI);
     }
 
     @BeforeClass
@@ -66,7 +67,7 @@ public class HackAndSlashTest {
         
         try { 
             URI forPath = new URI(testUri);
-             String controlUrl = "http://" + remoteUrl + ":" + remotePort + 
+             String controlUrl = "http://" + privateURI + ":" + privatePort + 
                 forPath.getPath();
         
             EPICRequest testRequest = has.hackAndSlashIn(this.request);
@@ -85,36 +86,36 @@ public class HackAndSlashTest {
         this.response.setBody(
                 "<html> <body>"
                 + "<p> This is a test case: </p>"
-                + "<a href=" + remoteUrl + ":" + remotePort + ">"
+                + "<a href=" + privateURI + ":" + privatePort + ">"
                 + "</a></body></html>"
                 );
         String controlBody =
                 "<html> <body>"
                 + "<p> This is a test case: </p>"
-                + "<a href=" + basePseudoURI + ">"
+                + "<a href=" + publicURI + ">"
                 + "</a></body></html>";
         EPICTextResponse testResponse = (EPICTextResponse)has.hackAndSlashOut(response); 
         assertEquals(controlBody, testResponse.getBody());
     }
 
     /**
-     * Test of getPseudoUrl method when url is own, of class HackAndSlash.
+     * Test of getMaskedUrl method when url is own, of class HackAndSlash.
      */
     @Test
-    public void testGetPseudoUrl_ownUrl() {
+    public void testGetMaskedUrl_ownUrl() {
         // Under processing
-        String ownUrl = "http://" + basePseudoURI + "/test/testing.html";
-        String testUrl = has.getPseudoUrl(ownUrl);
+        String ownUrl = "http://" + publicURI + "/test/testing.html";
+        String testUrl = has.getMaskedUrl(ownUrl);
         assertEquals(ownUrl, testUrl);
     }
     
     /**
-     * Test of getPseudoUrl method when url isn't own, of class HackAndSlash.
+     * Test of getMaskedUrl method when url isn't own, of class HackAndSlash.
      */
     @Test
-    public void testGetPseudoUrl_notOwnUrl() {
+    public void testGetMaskedUrl_notOwnUrl() {
         String foreignUrl = "http://www.google.com";
-        String testUrl = has.getPseudoUrl(foreignUrl);
+        String testUrl = has.getMaskedUrl(foreignUrl);
         assertEquals(foreignUrl, testUrl);
     }
 
@@ -123,6 +124,10 @@ public class HackAndSlashTest {
      */
     @Test
     public void testConvertUrlInTag() {
-        fail("The test case is a prototype.");
+        String tag = "<a href=\"http://128.214.9.12:80/testing\">Boo</a>";
+        String attribute = "href";
+        String reTag = has.convertUrlInTag(tag, attribute);
+        String controlTag = "<a href=\"http://palomuuri.users.cs.helsinki.fi/testing\">Boo</a>";
+        assertEquals(controlTag, reTag);
     }
 }

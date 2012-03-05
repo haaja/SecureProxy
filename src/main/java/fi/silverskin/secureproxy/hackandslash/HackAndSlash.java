@@ -10,12 +10,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 public class HackAndSlash {
 
-    private EPICRequest request;
-    private EPICResponse response;
     private final String[][] tagsAndAttributes = {
         {"a", "href"}, {"applet", "codebase", "archive"}, {"area", "href"},
         {"base", "href"}, {"blockquate", "cite"}, {"body", "background"},
@@ -28,15 +25,15 @@ public class HackAndSlash {
     };
     private static final Logger LOGGER = Logger.getLogger(HackAndSlash.class.getName(), null);
     //TODO: To be replaced with proper settings
-    private String remoteUrl;
-    private String remotePort;
-    private URI basePseudoURI;
+    private String privateURI;
+    private String privatePort;
+    private URI publicURI;
 
 
     public HackAndSlash(HackAndSlashConfig conf) {
-        remoteUrl = conf.getRemoteUrl();
-        remotePort = conf.getRemotePort();
-        basePseudoURI = conf.getBasePseudoURI();
+        privateURI = conf.getprivateURI();
+        privatePort = conf.getprivatePort();
+        publicURI = conf.getpublicURI();
     }
 
     /**
@@ -48,33 +45,13 @@ public class HackAndSlash {
     public EPICRequest hackAndSlashIn(EPICRequest request) {
         try {
             URI uri = new URI(request.getUri());
-            request.setUri("http://" + remoteUrl + ":" + remotePort + uri.getPath());
+            request.setUri("http://" + privateURI + ":" + privatePort + uri.getPath());
             LOGGER.log(Level.INFO, request.getUri().toString());
 
         } catch (URISyntaxException ex) {
             LOGGER.log(Level.SEVERE, null, ex);
         }
         return request;
-    }
-
-    /**
-     *
-     * @param response
-     * @return
-     */
-    public EPICResponse hackAndSlashIn(EPICResponse response) {
-
-        throw new NotImplementedException();
-    }
-
-    /**
-     *
-     * @param request
-     * @return
-     */
-    public EPICRequest hackAndSlashOut(EPICRequest request) {
-
-        throw new NotImplementedException();
     }
 
     /**
@@ -129,34 +106,43 @@ public class HackAndSlash {
      * @param url Original URI
      * @return Masked URI
      */
-    public String getPseudoUrl(String url) {
+    public String getMaskedUrl(String url) {
 
+        System.out.println("getMaskedUrl's param: " + url);
         URI parsedUri = null;
-        String pseudoUri = null;
+        String maskedUri = null;
 
         try {
             parsedUri = new URI(url);
         } catch (URISyntaxException ex) {
             LOGGER.log(Level.SEVERE, null, ex);
         }
-
-        if (!ownUrl(parsedUri)) {
+/*
+        if (!isProtectedUrl(parsedUri)) {
+            System.out.println("Wasn't protected.");
             return url;
         }
-
+*/
         if (parsedUri.isAbsolute()) {
-            pseudoUri = basePseudoURI + parsedUri.getPath();
+            maskedUri = publicURI + parsedUri.getPath();
         } else {
-            pseudoUri = basePseudoURI + "/" + url;
+            maskedUri = publicURI + "/" + url;
         }
 
-        LOGGER.log(Level.INFO, "Returning pseudourl: {0}", pseudoUri);
-        return pseudoUri;
+        LOGGER.log(Level.INFO, "Returning masked url: {0}", maskedUri);
+        System.out.println("ready Masked url: " + maskedUri);
+        return maskedUri;
     }
 
-    private boolean ownUrl(URI url) {
+    /**
+     * Checks if url is own by protected service
+     *
+     * @param url Original URI
+     * @return
+     */
+    private boolean isProtectedUrl(URI url) {
         String hostname = url.getHost();
-        if (hostname.equals(basePseudoURI.getHost())) {
+        if (hostname.equals(publicURI.getHost())) {
             return true;
         } else {
             return false;
@@ -190,11 +176,11 @@ public class HackAndSlash {
                     if (attributeName.equals("archive")) {
                         String[] urls = url.split(" ");
                         for (String s : urls) {
-                            newUrl += getPseudoUrl(s) + " ";
+                            newUrl += getMaskedUrl(s) + " ";
                         }
                         newUrl = newUrl.trim();
                     } else {
-                        newUrl = getPseudoUrl(url);
+                        newUrl = getMaskedUrl(url);
                     }
                     return tag.substring(0, attributeStart + urlMatcher.start() + 1)
                             + newUrl + tag.substring(attributeEnd - 1);

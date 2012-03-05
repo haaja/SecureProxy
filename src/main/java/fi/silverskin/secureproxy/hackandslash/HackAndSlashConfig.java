@@ -6,26 +6,26 @@ import java.net.URISyntaxException;
 
 
 public class HackAndSlashConfig {
-    private String remoteUrl;
-    private String remotePort;
-    private URI basePseudoURI;
+    private String privateURI;
+    private String privatePort;
+    private URI publicURI;
 
-    public HackAndSlashConfig(String remoteUrl, String remotePort, String basePseudoURI) throws URISyntaxException {
-        this.remoteUrl = remoteUrl;
-        this.remotePort = remotePort;
-        this.basePseudoURI = new URI(basePseudoURI);
+    public HackAndSlashConfig(String privateURI, String privatePort, String publicURI) throws URISyntaxException {
+        this.privateURI = privateURI;
+        this.privatePort = privatePort;
+        this.publicURI = new URI(publicURI);
     }
      
-    public URI getBasePseudoURI() {
-        return basePseudoURI;
+    public URI getpublicURI() {
+        return publicURI;
     }
 
-    public String getRemotePort() {
-        return remotePort;
+    public String getprivatePort() {
+        return privatePort;
     }
 
-    public String getRemoteUrl() {
-        return remoteUrl;
+    public String getprivateURI() {
+        return privateURI;
     }
     
 }
