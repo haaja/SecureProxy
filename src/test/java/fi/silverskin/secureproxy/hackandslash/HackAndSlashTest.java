@@ -66,12 +66,12 @@ public class HackAndSlashTest {
         this.request.setUri(testUri);
         
         try { 
-            URI forPath = new URI(testUri);
+            URI path = new URI(testUri);
              String controlUrl = privateURI + ":" + privatePort + 
-                forPath.getPath();
+                path.getPath();
         
-            EPICRequest testRequest = has.hackAndSlashIn(this.request);
-            assertEquals(controlUrl, testRequest.getUri());
+            EPICRequest resultRequest = has.hackAndSlashIn(this.request);
+            assertEquals(controlUrl, resultRequest.getUri());
         } catch (URISyntaxException ex) { 
             fail(); 
         }
@@ -94,8 +94,8 @@ public class HackAndSlashTest {
                 + "<p> This is a test case: </p>"
                 + "<a href=\"" + publicURI + "\">"
                 + "</a></body></html>";
-        EPICTextResponse testResponse = has.hackAndSlashOut(textResponse); 
-        assertEquals(controlBody, testResponse.getBody());
+        EPICTextResponse resultResponse = has.hackAndSlashOut(textResponse); 
+        assertEquals(controlBody, resultResponse.getBody());
     }
 
     /**
@@ -106,7 +106,7 @@ public class HackAndSlashTest {
         // Under processing
         String expectedUrl = publicURI + "/test/testing.html";
         String testUrl = privateURI + ":" + privatePort + "/test/testing.html"; 
-        String resultUrl = has.getMaskedUrl(expectedUrl);
+        String resultUrl = has.getMaskedUrl(testUrl);
         assertEquals(expectedUrl, resultUrl);
     }
     
@@ -116,8 +116,8 @@ public class HackAndSlashTest {
     @Test
     public void testGetMaskedUrl_notOwnUrl() {
         String foreignUrl = "http://www.google.com";
-        String testUrl = has.getMaskedUrl(foreignUrl);
-        assertEquals(foreignUrl, testUrl);
+        String resultUrl = has.getMaskedUrl(foreignUrl);
+        assertEquals(foreignUrl, resultUrl);
     }
 
     /**
@@ -127,8 +127,8 @@ public class HackAndSlashTest {
     public void testConvertUrlInTag() {
         String tag = "<a href=\"http://128.214.9.12:80/testing\">Boo</a>";
         String attribute = "href";
-        String reTag = has.convertUrlInTag(tag, attribute);
+        String resultTag = has.convertUrlInTag(tag, attribute);
         String controlTag = "<a href=\"http://palomuuri.users.cs.helsinki.fi/testing\">Boo</a>";
-        assertEquals(controlTag, reTag);
+        assertEquals(controlTag, resultTag);
     }
 }
