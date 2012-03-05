@@ -64,6 +64,7 @@ public class HackAndSlash {
         String oldResponse = response.getBody(), newResponse = "";
         for (int i = 0; i < tagsAndAttributes.length; i++) {
             newResponse = "";
+            // Find all strings beginning with '<', containing a tag keyword and ending with '>'
             Pattern tagPattern = Pattern.compile("<(\\s)*" + tagsAndAttributes[i][0] + "[^>]*>");
             Matcher tagMatcher = tagPattern.matcher(oldResponse);
             int index = 0;
@@ -73,6 +74,7 @@ public class HackAndSlash {
                 }
                 index = tagMatcher.end();
                 String tag = tagMatcher.group();
+                // Find attributes, that may contain a URL, and convert URLs if needed
                 for (int j = 1; j < tagsAndAttributes[i].length; j++) {
                     tag = convertUrlInTag(tag, tagsAndAttributes[i][j]);
                 }
