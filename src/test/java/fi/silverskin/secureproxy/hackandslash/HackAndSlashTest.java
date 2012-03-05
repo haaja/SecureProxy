@@ -22,13 +22,16 @@ public class HackAndSlashTest {
     private HackAndSlash has;
     private EPICRequest request;
     private EPICTextResponse response;
-    
+
+    private HackAndSlashConfig conf;
+
     // From the class. Replace if modified.
     private String remoteUrl = "128.214.9.12";
     private String remotePort = "80";
-    private String basePseudoURI = "palomuuri.users.cs.helsinki.fi";
+    private String basePseudoURI = "http://palomuuri.users.cs.helsinki.fi";
     
     public HackAndSlashTest() {
+        conf = new HackAndSlashConfig(remoteUrl, remotePort, basePseudoURI);
     }
 
     @BeforeClass
@@ -44,7 +47,7 @@ public class HackAndSlashTest {
         HashMap<String, String> headers = new HashMap<String, String>();        
         String body = "";
         
-        this.has = new HackAndSlash();
+        this.has = new HackAndSlash(conf);
         this.request = new EPICRequest("get", headers, body);
         this.response = new EPICTextResponse(headers, body);
     }
@@ -58,7 +61,7 @@ public class HackAndSlashTest {
      */
     @Test
     public void testHackAndSlashIn_EPICRequest() {
-        String testUri = "http://http://www.cs.helsinki.fi/opiskelu";
+        String testUri = "http://www.cs.helsinki.fi/opiskelu";
         this.request.setUri(testUri);
         
         try { 

@@ -28,13 +28,15 @@ public class HackAndSlash {
     };
     private static final Logger LOGGER = Logger.getLogger(HackAndSlash.class.getName(), null);
     //TODO: To be replaced with proper settings
-    private String remoteUrl = "128.214.9.12";
-    private String remotePort = "80";
-    private String basePseudoURI = "palomuuri.users.cs.helsinki.fi";
+    private String remoteUrl;
+    private String remotePort;
+    private String basePseudoURI;
 
-    public HackAndSlash() {
-        this.request = null;
-        this.response = null;
+
+    public HackAndSlash(HackAndSlashConfig conf) {
+        remoteUrl = conf.getRemoteUrl();
+        remotePort = conf.getRemotePort();
+        basePseudoURI = conf.getBasePseudoURI();
     }
 
     /**
@@ -149,7 +151,6 @@ public class HackAndSlash {
         }
 
         LOGGER.log(Level.INFO, "Returning pseudourl: {0}", pseudoUri);
-
         return pseudoUri;
     }
 

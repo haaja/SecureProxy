@@ -1,6 +1,7 @@
 package fi.silverskin.secureproxy;
 
 import fi.silverskin.secureproxy.hackandslash.HackAndSlash;
+import fi.silverskin.secureproxy.hackandslash.HackAndSlashConfig;
 import fi.silverskin.secureproxy.resourcefetcher.ResourceFetcher;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -13,7 +14,9 @@ public class ProxyController {
  
     public ProxyController() {
         fetcher = new ResourceFetcher();
-        hackAndSlash = new HackAndSlash();
+
+        HackAndSlashConfig conf = new HackAndSlashConfig("128.214.9.12", "80", "http://palomuuri.users.cs.helsinki.fi");
+        hackAndSlash = new HackAndSlash(conf);
     }
 
     /**
