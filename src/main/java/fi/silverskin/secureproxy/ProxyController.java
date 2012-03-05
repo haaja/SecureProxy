@@ -3,6 +3,7 @@ package fi.silverskin.secureproxy;
 import fi.silverskin.secureproxy.hackandslash.HackAndSlash;
 import fi.silverskin.secureproxy.hackandslash.HackAndSlashConfig;
 import fi.silverskin.secureproxy.resourcefetcher.ResourceFetcher;
+import java.net.URISyntaxException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -12,7 +13,7 @@ public class ProxyController {
     private HackAndSlash hackAndSlash;
     private static final Logger LOGGER = Logger.getLogger(ProxyController.class.getName(), null);
  
-    public ProxyController() {
+    public ProxyController() throws URISyntaxException {
         fetcher = new ResourceFetcher();
 
         HackAndSlashConfig conf = new HackAndSlashConfig("128.214.9.12", "80", "http://palomuuri.users.cs.helsinki.fi");

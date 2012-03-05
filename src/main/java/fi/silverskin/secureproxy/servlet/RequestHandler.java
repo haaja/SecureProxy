@@ -5,6 +5,7 @@ import fi.silverskin.secureproxy.ProxyLogger;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.net.URISyntaxException;
 import java.util.Enumeration;
 import java.util.logging.Logger;
 import javax.servlet.ServletException;
@@ -19,7 +20,7 @@ public class RequestHandler extends HttpServlet {
     private EPICTomcat tomcatHandler;
     private static final Logger LOGGER = Logger.getLogger(RequestHandler.class.getName(), null);
     
-    public RequestHandler() {
+    public RequestHandler() throws URISyntaxException {
         tomcatHandler = new EPICTomcat();
 
         //initialize logger settings for SecureProxy

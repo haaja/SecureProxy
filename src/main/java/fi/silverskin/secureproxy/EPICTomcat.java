@@ -3,6 +3,7 @@ package fi.silverskin.secureproxy;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.net.URISyntaxException;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
@@ -17,7 +18,7 @@ public class EPICTomcat {
     private ProxyController proxy;
     private static final Logger LOGGER = Logger.getLogger(EPICTomcat.class.getName());
 
-    public EPICTomcat() {
+    public EPICTomcat() throws URISyntaxException {
         proxy = new ProxyController();
     }
 

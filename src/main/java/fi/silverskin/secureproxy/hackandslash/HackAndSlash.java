@@ -30,7 +30,7 @@ public class HackAndSlash {
     //TODO: To be replaced with proper settings
     private String remoteUrl;
     private String remotePort;
-    private String basePseudoURI;
+    private URI basePseudoURI;
 
 
     public HackAndSlash(HackAndSlashConfig conf) {
@@ -140,7 +140,7 @@ public class HackAndSlash {
             LOGGER.log(Level.SEVERE, null, ex);
         }
 
-        if (!ourOwnUrl(parsedUri)) {
+        if (!ownUrl(parsedUri)) {
             return url;
         }
 
@@ -154,9 +154,9 @@ public class HackAndSlash {
         return pseudoUri;
     }
 
-    private boolean ourOwnUrl(URI url) {
+    private boolean ownUrl(URI url) {
         String hostname = url.getHost();
-        if (hostname.equals(basePseudoURI)) {
+        if (hostname.equals(basePseudoURI.getHost())) {
             return true;
         } else {
             return false;

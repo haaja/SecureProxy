@@ -1,19 +1,22 @@
 
 package fi.silverskin.secureproxy.hackandslash;
 
+import java.net.URI;
+import java.net.URISyntaxException;
+
 
 public class HackAndSlashConfig {
     private String remoteUrl;
     private String remotePort;
-    private String basePseudoURI;
+    private URI basePseudoURI;
 
-    public HackAndSlashConfig(String remoteUrl, String remotePort, String basePseudoURI) {
+    public HackAndSlashConfig(String remoteUrl, String remotePort, String basePseudoURI) throws URISyntaxException {
         this.remoteUrl = remoteUrl;
         this.remotePort = remotePort;
-        this.basePseudoURI = basePseudoURI;
+        this.basePseudoURI = new URI(basePseudoURI);
     }
-
-    public String getBasePseudoURI() {
+     
+    public URI getBasePseudoURI() {
         return basePseudoURI;
     }
 

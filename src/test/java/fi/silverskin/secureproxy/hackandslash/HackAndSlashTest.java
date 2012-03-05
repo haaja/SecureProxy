@@ -26,11 +26,11 @@ public class HackAndSlashTest {
     private HackAndSlashConfig conf;
 
     // From the class. Replace if modified.
-    private String remoteUrl = "128.214.9.12";
+    private String remoteUrl = "tkt_palo.users.cs.helsinki.fi";
     private String remotePort = "80";
     private String basePseudoURI = "http://palomuuri.users.cs.helsinki.fi";
     
-    public HackAndSlashTest() {
+    public HackAndSlashTest() throws URISyntaxException {
         conf = new HackAndSlashConfig(remoteUrl, remotePort, basePseudoURI);
     }
 
