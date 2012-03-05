@@ -6,12 +6,12 @@ import java.net.URISyntaxException;
 
 
 public class HackAndSlashConfig {
-    private String privateURI;
+    private URI privateURI;
     private String privatePort;
     private URI publicURI;
 
     public HackAndSlashConfig(String privateURI, String privatePort, String publicURI) throws URISyntaxException {
-        this.privateURI = privateURI;
+        this.privateURI = new URI(privateURI);
         this.privatePort = privatePort;
         this.publicURI = new URI(publicURI);
     }
@@ -24,7 +24,7 @@ public class HackAndSlashConfig {
         return privatePort;
     }
 
-    public String getprivateURI() {
+    public URI getprivateURI() {
         return privateURI;
     }
     

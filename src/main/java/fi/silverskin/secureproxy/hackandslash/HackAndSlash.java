@@ -25,10 +25,9 @@ public class HackAndSlash {
     };
     private static final Logger LOGGER = Logger.getLogger(HackAndSlash.class.getName(), null);
     //TODO: To be replaced with proper settings
-    private String privateURI;
+    private URI privateURI;
     private String privatePort;
     private URI publicURI;
-
 
     public HackAndSlash(HackAndSlashConfig conf) {
         privateURI = conf.getprivateURI();
@@ -45,7 +44,7 @@ public class HackAndSlash {
     public EPICRequest hackAndSlashIn(EPICRequest request) {
         try {
             URI uri = new URI(request.getUri());
-            request.setUri("http://" + privateURI + ":" + privatePort + uri.getPath());
+            request.setUri(privateURI + ":" + privatePort + uri.getPath());
             LOGGER.log(Level.INFO, request.getUri().toString());
 
         } catch (URISyntaxException ex) {
@@ -60,7 +59,7 @@ public class HackAndSlash {
      * @param response HTTP response with real data.
      * @return Modified HTTP response.
      */
-    public EPICResponse hackAndSlashOut(EPICTextResponse response) {
+    public EPICTextResponse hackAndSlashOut(EPICTextResponse response) {
 
         String oldResponse = response.getBody(), newResponse = "";
         for (int i = 0; i < tagsAndAttributes.length; i++) {
@@ -117,12 +116,12 @@ public class HackAndSlash {
         } catch (URISyntaxException ex) {
             LOGGER.log(Level.SEVERE, null, ex);
         }
-/*
+
         if (!isProtectedUrl(parsedUri)) {
             System.out.println("Wasn't protected.");
             return url;
         }
-*/
+
         if (parsedUri.isAbsolute()) {
             maskedUri = publicURI + parsedUri.getPath();
         } else {
@@ -142,7 +141,10 @@ public class HackAndSlash {
      */
     private boolean isProtectedUrl(URI url) {
         String hostname = url.getHost();
-        if (hostname.equals(publicURI.getHost())) {
+        System.out.println("Hostname: " + hostname);
+        System.out.println("privateURI hostname: " + privateURI.getHost());
+
+        if (hostname.equals(privateURI.getHost())) {
             return true;
         } else {
             return false;
@@ -158,6 +160,7 @@ public class HackAndSlash {
      */
     public String convertUrlInTag(String tag, String attributeName) {
 
+        // what about if quotation marks missing
         Pattern sourcePattern = Pattern.compile(attributeName + "(\\s)*=(\\s)*\"[^\"]*\"");
         Matcher sourceMatcher = sourcePattern.matcher(tag.toLowerCase());
 

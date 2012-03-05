@@ -21,13 +21,13 @@ public class HackAndSlashTest {
     
     private HackAndSlash has;
     private EPICRequest request;
-    private EPICTextResponse response;
+    private EPICTextResponse textResponse;
 
     private HackAndSlashConfig conf;
 
     // From the class. Replace if modified.    private EPICRequest request;
     //private String privateURI = "tkt_palo.users.cs.helsinki.fi";
-    private String privateURI = "128.214.9.12";
+    private String privateURI = "http://128.214.9.12";
     private String privatePort = "80";
     private String publicURI = "http://palomuuri.users.cs.helsinki.fi";
     
@@ -50,7 +50,7 @@ public class HackAndSlashTest {
         
         this.has = new HackAndSlash(conf);
         this.request = new EPICRequest("get", headers, body);
-        this.response = new EPICTextResponse(headers, body);
+        this.textResponse = new EPICTextResponse(headers, body);
     }
     
     @After
@@ -67,7 +67,7 @@ public class HackAndSlashTest {
         
         try { 
             URI forPath = new URI(testUri);
-             String controlUrl = "http://" + privateURI + ":" + privatePort + 
+             String controlUrl = privateURI + ":" + privatePort + 
                 forPath.getPath();
         
             EPICRequest testRequest = has.hackAndSlashIn(this.request);
@@ -83,18 +83,18 @@ public class HackAndSlashTest {
     @Test
     public void testHackAndSlashOut_EPICTextResponse() {
         // under processing
-        this.response.setBody(
+        this.textResponse.setBody(
                 "<html> <body>"
                 + "<p> This is a test case: </p>"
-                + "<a href=" + privateURI + ":" + privatePort + ">"
+                + "<a href=\"" + privateURI + ":" + privatePort + "\">"
                 + "</a></body></html>"
                 );
         String controlBody =
                 "<html> <body>"
                 + "<p> This is a test case: </p>"
-                + "<a href=" + publicURI + ">"
+                + "<a href=\"" + publicURI + "\">"
                 + "</a></body></html>";
-        EPICTextResponse testResponse = (EPICTextResponse)has.hackAndSlashOut(response); 
+        EPICTextResponse testResponse = has.hackAndSlashOut(textResponse); 
         assertEquals(controlBody, testResponse.getBody());
     }
 
@@ -104,9 +104,10 @@ public class HackAndSlashTest {
     @Test
     public void testGetMaskedUrl_ownUrl() {
         // Under processing
-        String ownUrl = "http://" + publicURI + "/test/testing.html";
-        String testUrl = has.getMaskedUrl(ownUrl);
-        assertEquals(ownUrl, testUrl);
+        String expectedUrl = publicURI + "/test/testing.html";
+        String testUrl = privateURI + ":" + privatePort + "/test/testing.html"; 
+        String resultUrl = has.getMaskedUrl(expectedUrl);
+        assertEquals(expectedUrl, resultUrl);
     }
     
     /**
