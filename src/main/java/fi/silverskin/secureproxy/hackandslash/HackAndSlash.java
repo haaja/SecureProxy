@@ -64,6 +64,7 @@ public class HackAndSlash {
         String oldResponse = response.getBody(), newResponse = "";
         for (int i = 0; i < tagsAndAttributes.length; i++) {
             newResponse = "";
+            // Find all strings beginning with '<', containing a tag keyword and ending with '>'
             Pattern tagPattern = Pattern.compile("<(\\s)*" + tagsAndAttributes[i][0] + "[^>]*>");
             Matcher tagMatcher = tagPattern.matcher(oldResponse);
             int index = 0;
@@ -73,6 +74,7 @@ public class HackAndSlash {
                 }
                 index = tagMatcher.end();
                 String tag = tagMatcher.group();
+                // Find attributes, that may contain a URL, and convert URLs if needed
                 for (int j = 1; j < tagsAndAttributes[i].length; j++) {
                     tag = convertUrlInTag(tag, tagsAndAttributes[i][j]);
                 }
@@ -161,6 +163,7 @@ public class HackAndSlash {
     public String convertUrlInTag(String tag, String attributeName) {
 
         // what about if quotation marks missing
+        // Extract given attribute and its value(s) from tag
         Pattern sourcePattern = Pattern.compile(attributeName + "(\\s)*=(\\s)*\"[^\"]*\"");
         Matcher sourceMatcher = sourcePattern.matcher(tag.toLowerCase());
 
@@ -168,14 +171,17 @@ public class HackAndSlash {
             int attributeStart = sourceMatcher.start();
             int attributeEnd = sourceMatcher.end();
             String temp = tag.substring(attributeStart, attributeEnd);
+            // Extract attribute value(s) including quotation marks
             Pattern urlPattern = Pattern.compile("\"[^\"]+\"");
             Matcher urlMatcher = urlPattern.matcher(temp);
 
             if ((urlMatcher.find())) {
                 String url = urlMatcher.group();
+                // Cut off quotation marks
                 url = url.substring(1, url.length() - 1);
                 if (!url.equals("")) {
                     String newUrl = "";
+                    // attribute archive may contain several values separated by spaces
                     if (attributeName.equals("archive")) {
                         String[] urls = url.split(" ");
                         for (String s : urls) {
