@@ -41,10 +41,14 @@ public class ProxyConfigurer {
      * Get configure by the parameter's name
      *
      * @param key configure the parameter's name
-     * @return value of key (only one)
+     * @return values of the key in String array
      */
-    public String getConfigure(String key) {
-        return configures.getProperty(key);
+    public String[] getConfigure(String key) {
+        String config = configures.getProperty(key);
+        if (config == null) 
+            return null;
+        else
+            return config.split(", ");
     }
     
 }

@@ -40,9 +40,23 @@ public class ProxyConfigurerTest {
      */
     @Test
     public void testGetConfigure() {
+        // tests the normal case
         String testKey = "publicURI";
         String control = "http://palomuuri.users.cs.helsinki.fi";
-        String result = configures.getConfigure(testKey);
-        assertEquals(control, result);
+        String[] result = configures.getConfigure(testKey);
+        assertEquals(control, result[0]);
+        
+        // tests if key is wrong or cannot find
+        String nullTest = "boo";
+        String[] nullResult = configures.getConfigure(nullTest);
+        assertNull(nullResult);
+        
+        // test the case of three parameters
+        String threeTest = "tester";
+        String[] threeControl = {"test1", "test2", "test3"};
+        String[] threeResult = configures.getConfigure(threeTest);
+        assertEquals(threeControl[0], threeResult[0]);
+        assertEquals(threeControl[1], threeResult[1]);
+        assertEquals(threeControl[2], threeResult[2]);
     }
 }

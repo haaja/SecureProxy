@@ -109,7 +109,7 @@ public class HackAndSlash {
      */
     public String getMaskedUrl(String url) {
 
-        System.out.println("getMaskedUrl's param: " + url);
+        //System.out.println("getMaskedUrl's param: " + url);
         URI parsedUri = null;
         String maskedUri = null;
 
@@ -120,7 +120,7 @@ public class HackAndSlash {
         }
 
         if (!isProtectedUrl(parsedUri)) {
-            System.out.println("Wasn't protected.");
+            //System.out.println("Wasn't protected.");
             return url;
         }
 
@@ -131,7 +131,7 @@ public class HackAndSlash {
         }
 
         LOGGER.log(Level.INFO, "Returning masked url: {0}", maskedUri);
-        System.out.println("ready Masked url: " + maskedUri);
+        //System.out.println("ready Masked url: " + maskedUri);
         return maskedUri;
     }
 
@@ -143,8 +143,8 @@ public class HackAndSlash {
      */
     private boolean isProtectedUrl(URI url) {
         String hostname = url.getHost();
-        System.out.println("Hostname: " + hostname);
-        System.out.println("privateURI hostname: " + privateURI.getHost());
+        //System.out.println("Hostname: " + hostname);
+        //System.out.println("privateURI hostname: " + privateURI.getHost());
 
         if (hostname.equals(privateURI.getHost())) {
             return true;
@@ -162,7 +162,7 @@ public class HackAndSlash {
      */
     public String convertUrlInTag(String tag, String attributeName) {
 
-        // what about if quotation marks missing
+        // what about if quotation marks are missing
         // Extract given attribute and its value(s) from tag
         Pattern sourcePattern = Pattern.compile(attributeName + "(\\s)*=(\\s)*\"[^\"]*\"");
         Matcher sourceMatcher = sourcePattern.matcher(tag.toLowerCase());
