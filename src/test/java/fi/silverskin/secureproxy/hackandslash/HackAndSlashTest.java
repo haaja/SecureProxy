@@ -6,6 +6,7 @@ package fi.silverskin.secureproxy.hackandslash;
 
 import fi.silverskin.secureproxy.EPICRequest;
 import fi.silverskin.secureproxy.EPICTextResponse;
+import fi.silverskin.secureproxy.ProxyConfigurer;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.HashMap;
@@ -23,15 +24,23 @@ public class HackAndSlashTest {
     private EPICRequest request;
     private EPICTextResponse textResponse;
 
+    // Tests will fail if privateURI and publicURI don't start http://
+    // please check the file properties.config
+    private String privateURI;
+    private String privatePort;
+    private String publicURI;
+    
+    //private String privateURI = "http://128.214.9.12";
+    //private String privatePort = "80";
+    //private String publicURI = "http://palomuuri.users.cs.helsinki.fi";
+    
     private HackAndSlashConfig conf;
-
-    // From the class. Replace if modified.    private EPICRequest request;
-    //private String privateURI = "tkt_palo.users.cs.helsinki.fi";
-    private String privateURI = "http://128.214.9.12";
-    private String privatePort = "80";
-    private String publicURI = "http://palomuuri.users.cs.helsinki.fi";
     
     public HackAndSlashTest() throws URISyntaxException {
+        ProxyConfigurer configurer = new ProxyConfigurer();
+        privateURI = configurer.getConfigure("privateURI")[0];
+        privatePort = configurer.getConfigure("privatePort")[0];
+        publicURI = configurer.getConfigure("publicURI")[0];
         conf = new HackAndSlashConfig(privateURI, privatePort, publicURI);
     }
 
