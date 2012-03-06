@@ -5,7 +5,9 @@ import java.util.Map;
 
 public class HeaderCleaner {
 
-    public static final String protectedHost = "tkt_palo.users.cs.helsinki.fi";
+    private static ProxyConfigurer configurer = new ProxyConfigurer();
+    public static final String protectedHost = configurer.getConfigure("protectedHost")[0];
+    //public static final String protectedHost = "tkt_palo.users.cs.helsinki.fi";
 
     public static EPICRequest cleanHeaders(EPICRequest request) {
         HashMap<String, String> cleanedHeaders = new HashMap<String, String>();

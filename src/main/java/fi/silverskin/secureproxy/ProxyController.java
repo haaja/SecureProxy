@@ -11,19 +11,11 @@ import java.util.logging.Logger;
 public class ProxyController {
     private ResourceFetcher fetcher;
     private HackAndSlash hackAndSlash;
-    private ProxyConfigurer configurer;
     private static final Logger LOGGER = Logger.getLogger(ProxyController.class.getName(), null);
  
     public ProxyController() throws URISyntaxException {
         fetcher = new ResourceFetcher();
-        configurer = new ProxyConfigurer();
-        
-        // Takes only one valye (first) from properties.configure
-        String privateURI = configurer.getConfigure("privateURI")[0];
-        String privatePort = configurer.getConfigure("privatePort")[0];
-        String publicURI = configurer.getConfigure("publicURI")[0];
-
-        HackAndSlashConfig conf = new HackAndSlashConfig(privateURI, privatePort, publicURI);
+        HackAndSlashConfig conf = new HackAndSlashConfig();
         hackAndSlash = new HackAndSlash(conf);
     }
 
