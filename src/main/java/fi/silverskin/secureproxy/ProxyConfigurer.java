@@ -15,7 +15,7 @@ import java.util.logging.Logger;
  */
 public class ProxyConfigurer {
 
-    private final String FILE = "config.properties";
+    private final String FILE = "/home/peltoel/config.properties";
     private Properties configures;
     private static final Logger LOGGER = Logger.getLogger(ProxyConfigurer.class.getName(), null);
     
@@ -24,17 +24,29 @@ public class ProxyConfigurer {
         InputStream input = null;
         try {
             input = getClass().getClassLoader().getResourceAsStream(FILE);
+            if (input == null) {
+                throw new RuntimeException("Config file didn't exists!");
+            }
             configures.load(input);
             input.close();
         } catch (IOException ex) {
             LOGGER.log(Level.SEVERE, null, ex);
-        } finally {
-            try {
-                input.close();
-            } catch (IOException ex) {
-                LOGGER.log(Level.SEVERE, null, ex);
-            }
         }
+    }
+    
+    public ProxyConfigurer(String path) {
+        configures = new Properties();
+        InputStream input = null;
+        try {
+            input = getClass().getClassLoader().getResourceAsStream(path);
+            if (input == null) {
+                throw new RuntimeException("Config file didn't exists!");
+            }
+            configures.load(input);
+            input.close();
+        } catch (IOException ex) {
+            LOGGER.log(Level.SEVERE, null, ex);
+        } 
     }
 
     /**

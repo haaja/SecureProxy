@@ -28,7 +28,8 @@ public class ProxyConfigurerTest {
     
     @Before
     public void setUp() {
-        configures = new ProxyConfigurer();
+        configures = new ProxyConfigurer("config.properties");
+        //configures = new ProxyConfigurer();
     }
     
     @After
