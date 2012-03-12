@@ -41,9 +41,11 @@ public abstract class EPICAbstraction {
      * @return A string representation of the URI.
      */
     public String getUri() {
+        LOGGER.entering(EPICAbstraction.class.getName(), "getUri");
         if (uri == null) {
             return "";
         }
+        LOGGER.exiting(EPICAbstraction.class.getName(), "getUri", uri.toString());
         return uri.toString();
     }
 
@@ -53,11 +55,13 @@ public abstract class EPICAbstraction {
      * @param uri A string representation of the URI.
      */
     public void setUri(String uri) {
+        LOGGER.entering(EPICAbstraction.class.getName(), "setUri", uri);
         try {
             this.uri = new URI(uri);
         } catch (URISyntaxException ex) {
             //TODO: proper error handling
             LOGGER.log(Level.SEVERE, null, ex);
         }
+        LOGGER.exiting(EPICAbstraction.class.getName(), "setUri");
     }
 }

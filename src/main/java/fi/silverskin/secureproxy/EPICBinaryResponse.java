@@ -70,9 +70,10 @@ public class EPICBinaryResponse extends EPICResponse {
     
     
     private byte[] fromInputStream(InputStream in) {
-        try {
-            ByteArrayOutputStream buff = new ByteArrayOutputStream();
-            
+        LOGGER.entering(EPICBinaryResponse.class.getName(), "fromInputStream", in);
+        ByteArrayOutputStream buff = new ByteArrayOutputStream();
+        
+        try {            
             byte[] b = new byte[0x1000];
             int read = in.read(b);
             while(read > -1) {
@@ -82,10 +83,13 @@ public class EPICBinaryResponse extends EPICResponse {
             
             buff.flush();
             in.close();
-            return buff.toByteArray();
         } catch (IOException ex) {
             LOGGER.log(Level.SEVERE, null, ex);
             return new byte[0];
         }
+
+        LOGGER.exiting(EPICBinaryResponse.class.getName(), "fromInputStream", in);
+
+        return buff.toByteArray();
     }
 }

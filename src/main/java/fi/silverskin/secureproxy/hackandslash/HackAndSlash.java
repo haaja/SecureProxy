@@ -1,7 +1,6 @@
 package fi.silverskin.secureproxy.hackandslash;
 
 import fi.silverskin.secureproxy.EPICRequest;
-import fi.silverskin.secureproxy.EPICResponse;
 import fi.silverskin.secureproxy.EPICTextResponse;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -42,6 +41,7 @@ public class HackAndSlash {
      * @return HTTP request containing the real URI of the service.
      */
     public EPICRequest hackAndSlashIn(EPICRequest request) {
+        LOGGER.entering(HackAndSlash.class.getName(), "hackAndSlashIn", request);
         try {
             URI uri = new URI(request.getUri());
             request.setUri(privateURI + ":" + privatePort + uri.getPath());
@@ -50,6 +50,9 @@ public class HackAndSlash {
         } catch (URISyntaxException ex) {
             LOGGER.log(Level.SEVERE, null, ex);
         }
+
+        LOGGER.exiting(HackAndSlash.class.getName(), "hackAndSlashIn", request);
+
         return request;
     }
 
@@ -60,7 +63,7 @@ public class HackAndSlash {
      * @return Modified HTTP response.
      */
     public EPICTextResponse hackAndSlashOut(EPICTextResponse response) {
-
+        LOGGER.entering(HackAndSlash.class.getName(), "hackAndSlashOut", response);
         String oldResponse = response.getBody(), newResponse = "";
         for (int i = 0; i < tagsAndAttributes.length; i++) {
             newResponse = "";
@@ -96,6 +99,7 @@ public class HackAndSlash {
         headers.put("Content-Length", Integer.toString(response.getBody().getBytes().length));
         response.setHeaders(headers);
 
+        LOGGER.exiting(HackAndSlash.class.getName(), "hackAndSlashOut", response);
         return response;
     }
 
@@ -108,8 +112,7 @@ public class HackAndSlash {
      * @return Masked URI
      */
     public String getMaskedUrl(String url) {
-
-        System.out.println("getMaskedUrl's param: " + url);
+        LOGGER.entering(HackAndSlash.class.getName(), "getMaskedUrl", url);
         URI parsedUri = null;
         String maskedUri = null;
 
@@ -131,7 +134,7 @@ public class HackAndSlash {
         }
 
         LOGGER.log(Level.INFO, "Returning masked url: {0}", maskedUri);
-        System.out.println("ready Masked url: " + maskedUri);
+        LOGGER.exiting(HackAndSlash.class.getName(), "getMaskedUrl", maskedUri);
         return maskedUri;
     }
 
@@ -142,13 +145,16 @@ public class HackAndSlash {
      * @return
      */
     private boolean isProtectedUrl(URI url) {
+        LOGGER.entering(HackAndSlash.class.getName(), "isProtectedUrl", url);
         String hostname = url.getHost();
         System.out.println("Hostname: " + hostname);
         System.out.println("privateURI hostname: " + privateURI.getHost());
 
         if (hostname.equals(privateURI.getHost())) {
+            LOGGER.exiting(HackAndSlash.class.getName(), "isProtectedUrl", true);
             return true;
         } else {
+            LOGGER.exiting(HackAndSlash.class.getName(), "isProtectedUrl", false);
             return false;
         }
     }
@@ -161,7 +167,7 @@ public class HackAndSlash {
      * @return HTML tag with masked URI
      */
     public String convertUrlInTag(String tag, String attributeName) {
-
+        LOGGER.entering(HackAndSlash.class.getName(), "convertUrlInTag", new Object[] {tag, attributeName});
         // what about if quotation marks missing
         // Extract given attribute and its value(s) from tag
         Pattern sourcePattern = Pattern.compile(attributeName + "(\\s)*=(\\s)*\"[^\"]*\"");
@@ -191,11 +197,16 @@ public class HackAndSlash {
                     } else {
                         newUrl = getMaskedUrl(url);
                     }
-                    return tag.substring(0, attributeStart + urlMatcher.start() + 1)
+                    
+                    String convertedTag = tag.substring(0, attributeStart + urlMatcher.start() + 1)
                             + newUrl + tag.substring(attributeEnd - 1);
+                    LOGGER.exiting(HackAndSlash.class.getName(), "convertUrlInTag", convertedTag);
+                    
+                    return convertedTag;
                 }
             }
         }
+        LOGGER.exiting(HackAndSlash.class.getName(), "convertUrlInTag", tag);
         return tag;
     }
 }

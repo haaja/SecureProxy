@@ -27,6 +27,7 @@ public class ProxyController {
      * @return Modified HTTP response.
      */
     public EPICResponse handleRequest(EPICRequest request) {
+        LOGGER.entering(ProxyController.class.getName(), "handleRequest", request);
         request = hackAndSlash.hackAndSlashIn(request);
         request = HeaderCleaner.cleanHeaders(request);
        
@@ -40,6 +41,8 @@ public class ProxyController {
             LOGGER.log(Level.INFO, response.toString());
         }
 
+        LOGGER.exiting(ProxyController.class.getName(), "handleRequest", response);
+        
         return response;
     }
 }

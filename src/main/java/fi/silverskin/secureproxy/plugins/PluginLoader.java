@@ -32,19 +32,23 @@ public class PluginLoader {
      */
     public static URL[] getPluginURLs(Properties pluginConfig)
             throws MalformedURLException {
+        LOGGER.entering(PluginLoader.class.getName(), "getPluginURLs", pluginConfig);
         File pluginDir = getPluginDirFile(pluginConfig);
         File[] allPlugins = pluginDir.listFiles(new JarFilter());
+        URL[] pluginURLs;
 
         if (allPlugins != null) {
             ArrayList<URL> urlList = new ArrayList<URL>();
             for (File f : allPlugins) {
                 urlList.add(f.toURI().toURL());
             }
-            return urlList.toArray(new URL[urlList.size()]);
+            pluginURLs = urlList.toArray(new URL[urlList.size()]);
         } else {
-            LOGGER.log(Level.SEVERE, "Properties given to getPluginURLs was NULL!");
-            return new URL[0];
+            pluginURLs = new URL[0];
         }
+        LOGGER.exiting(PluginLoader.class.getName(), "getPluginURLs", pluginURLs);
+
+        return pluginURLs;
     }
 
     /**
@@ -54,6 +58,7 @@ public class PluginLoader {
      * @return true if file can be used to try load
      */
     public static boolean validateConfig(Properties pluginConfig) {
+        LOGGER.entering(PluginLoader.class.getName(), "validateConfig", pluginConfig);
         boolean isValid = true;
 
         if (pluginConfig == null) {
@@ -70,6 +75,7 @@ public class PluginLoader {
             isValid = false;
         }
 
+        LOGGER.exiting(PluginLoader.class.getName(), "validateConfig", isValid);
         return isValid;
     }
 
@@ -81,6 +87,7 @@ public class PluginLoader {
      * @return List of plugin names, in loading order.
      */
     public static String[] getPluginNames(Properties pluginConfig) {
+        LOGGER.entering(PluginLoader.class.getName(), "getPluginNames", pluginConfig);
         if (pluginConfig == null) {
             LOGGER.log(Level.SEVERE, "Properties given to getPluginNames was NULL!");
             return new String[0];
@@ -88,10 +95,13 @@ public class PluginLoader {
         
         String names = pluginConfig.getProperty("load_order");
         String tmp[] = names.split(", ");
+
+        LOGGER.exiting(PluginLoader.class.getName(), "getPluginNames", tmp);
         return tmp;
     }
 
     public static File getPluginDirFile(Properties pluginConfig) {
+        LOGGER.entering(PluginLoader.class.getName(), "getPluginDirFile", pluginConfig);
         if (pluginConfig == null) {
             LOGGER.log(Level.SEVERE, "Properties given to getPluginDir was NULL!");
             return null;
@@ -99,6 +109,8 @@ public class PluginLoader {
 
         File retval = new File(pluginConfig.getProperty("plugin_dir"));
         LOGGER.log(Level.INFO, "Loaded {0} as plugin directory.", retval.getAbsolutePath());
+
+        LOGGER.entering(PluginLoader.class.getName(), "getPluginDirFile", retval);
         return retval;
     }
 }
@@ -109,11 +121,14 @@ class JarFilter implements FileFilter {
 
     @Override
     public boolean accept(File file) {
+        LOGGER.entering(PluginLoader.class.getName(), "accept", file);
         System.err.println("Checking file '" + file.getAbsolutePath() + "' is plugin.");
         if (file.isFile() && file.getAbsolutePath().endsWith(".jar")) {
             LOGGER.log(Level.INFO, "Dtermied that {0} is plugin.", file.getAbsolutePath());
+            LOGGER.exiting(PluginLoader.class.getName(), "accept", true);
             return true;
         } else {
+            LOGGER.exiting(PluginLoader.class.getName(), "accept", false);
             return false;
         }
     }
