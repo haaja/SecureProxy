@@ -21,19 +21,23 @@ public class FetcherUtilities {
     private static final Logger LOGGER = Logger.getLogger(FetcherUtilities.class.getName(), null);
   
     public static boolean contentIsText(HttpResponse response) {
+        LOGGER.entering(FetcherUtilities.class.getName(), "contextIsText", response);
         Header contentType = response.getFirstHeader("content-type");
 
         Header[] contenttypes = response.getHeaders("Content-Type");
         LOGGER.log(Level.INFO, "Content-Type: {0}", (contenttypes == null ? null : contenttypes.length));
 
         if (contentType == null || contentType.getValue().matches("text/.*")) {
+            LOGGER.exiting(FetcherUtilities.class.getName(), "contextIsText", true);
             return true;
         }
-        
+
+        LOGGER.exiting(FetcherUtilities.class.getName(), "contextIsText", false);
         return false;
     }
 
     public static EPICTextResponse toEPICText(HttpResponse response) {
+        LOGGER.entering(FetcherUtilities.class.getName(), "toEPICText", response);
         EPICTextResponse e = new EPICTextResponse();
         try {
             //        e.setBody(getBody(response.getEntity()));
@@ -43,12 +47,14 @@ public class FetcherUtilities {
         } catch (IOException ex) {
             Logger.getLogger(FetcherUtilities.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
+
+        LOGGER.entering(FetcherUtilities.class.getName(), "toEPICText", e);
         return e;
     }
 
     
     public static EPICBinaryResponse toEPICBinary(HttpResponse response) {
+        LOGGER.entering(FetcherUtilities.class.getName(), "toEPICBinary", response);
         EPICBinaryResponse e = new EPICBinaryResponse();
 
         try {
@@ -60,11 +66,13 @@ public class FetcherUtilities {
         } catch (IllegalStateException ex) {
             LOGGER.log(Level.SEVERE, null, ex);
         }
-        
+
+        LOGGER.exiting(FetcherUtilities.class.getName(), "toEPICBinary", e);
         return e;
     }
 
     public static String getBody(HttpEntity e) {
+        LOGGER.entering(FetcherUtilities.class.getName(), "getBody", e);
         StringBuilder sb = null;
         try {
             Reader reader = new BufferedReader(new InputStreamReader(e.getContent()));
@@ -85,23 +93,28 @@ public class FetcherUtilities {
             LOGGER.log(Level.SEVERE, null, ex);
         }
 
+        LOGGER.exiting(FetcherUtilities.class.getName(), "getBody", sb.toString());
         return sb.toString();
     }
 
     public static HashMap<String, String> getHeaders(HttpResponse e) {
+        LOGGER.entering(FetcherUtilities.class.getName(), "getHeaders", e);
         Header[] headers = e.getAllHeaders();
         HashMap<String, String> map = new HashMap<String, String>();
         for (Header header : headers) {
             map.put(header.getName(), header.getValue());
         }
 
+        LOGGER.exiting(FetcherUtilities.class.getName(), "getHeaders", map);
         return map;
     }
 
     public static void copyHeaders(EPICRequest epic, HttpRequest req) {
+        LOGGER.entering(FetcherUtilities.class.getName(), "copyHeaders", new Object[] {epic, req});
         for (Map.Entry<String, String> k : epic.getHeaders().entrySet()) {
             req.addHeader(k.getKey(), k.getValue());
         }
+        LOGGER.exiting(FetcherUtilities.class.getName(), "copyHeaders");
     }
 
     /**
@@ -112,10 +125,12 @@ public class FetcherUtilities {
      * @param req HttpPost or HttpPut to modify
      */
     public static void copyBody(EPICRequest epic, HttpEntityEnclosingRequestBase req) {
+        LOGGER.entering(FetcherUtilities.class.getName(), "copyBody", new Object[] {epic, req});
         try {
             req.setEntity(new StringEntity(epic.getBody()));
         } catch (UnsupportedEncodingException ex) {
             LOGGER.log(Level.SEVERE, null, ex);
         }
+        LOGGER.exiting(FetcherUtilities.class.getName(), "copyBody");
     }
 }

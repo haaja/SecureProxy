@@ -29,10 +29,12 @@ public class EPICTomcat {
      * @param response HTTP response coming from servlet.
      */
     public void handleRequest(HttpServletRequest request, HttpServletResponse response) {
+        LOGGER.entering(EPICTomcat.class.getName(), "handleRequest", new Object[] {request, response});
         EPICRequest convertedRequest = convertToEPICRequest(request);
         EPICResponse epic = proxy.handleRequest(convertedRequest);
 
         fillResponse(response, epic);
+        LOGGER.exiting(EPICTomcat.class.getName(), "handleRequest");
     }
 
     /**
@@ -42,8 +44,7 @@ public class EPICTomcat {
      * @param epic Internal response used by SecureProxy.
      */
     private void fillResponse(HttpServletResponse response, EPICResponse epic) {
-
-        LOGGER.log(Level.INFO, "Headers before");
+        LOGGER.entering(EPICTomcat.class.getName(), "fillResponse", new Object[] {response, epic});
 
         try {
             //response.reset();
@@ -61,7 +62,8 @@ public class EPICTomcat {
         } else {
             fillBinary(response, (EPICBinaryResponse) epic);
         }
-        
+
+        LOGGER.exiting(EPICTomcat.class.getName(), "fillResponse");
     }
 
     /**
@@ -71,6 +73,8 @@ public class EPICTomcat {
      * @param epic Internal response used by SecureProxy.
      */
     private void fillText(HttpServletResponse response, EPICTextResponse epic) {
+        LOGGER.entering(EPICTomcat.class.getName(), "fillText", new Object[] {response, epic});
+        
         try {
             PrintWriter out = response.getWriter();
             out.print(epic.getBody());
@@ -80,6 +84,7 @@ public class EPICTomcat {
             LOGGER.log(Level.SEVERE, null, ex);
         }
 
+        LOGGER.entering(EPICTomcat.class.getName(), "fillText");
     }
 
     /**
@@ -89,6 +94,8 @@ public class EPICTomcat {
      * @param epic Internal response used by SecureProxy.
      */
     private void fillBinary(HttpServletResponse response, EPICBinaryResponse epic) {
+        LOGGER.entering(EPICTomcat.class.getName(), "fillBinary", new Object[] {response, epic});
+        
         try {
             ServletOutputStream out = response.getOutputStream();
             out.write(epic.getBody());
@@ -97,6 +104,8 @@ public class EPICTomcat {
         } catch (IOException ex) {
             LOGGER.log(Level.SEVERE, null, ex);
         }
+
+        LOGGER.entering(EPICTomcat.class.getName(), "fillBinary");
     }
 
     /**
@@ -106,6 +115,7 @@ public class EPICTomcat {
      * @return HTTP request converted to internal EPICRequest.
      */
     private EPICRequest convertToEPICRequest(HttpServletRequest request) {
+        LOGGER.entering(EPICTomcat.class.getName(), "convertToEPICRequest", request);
         HashMap<String, String> headers = new HashMap();
         String body = new String();
         
@@ -143,7 +153,9 @@ public class EPICTomcat {
             e.setUri(request.getRequestURL() + "?" + request.getQueryString());
         } else {
             e.setUri(request.getRequestURI());
-        }        
+        }
+
+        LOGGER.exiting(EPICTomcat.class.getName(), "convertToEPICRequest", e);
         return e;
     }
 }

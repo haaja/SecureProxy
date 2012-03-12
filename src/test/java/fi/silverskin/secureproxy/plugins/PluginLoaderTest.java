@@ -1,17 +1,22 @@
 package fi.silverskin.secureproxy.plugins;
 
-
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Properties;
 import static org.junit.Assert.*;
 import org.junit.*;
 
-
 public class PluginLoaderTest {
 
-    public PluginLoaderTest() {
+    private Properties config;
+
+    public PluginLoaderTest() throws IOException {
+        InputStream in = getClass().getClassLoader().getResourceAsStream("plugin_loader_test.properties");
+        this.config = new Properties();
+        this.config.load(in);
     }
 
     @BeforeClass
@@ -37,48 +42,36 @@ public class PluginLoaderTest {
 
     @Test
     public void testValidateConfig() throws IOException {
-        InputStream in = null;
+        boolean result = PluginLoader.validateConfig(config);
+        assertEquals(true, result);
 
-        try {
-            in = getClass().getClassLoader().getResourceAsStream("plugin_loader_test.properties");
-            Properties pluginConfig = new Properties();
-            pluginConfig.load(in);
-            boolean result = PluginLoader.validateConfig(pluginConfig);
-            assertEquals(true, result);
-        } finally {
-            in.close();
-        }
+        result = PluginLoader.validateConfig(null);
+        assertEquals(false, result);
     }
 
     @Test
     public void testGetPluginNames() throws IOException {
-        InputStream in = null;
+        String[] expResult = {"first", "second", "third"};
+        String[] result = PluginLoader.getPluginNames(config);
+        assertEquals(expResult, result);
 
-        try {
-            in = getClass().getClassLoader().getResourceAsStream("plugin_loader_test.properties");
-            Properties pluginConfig = new Properties();
-            pluginConfig.load(in);
-            String[] expResult = {"first", "second", "third"};
-            String[] result = PluginLoader.getPluginNames(pluginConfig);
-            assertEquals(expResult, result);
-        } finally {
-            in.close();
-        }
+        result = PluginLoader.getPluginNames(null);
+        assertEquals(0, result.length);
     }
 
     @Test
     public void testGetPluginDir() throws IOException {
-        InputStream in = null;
+        File result = PluginLoader.getPluginDirFile(config);
+        File actual = new File("src/test/resources/plugin_test_dir/");
+        assertEquals(actual.getAbsolutePath(), result.getAbsolutePath());
 
-        try {
-            in = getClass().getClassLoader().getResourceAsStream("plugin_loader_test.properties");
-            Properties pluginConfig = new Properties();
-            pluginConfig.load(in);
-            File result = PluginLoader.getPluginDirFile(pluginConfig);
-            File actual = new File("plugin_test_dir/");
-            assertEquals(actual.getAbsolutePath(), result.getAbsolutePath());
-        } finally {
-            in.close();
-        }
+        result = PluginLoader.getPluginDirFile(null);
+        assertEquals(null, result);
+    }
+
+    @Test
+    public void testGetPluginURLs() throws MalformedURLException {
+        URL[] urls = PluginLoader.getPluginURLs(config);
+        assertEquals(3, urls.length);  // there should be 3 jars
     }
 }

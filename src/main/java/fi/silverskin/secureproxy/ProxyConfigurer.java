@@ -15,7 +15,7 @@ import java.util.logging.Logger;
  */
 public class ProxyConfigurer {
 
-    private final String FILE = "/home/peltoel/config.properties";
+    private final String FILE = "config.properties";
     private Properties configures;
     private static final Logger LOGGER = Logger.getLogger(ProxyConfigurer.class.getName(), null);
     
