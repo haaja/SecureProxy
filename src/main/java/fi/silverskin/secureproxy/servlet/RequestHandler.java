@@ -24,12 +24,7 @@ public class RequestHandler extends HttpServlet {
         tomcatHandler = new EPICTomcat();
 
         //initialize logger settings for SecureProxy
-        try {
-            ProxyLogger.setup();
-        } catch (IOException ex) {
-            ex.printStackTrace();
-            throw new RuntimeException("Problems creating the log files.");
-        }
+        ProxyLogger.setup();
     }
 
     /**
