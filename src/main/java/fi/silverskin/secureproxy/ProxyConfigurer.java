@@ -59,5 +59,13 @@ public class ProxyConfigurer {
         else
             return config.split(", ");
     }
-    
+
+
+    /**
+     * Getter for read configuration properties
+     * @return Properties of the read configuration file.
+     */
+    public Properties getConfigurationProperties() {
+        return configures;
+    }
 }

@@ -8,26 +8,29 @@ import java.util.logging.Logger;
 
 public class ProxyLogger {
 
-/*   Hard coded config file untill we know where to put the path to the config
- *   file.
- *
- *   private static ProxyConfigurer configurer = new ProxyConfigurer();
- *   private static final String LOGFILE = configurer.
- *                                         getConfigure("loggingConfigFile")[0];
- */
-    private static final String LOGFILE = "logging.properties";
-    private static Logger LOGGER = Logger.getLogger(ProxyLogger.class.getName());
+    private static final String LOGFILEPATH = "logging.properties";
+    private static final Logger LOGGER = Logger.getLogger(ProxyLogger.class.getName());
+    private static ProxyConfigurer configurer;
 
     /**
      * Initializes logger.
      */
     public static void setup() {
-
-        initLogConfigFile();
+        LOGGER.entering(ProxyLogger.class.getName(), "setup");
 
         Properties systemProperties = System.getProperties();
-        systemProperties.setProperty("java.util.logging.config.file",
-                                     LOGFILE);
+        configurer = new ProxyConfigurer(LOGFILEPATH);
+        Properties loggingProperties = configurer.getConfigurationProperties();
+        if (validateConfig(loggingProperties)) {
+            systemProperties.setProperty("java.util.logging.config.file",
+                                         LOGFILEPATH);
+        }
+        else {
+            LOGGER.info("Configuration file was invalid. Generating new.");
+            initLogConfigFile();
+            systemProperties.setProperty("java.util.logging.config.file",
+                                         LOGFILEPATH);
+        }
 
         File logDirectory = new File("log");
         if (!logDirectory.exists()) {
@@ -39,7 +42,7 @@ public class ProxyLogger {
         } catch (IOException ex) {
             LOGGER.log(Level.SEVERE, "Unable to load configuration file", ex);
         }
-
+        LOGGER.exiting(ProxyLogger.class.getName(), "setup");
     }
 
     /**
@@ -47,7 +50,8 @@ public class ProxyLogger {
      * If configuration file already exists, method does nothing
      */
     private static void initLogConfigFile() {
-        File logConfigFile = new File(LOGFILE);
+        LOGGER.entering(ProxyLogger.class.getName(), "initLogConfigFile");
+        File logConfigFile = new File(LOGFILEPATH);
 
         if (!logConfigFile.exists()) {
             try {
@@ -87,5 +91,52 @@ public class ProxyLogger {
                 ex.printStackTrace();
             }
         }
+        LOGGER.exiting(ProxyLogger.class.getName(), "initLogConfigFile");
+    }
+
+    /**
+     * Validates that config has all needed keys.
+     *
+     * @param pluginConfig file to validate
+     * @return true if file has all the required keys, otherwise false
+     */
+    public static boolean validateConfig(Properties pluginConfig) {
+        LOGGER.entering(ProxyLogger.class.getName(), "validateConfig", pluginConfig);
+        boolean isValid = true;
+
+        if (pluginConfig == null) {
+            return false;
+        }
+
+        if (!pluginConfig.containsKey("handlers")) {
+            isValid = false;
+        }
+        if (!pluginConfig.containsKey(".level")) {
+            isValid = false;
+        }
+        if (!pluginConfig.containsKey("java.util.logging.ConsoleHandler.level")) {
+            isValid = false;
+        }
+        if (!pluginConfig.containsKey("java.util.logging.ConsoleHandler.formatter")) {
+            isValid = false;
+        }
+        if (!pluginConfig.containsKey("java.util.logging.FileHandler.level")) {
+            isValid = false;
+        }
+        if (!pluginConfig.containsKey("java.util.logging.FileHandler.pattern")) {
+            isValid = false;
+        }
+        if (!pluginConfig.containsKey("java.util.logging.FileHandler.limit")) {
+            isValid = false;
+        }
+        if (!pluginConfig.containsKey("java.util.logging.FileHandler.count")) {
+            isValid = false;
+        }
+        if (!pluginConfig.containsKey("java.util.logging.FileHandler.formatter")) {
+            isValid = false;
+        }
+
+        LOGGER.exiting(ProxyLogger.class.getName(), "validateConfig", isValid);
+        return isValid;
     }
 }
