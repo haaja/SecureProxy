@@ -21,7 +21,8 @@ public class ProxyConfigurer {
     public ProxyConfigurer() {
         configures = new Properties();
         FileInputStream input;
-        File basedir = new File(System.getProperty("catalina.base")); 
+        File basedir = new File(System.getProperty("catalina.base"));
+        LOGGER.log(Level.FINE, "Catalina base dir: {0}", System.getProperty("catalina.base"));
         File config = new File(basedir, "conf/.secureproxy/" + FILENAME);
         
         if (config == null) {
