@@ -37,7 +37,7 @@ public class HackAndSlashTest {
     private HackAndSlashConfig conf;
     
     public HackAndSlashTest() throws URISyntaxException {
-        ProxyConfigurer configurer = new ProxyConfigurer();
+        ProxyConfigurer configurer = new ProxyConfigurer("config.properties");
         privateURI = configurer.getConfigure("privateURI")[0];
         privatePort = configurer.getConfigure("privatePort")[0];
         publicURI = configurer.getConfigure("publicURI")[0];
