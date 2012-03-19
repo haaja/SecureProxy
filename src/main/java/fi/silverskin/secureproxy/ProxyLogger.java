@@ -8,9 +8,9 @@ import java.util.logging.Logger;
 
 public class ProxyLogger {
 
-    private static final String LOGFILEPATH = "logging.properties";
+    //this might be problematic as tomcat also uses logging.properties
+    private static final String CONFIGFILENAME = "logging.properties";
     private static final Logger LOGGER = Logger.getLogger(ProxyLogger.class.getName());
-    private static ProxyConfigurer configurer;
 
     /**
      * Initializes logger.
@@ -19,20 +19,19 @@ public class ProxyLogger {
         LOGGER.entering(ProxyLogger.class.getName(), "setup");
 
         Properties systemProperties = System.getProperties();
-        configurer = new ProxyConfigurer(LOGFILEPATH);
-        Properties loggingProperties = configurer.getConfigurationProperties();
+        Properties loggingProperties = readConfigFile();
         if (validateConfig(loggingProperties)) {
             systemProperties.setProperty("java.util.logging.config.file",
-                                         LOGFILEPATH);
+                                         CONFIGFILENAME);
         }
         else {
-            LOGGER.info("Configuration file was invalid. Generating new.");
+            LOGGER.info("Configuration file was invalid. Generating default configuration file.");
             initLogConfigFile();
             systemProperties.setProperty("java.util.logging.config.file",
-                                         LOGFILEPATH);
+                                         CONFIGFILENAME);
         }
 
-        File logDirectory = new File("log");
+        File logDirectory = new File(System.getProperty("catalina.base") + "logs");
         if (!logDirectory.exists()) {
             logDirectory.mkdir();
         }
@@ -46,21 +45,25 @@ public class ProxyLogger {
     }
 
     /**
-     * Initialized configuration file for logger with default values. 
+     * Initialized configuration file for logger with default values.
      * If configuration file already exists, method does nothing
      */
     private static void initLogConfigFile() {
         LOGGER.entering(ProxyLogger.class.getName(), "initLogConfigFile");
-        File logConfigFile = new File(LOGFILEPATH);
+        File loggerConfigFile = null;
+        
+        try {
+            String tomcatBase = System.getProperty("catalina.base");
+            File basedir = new File(tomcatBase);
+            loggerConfigFile = new File(basedir, "conf/.secureproxy/" + CONFIGFILENAME);
 
-        if (!logConfigFile.exists()) {
-            try {
-                Writer out = new BufferedWriter(new FileWriter(logConfigFile));
+            if (!loggerConfigFile.exists()) {
+                Writer out = new BufferedWriter(new FileWriter(loggerConfigFile));
                 Properties logConfig = new Properties();
 
                 //logging handlers
                 logConfig.setProperty("handlers",
-                                      "java.util.logging.FileHandler,"+
+                                      "java.util.logging.FileHandler," +
                                       "java.util.logging.ConsoleHandler");
 
                 //Common logging level
@@ -77,6 +80,8 @@ public class ProxyLogger {
                                       "INFO");
                 logConfig.setProperty("java.util.logging.FileHandler.pattern",
                                       "log/secureproxy.log");
+                logConfig.setProperty("java.util.logging.FileHandler.directory",
+                                      System.getProperty("catalina.base") + "logs");
                 logConfig.setProperty("java.util.logging.FileHandler.limit",
                                       "50000");
                 logConfig.setProperty("java.util.logging.FileHandler.count",
@@ -86,13 +91,48 @@ public class ProxyLogger {
 
                 logConfig.store(out, "Configuration file generated");
                 out.close();
-            } catch (IOException ex) {
-                LOGGER.severe("Unable to create config file with default values.");
-                ex.printStackTrace();
             }
+        } catch (NullPointerException ex) {
+            LOGGER.log(Level.SEVERE, "Unable to open config file.", ex);
+        } catch (IOException ex) {
+            LOGGER.log(Level.SEVERE,
+                       "Unable to create config file with default values.",
+                       ex);
+            ex.printStackTrace();
         }
         LOGGER.exiting(ProxyLogger.class.getName(), "initLogConfigFile");
     }
+
+    /**
+     * Reads configuration file of the logger
+     * @return parsed configuration properties
+     */
+    private static Properties readConfigFile() {
+        LOGGER.entering(ProxyLogger.class.getName(), "readConfigFile");
+
+        FileInputStream input;
+        File baseDir = new File(System.getProperty("catalina.base"));
+        File config = new File(baseDir,
+                               "conf/.secureproxy/" + CONFIGFILENAME);
+        Properties configuration = new Properties();
+        if (config == null) {
+            throw new RuntimeException("Config file didn't exists!");
+        }
+        try {
+            input = new FileInputStream(config);
+            configuration.load(input);
+            input.close();
+        } catch (IOException ex) {
+            LOGGER.log(Level.SEVERE, null, ex);
+        }
+
+        LOGGER.exiting(ProxyLogger.class.getName(),
+                       "readConfigFile",
+                       configuration);
+
+        return configuration;
+    }
+
 
     /**
      * Validates that config has all needed keys.
@@ -127,6 +167,9 @@ public class ProxyLogger {
             isValid = false;
         }
         if (!pluginConfig.containsKey("java.util.logging.FileHandler.limit")) {
+            isValid = false;
+        }
+        if (!pluginConfig.containsKey("java.util.logging.FileHandler.directory")) {
             isValid = false;
         }
         if (!pluginConfig.containsKey("java.util.logging.FileHandler.count")) {
