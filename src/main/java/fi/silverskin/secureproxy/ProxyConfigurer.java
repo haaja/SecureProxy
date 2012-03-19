@@ -22,11 +22,13 @@ public class ProxyConfigurer {
         configures = new Properties();
         FileInputStream input;
         File basedir = new File(System.getProperty("catalina.base"));
-        LOGGER.log(Level.FINE, "Catalina base dir: {0}", System.getProperty("catalina.base"));
+        
         File config = new File(basedir, "conf/.secureproxy/" + FILENAME);
         
         if (config == null) {
             // luo hakemisto asennusvaiheessa :P
+            LOGGER.log(Level.SEVERE, "Catalina base dir: {0}", System.getProperty("catalina.base"));
+            
             throw new RuntimeException("Config file didn't exists!");
         }
         try {
