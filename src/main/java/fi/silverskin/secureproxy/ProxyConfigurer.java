@@ -21,7 +21,7 @@ public class ProxyConfigurer {
     public ProxyConfigurer() {
         configures = new Properties();
         FileInputStream input = null;
-        File config = new File(System.getProperty("user.home"), ".secureproxy/" + FILENAME);
+        File config = new File(System.getProperty("catalina.base"), "conf/.secureproxy/" + FILENAME);
         if (config == null) {
             // luo hakemisto asennusvaiheessa :P
             throw new RuntimeException("Config file didn't exists!");
