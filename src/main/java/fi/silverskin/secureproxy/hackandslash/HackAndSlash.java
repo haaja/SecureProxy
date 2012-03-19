@@ -14,13 +14,16 @@ public class HackAndSlash {
 
     private final String[][] tagsAndAttributes = {
         {"a", "href"}, {"applet", "codebase", "archive"}, {"area", "href"},
+        {"audio", "src"},
         {"base", "href"}, {"blockquate", "cite"}, {"body", "background"},
-        {"del", "cite"}, {"form", "action"}, {"frame", "src", "longdesc"},
+        {"command", "icon"},
+        {"del", "cite"}, {"embed", "src"},{"form", "action"}, {"frame", "src", "longdesc"},
         {"head", "profile"}, {"iframe", "src", "longdesc"},
         {"img", "src", "longdesc", "usemap"}, {"input", "src"}, {"ins", "cite"},
         {"link", "href"},
         {"object", "data", "classid", "archive", "codebase", "usemap"},
-        {"q", "cite"}, {"script", "src"}
+        {"q", "cite"}, {"script", "src"}, {"source", "src"}, {"track", "src"}, 
+        {"video", "poster", "src"}
     };
     private static final Logger LOGGER = Logger.getLogger(HackAndSlash.class.getName(), null);
     //TODO: To be replaced with proper settings
