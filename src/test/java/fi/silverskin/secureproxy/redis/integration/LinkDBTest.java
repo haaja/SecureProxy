@@ -2,10 +2,11 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package fi.silverskin.secureproxy.redis;
+package fi.silverskin.secureproxy.redis.integration;
 
+import fi.silverskin.secureproxy.redis.LinkDB;
+import static org.junit.Assert.assertEquals;
 import org.junit.*;
-import static org.junit.Assert.*;
 
 /**
  *
