@@ -6,7 +6,7 @@ import java.util.logging.Logger;
 
 public class HeaderCleaner {
 
-    private static ProxyConfigurer configurer = new ProxyConfigurer();
+    private static ProxyConfigurer configurer = new ProxyConfigurer("config.properties");
     private static final String PROTECTEDHOST = configurer.getConfigure("protectedHost")[0];
     private static final Logger LOGGER = Logger.getLogger(HeaderCleaner.class.getName(), null);
     private static String[] headersToBePreserved = { "cookie" };
@@ -23,7 +23,7 @@ public class HeaderCleaner {
 
         for (int i=0; i<headersToBePreserved.length; i++) {
             cleanedHeaders.put(headersToBePreserved[i],
-                               originalHeaders.get(headersToBePreserved[i]));
+            originalHeaders.get(headersToBePreserved[i]));
         }
 
         cleanedHeaders.put("host", PROTECTEDHOST);
