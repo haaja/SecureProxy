@@ -29,7 +29,7 @@ public class ProxyConfigurer {
             // luo hakemisto asennusvaiheessa :P
             LOGGER.log(Level.SEVERE, "Catalina base dir: {0}", System.getProperty("catalina.base"));
             
-            throw new RuntimeException("Config file didn't exists!");
+            throw new RuntimeException("Config file didn't exists! " + System.getProperty("catalina.base"));
         }
         try {
             input = new FileInputStream(config);
