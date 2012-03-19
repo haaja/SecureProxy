@@ -1,5 +1,7 @@
 package fi.silverskin.secureproxy;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
@@ -12,18 +14,20 @@ import java.util.logging.Logger;
  */
 public class ProxyConfigurer {
 
-    private final String FILE = "config.properties";
+    private final String FILENAME = "config.properties";
     private Properties configures;
     private static final Logger LOGGER = Logger.getLogger(ProxyConfigurer.class.getName(), null);
     
     public ProxyConfigurer() {
         configures = new Properties();
-        InputStream input = null;
+        FileInputStream input = null;
+        File config = new File(System.getProperty("user.home"), ".secureproxy/" + FILENAME);
+        if (config == null) {
+            // luo hakemisto asennusvaiheessa :P
+            throw new RuntimeException("Config file didn't exists!");
+        }
         try {
-            input = getClass().getClassLoader().getResourceAsStream(FILE);
-            if (input == null) {
-                throw new RuntimeException("Config file didn't exists!");
-            }
+            input = new FileInputStream(config);
             configures.load(input);
             input.close();
         } catch (IOException ex) {
