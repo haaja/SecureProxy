@@ -63,6 +63,7 @@ public class EPICRequest extends EPICAbstraction {
      * @return Matching RequestType.
      */
     private RequestType matchType(String type) {
+        LOGGER.entering(EPICRequest.class.getName(), "matchType");
         if (type.equalsIgnoreCase("post"))
             return RequestType.POST;
         else if (type.equalsIgnoreCase("put"))
@@ -71,7 +72,7 @@ public class EPICRequest extends EPICAbstraction {
             return RequestType.GET;
         else if (type.equalsIgnoreCase("delete"))
             return RequestType.DELETE;
-        else if (type.equalsIgnoreCase("put"))
+        else if (type.equalsIgnoreCase("head"))
             return RequestType.HEAD;
         else
             LOGGER.log(Level.SEVERE, "Invalid request type: " +type);
