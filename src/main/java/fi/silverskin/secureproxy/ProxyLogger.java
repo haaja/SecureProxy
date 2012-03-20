@@ -31,7 +31,7 @@ public class ProxyLogger {
                                          CONFIGFILENAME);
         }
 
-        File logDirectory = new File(System.getProperty("catalina.base") + "logs");
+        File logDirectory = new File(System.getProperty("catalina.base") + "/logs");
         if (!logDirectory.exists()) {
             logDirectory.mkdir();
         }
@@ -53,9 +53,9 @@ public class ProxyLogger {
         File loggerConfigFile = null;
         
         try {
-            String tomcatBase = System.getProperty("catalina.base");
-            File basedir = new File(tomcatBase);
-            loggerConfigFile = new File(basedir, "conf/.secureproxy/" + CONFIGFILENAME);
+            String catalinaBase = System.getProperty("catalina.base");
+            File basedir = new File(catalinaBase);
+            loggerConfigFile = new File(basedir, "conf/secureproxy/" + CONFIGFILENAME);
 
             if (!loggerConfigFile.exists()) {
                 Writer out = new BufferedWriter(new FileWriter(loggerConfigFile));
@@ -79,9 +79,9 @@ public class ProxyLogger {
                 logConfig.setProperty("java.util.logging.FileHandler.level",
                                       "INFO");
                 logConfig.setProperty("java.util.logging.FileHandler.pattern",
-                                      "log/secureproxy.log");
+                                      "secureproxy%u.log");
                 logConfig.setProperty("java.util.logging.FileHandler.directory",
-                                      System.getProperty("catalina.base") + "logs");
+                                      System.getProperty("catalina.base") + "/logs");
                 logConfig.setProperty("java.util.logging.FileHandler.limit",
                                       "50000");
                 logConfig.setProperty("java.util.logging.FileHandler.count",
@@ -111,19 +111,34 @@ public class ProxyLogger {
         LOGGER.entering(ProxyLogger.class.getName(), "readConfigFile");
 
         FileInputStream input;
-        File baseDir = new File(System.getProperty("catalina.base"));
-        File config = new File(baseDir,
-                               "conf/.secureproxy/" + CONFIGFILENAME);
         Properties configuration = new Properties();
-        if (config == null) {
-            throw new RuntimeException("Config file didn't exists!");
-        }
+
         try {
-            input = new FileInputStream(config);
+            String basePath = System.getProperty("catalina.base");
+            File baseDir = new File(basePath);
+            File configFile = new File(baseDir, "conf/secureproxy/" + CONFIGFILENAME);
+            
+            if (!configFile.exists()) {
+                LOGGER.log(Level.SEVERE, "Config file does not exists.");
+                LOGGER.log(Level.SEVERE, "Catalina base dir: {0}", System.getProperty("catalina.base"));
+                throw new RuntimeException("Config file didn't exists! " + System.getProperty("catalina.base"));
+            }
+
+            input = new FileInputStream(configFile);
             configuration.load(input);
             input.close();
         } catch (IOException ex) {
-            LOGGER.log(Level.SEVERE, null, ex);
+            LOGGER.log(Level.SEVERE, "Received IOException", ex);
+            ex.printStackTrace();
+        } catch (SecurityException ex) {
+            LOGGER.log(Level.SEVERE, "Received SecurityException", ex);
+            ex.printStackTrace();
+        } catch (NullPointerException ex) {
+            LOGGER.log(Level.SEVERE, "Received Exception", ex);
+            ex.printStackTrace();
+        } catch (IllegalArgumentException ex) {
+            LOGGER.log(Level.SEVERE, "Received IllegalArgumentException", ex);
+            ex.printStackTrace();
         }
 
         LOGGER.exiting(ProxyLogger.class.getName(),
