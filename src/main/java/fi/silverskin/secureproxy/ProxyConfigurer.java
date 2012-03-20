@@ -14,37 +14,51 @@ import java.util.logging.Logger;
  */
 public class ProxyConfigurer {
 
-    private final String FILENAME = "config.properties";
+    private final String CONFIGFILENAME = "config.properties";
     private Properties configures;
     private static final Logger LOGGER = Logger.getLogger(ProxyConfigurer.class.getName(), null);
-    
+
     public ProxyConfigurer() {
         configures = new Properties();
         FileInputStream input;
-        File basedir = new File(System.getProperty("catalina.base"));
-        
-        File config = new File(basedir, "conf/.secureproxy/" + FILENAME);
-        
-        if (config == null) {
-            // luo hakemisto asennusvaiheessa :P
-            LOGGER.log(Level.SEVERE, "Catalina base dir: {0}", System.getProperty("catalina.base"));
-            
-            throw new RuntimeException("Config file didn't exists! " + System.getProperty("catalina.base"));
-        }
+ 
         try {
-            input = new FileInputStream(config);
+            String basePath = System.getProperty("catalina.base");
+            File baseDir = new File(basePath);
+            File configFile = new File(baseDir, "conf/secureproxy/" + CONFIGFILENAME);
+
+            if (!configFile.exists()) {
+                LOGGER.log(Level.SEVERE, "Config file does not exists.");
+                LOGGER.log(Level.SEVERE, "Catalina base dir: {0}", System.getProperty("catalina.base"));
+                throw new RuntimeException("Config file didn't exists! " + System.getProperty("catalina.base"));
+            }
+            
+            input = new FileInputStream(configFile);
             configures.load(input);
             input.close();
         } catch (IOException ex) {
-            LOGGER.log(Level.SEVERE, null, ex);
+            LOGGER.log(Level.SEVERE, "Received IOException", ex);
+            ex.printStackTrace();
+        } catch (SecurityException ex) {
+            LOGGER.log(Level.SEVERE, "Received SecurityException", ex);
+            ex.printStackTrace();
+        } catch (NullPointerException ex) {
+            LOGGER.log(Level.SEVERE, "Received Exception", ex);
+            ex.printStackTrace();
+        } catch (IllegalArgumentException ex) {
+            LOGGER.log(Level.SEVERE, "Received IllegalArgumentException", ex);
+            ex.printStackTrace();
         }
     }
-    
-    public ProxyConfigurer(String path) {
+
+    public ProxyConfigurer(String configFilePath) {
+        LOGGER.entering(ProxyConfigurer.class.getName(),
+                        "ProxyConfigurer", configFilePath);
+        
         configures = new Properties();
-        InputStream input = null;
+        InputStream input;
         try {
-            input = getClass().getClassLoader().getResourceAsStream(path);
+            input = getClass().getClassLoader().getResourceAsStream(configFilePath);
             if (input == null) {
                 throw new RuntimeException("Config file didn't exists!");
             }
@@ -52,7 +66,9 @@ public class ProxyConfigurer {
             input.close();
         } catch (IOException ex) {
             LOGGER.log(Level.SEVERE, null, ex);
-        } 
+        }
+        
+        LOGGER.exiting(ProxyConfigurer.class.getName(), "ProxyConfigurer");
     }
 
     /**
@@ -76,5 +92,17 @@ public class ProxyConfigurer {
      */
     public Properties getConfigurationProperties() {
         return configures;
+    }
+
+
+    /**
+     * Searches for the property with the specified key in this property list.
+     *
+     * @param key the property key
+     * @return the value in this property list or null if the specified key
+     *         cannot be found
+     */
+    public String getProperty(String key) {
+        return configures.getProperty(key);
     }
 }

@@ -26,7 +26,6 @@ public class HackAndSlash {
         {"video", "poster", "src"}
     };
     private static final Logger LOGGER = Logger.getLogger(HackAndSlash.class.getName(), null);
-    //TODO: To be replaced with proper settings
     private URI privateURI;
     private String privatePort;
     private URI publicURI;
@@ -96,12 +95,15 @@ public class HackAndSlash {
         response.setBody(newResponse);
 
         /*
-         * Update Content-Lenght with new size
+         * See: https://en.wikipedia.org/wiki/Chunked_transfer_encoding
          */
-        HashMap<String, String> headers = new HashMap<String, String>(response.getHeaders());
-        headers.put("Content-Length", Integer.toString(response.getBody().getBytes().length));
-        response.setHeaders(headers);
-
+        if (!response.getHeaders().containsKey("Transfer-Encoding")) {
+            /* Update Content-Lenght with new size */
+            HashMap<String, String> headers = new HashMap<String, String>(response.getHeaders());
+            headers.put("Content-Length", Integer.toString(response.getBody().getBytes().length));
+            response.setHeaders(headers);
+        }
+        
         LOGGER.exiting(HackAndSlash.class.getName(), "hackAndSlashOut", response);
         return response;
     }
@@ -116,9 +118,7 @@ public class HackAndSlash {
      */
     public String getMaskedUrl(String url) {
 
-
-        //System.out.println("getMaskedUrl's param: " + url);
-
+        LOGGER.info("getMaskedUrl's param: " + url);
         LOGGER.entering(HackAndSlash.class.getName(), "getMaskedUrl", url);
 
         URI parsedUri = null;
@@ -126,26 +126,25 @@ public class HackAndSlash {
 
         try {
             parsedUri = new URI(url);
+        } catch (NullPointerException ex) {
+          LOGGER.log(Level.SEVERE, "Received NullPointerException", ex);
         } catch (URISyntaxException ex) {
-            LOGGER.log(Level.SEVERE, null, ex);
+            LOGGER.log(Level.SEVERE, "Received URISyntaxException", ex);
         }
 
         if (!isProtectedUrl(parsedUri)) {
-            //System.out.println("Wasn't protected.");
             return url;
         }
 
         if (parsedUri.isAbsolute()) {
             maskedUri = publicURI + parsedUri.getPath();
         } else {
-            maskedUri = publicURI + "/" + url;
+            maskedUri = publicURI + url;
         }
 
         LOGGER.log(Level.INFO, "Returning masked url: {0}", maskedUri);
-
-        //System.out.println("ready Masked url: " + maskedUri);
-
         LOGGER.exiting(HackAndSlash.class.getName(), "getMaskedUrl", maskedUri);
+
         return maskedUri;
     }
 
@@ -157,9 +156,20 @@ public class HackAndSlash {
      */
     private boolean isProtectedUrl(URI url) {
         LOGGER.entering(HackAndSlash.class.getName(), "isProtectedUrl", url);
+
+        if (!url.isAbsolute()) {
+            return true;
+        }
+        /* this came up on cs.helsinki.fi: <a href="mailto:it-web[at-remove]cs.helsinki.fi">Webmaster</a>
+         * there might be more special cases and we need to take them into acount
+         */
+        else if (url.toString().startsWith("mailto:")) {
+            return false;
+        }
+
         String hostname = url.getHost();
-        //System.out.println("Hostname: " + hostname);
-        //System.out.println("privateURI hostname: " + privateURI.getHost());
+        LOGGER.info("Hostname: " + hostname);
+        LOGGER.info("privateURI hostname: " + privateURI.getHost());
 
         if (hostname.equals(privateURI.getHost())) {
             LOGGER.exiting(HackAndSlash.class.getName(), "isProtectedUrl", true);

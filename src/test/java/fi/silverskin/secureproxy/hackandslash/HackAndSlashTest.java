@@ -30,17 +30,13 @@ public class HackAndSlashTest {
     private String privatePort;
     private String publicURI;
     
-    //private String privateURI = "http://128.214.9.12";
-    //private String privatePort = "80";
-    //private String publicURI = "http://palomuuri.users.cs.helsinki.fi";
-    
     private HackAndSlashConfig conf;
     
     public HackAndSlashTest() throws URISyntaxException {
         ProxyConfigurer configurer = new ProxyConfigurer("config.properties");
-        privateURI = configurer.getConfigure("privateURI")[0];
-        privatePort = configurer.getConfigure("privatePort")[0];
-        publicURI = configurer.getConfigure("publicURI")[0];
+        privateURI = configurer.getProperty("privateURI");
+        privatePort = configurer.getProperty("privatePort");
+        publicURI = configurer.getProperty("publicURI");
         conf = new HackAndSlashConfig(privateURI, privatePort, publicURI);
     }
 

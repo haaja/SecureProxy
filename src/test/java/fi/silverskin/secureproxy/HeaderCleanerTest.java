@@ -5,8 +5,9 @@
 package fi.silverskin.secureproxy;
 
 import java.util.HashMap;
+import java.util.Properties;
+import static org.junit.Assert.assertEquals;
 import org.junit.*;
-import static org.junit.Assert.*;
 
 /**
  *
@@ -15,6 +16,7 @@ import static org.junit.Assert.*;
 public class HeaderCleanerTest {
 
     private EPICRequest request;
+    private Properties configuration;
 
     public HeaderCleanerTest() {
     }
@@ -33,6 +35,8 @@ public class HeaderCleanerTest {
         String body = "";
 
         this.request = new EPICRequest("get", headers, body);
+        ProxyConfigurer configurer = new ProxyConfigurer("config.properties");
+        this.configuration = configurer.getConfigurationProperties();
     }
 
     @After
@@ -42,6 +46,7 @@ public class HeaderCleanerTest {
     /**
      * Test of cleanHeaders method, of class HeaderCleaner.
      */
+
     @Test
     public void testCleanHeaders() {
         System.out.println("Testing cleanHeaders method of class HeaderCleaner.java");
@@ -59,7 +64,7 @@ public class HeaderCleanerTest {
         expectedHeaders.put("host", "tkt_palo.users.cs.helsinki.fi");
 
         request.setHeaders(testHeaders);
-        EPICRequest result = HeaderCleaner.cleanHeaders(request);
+        EPICRequest result = HeaderCleaner.cleanHeaders(request, configuration);
         assertEquals(expectedHeaders, new HashMap<String, String>(result.getHeaders()));
         
     }
