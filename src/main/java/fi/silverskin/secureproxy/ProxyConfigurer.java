@@ -28,9 +28,10 @@ public class ProxyConfigurer {
             File configFile = new File(baseDir, "conf/secureproxy/" + CONFIGFILENAME);
 
             if (!configFile.exists()) {
-                LOGGER.log(Level.SEVERE, "Config file does not exists.");
+                LOGGER.log(Level.SEVERE, "Config file does not exist.");
                 LOGGER.log(Level.SEVERE, "Catalina base dir: {0}", System.getProperty("catalina.base"));
-                throw new RuntimeException("Config file didn't exists! " + configFile );
+                LOGGER.log(Level.SEVERE, "Config file location: {0}", configFile);
+                throw new RuntimeException("Config file didn't exist! " + configFile );
             }
             
             input = new FileInputStream(configFile);
