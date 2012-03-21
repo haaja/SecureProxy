@@ -121,7 +121,8 @@ public class ProxyLogger {
             if (!configFile.exists()) {
                 LOGGER.log(Level.SEVERE, "Config file does not exists.");
                 LOGGER.log(Level.SEVERE, "Catalina base dir: {0}", System.getProperty("catalina.base"));
-                throw new RuntimeException("Config file didn't exists! " + System.getProperty("catalina.base"));
+                //no config file returning empty configuration
+                return configuration;
             }
 
             input = new FileInputStream(configFile);
