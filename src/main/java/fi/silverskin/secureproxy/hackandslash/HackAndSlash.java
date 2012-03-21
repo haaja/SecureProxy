@@ -157,6 +157,12 @@ public class HackAndSlash {
         else if (url.toString().startsWith("mailto:")) {
             return false;
         }
+        /* Quick fix for <img src="file:///C:/Users/TVIKBE~1.003/AppData/Local/Temp/moz-screenshot.png" alt="" />
+         * in page: http://www.cs.helsinki.fi/alumni
+         */
+        else if (url.toString().startsWith("file:")) {
+            return false;
+        }
 
         String hostname = url.getHost();
         LOGGER.info("Hostname: " + hostname);
