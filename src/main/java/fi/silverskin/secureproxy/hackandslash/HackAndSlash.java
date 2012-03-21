@@ -93,16 +93,7 @@ public class HackAndSlash {
             oldResponse = newResponse;
         }
         response.setBody(newResponse);
-
-        /*
-         * See: https://en.wikipedia.org/wiki/Chunked_transfer_encoding
-         */
-        if (!response.getHeaders().containsKey("Transfer-Encoding")) {
-            /* Update Content-Lenght with new size */
-            HashMap<String, String> headers = new HashMap<String, String>(response.getHeaders());
-            headers.put("Content-Length", Integer.toString(response.getBody().getBytes().length));
-            response.setHeaders(headers);
-        }
+        response = updateContentLength(response);
         
         LOGGER.exiting(HackAndSlash.class.getName(), "hackAndSlashOut", response);
         return response;
@@ -233,5 +224,26 @@ public class HackAndSlash {
         }
         LOGGER.exiting(HackAndSlash.class.getName(), "convertUrlInTag", tag);
         return tag;
+    }
+
+    /**
+     * Updates Content-Length header with a new value after masking the urls.
+     * 
+     * See: https://en.wikipedia.org/wiki/Chunked_transfer_encoding
+     * @param response Response with modified Content-Length value or unmodified
+     *        response in case chunked encoding is used
+     *
+     */
+    private EPICTextResponse updateContentLength(EPICTextResponse response) {
+
+        //if the http server uses chunked encoding
+        if (!response.getHeaders().containsKey("Transfer-Encoding")) {
+            /* Update Content-Lenght with new size */
+            HashMap<String, String> headers = new HashMap<String, String>(response.getHeaders());
+            headers.put("Content-Length", Integer.toString(response.getBody().getBytes().length));
+            response.setHeaders(headers);
+        }
+
+        return response;
     }
 }
