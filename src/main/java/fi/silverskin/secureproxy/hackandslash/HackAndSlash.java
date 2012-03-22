@@ -44,11 +44,19 @@ public class HackAndSlash {
      */
     public EPICRequest hackAndSlashIn(EPICRequest request) {
         LOGGER.entering(HackAndSlash.class.getName(), "hackAndSlashIn", request);
+        String modifiedUri;
         try {
             URI uri = new URI(request.getUri());
-            request.setUri(privateURI + ":" + privatePort + uri.getPath());
+            modifiedUri = privateURI + ":" + privatePort + uri.getPath();
+            if (uri.getQuery() != null) {
+                modifiedUri = modifiedUri + "?" + uri.getQuery();
+            }
+            if (uri.getFragment() != null) {
+                modifiedUri = modifiedUri + "#" + uri.getFragment();
+            }
+            
+            request.setUri(modifiedUri);
             LOGGER.log(Level.INFO, request.getUri().toString());
-
         } catch (URISyntaxException ex) {
             LOGGER.log(Level.SEVERE, null, ex);
         }
@@ -113,7 +121,7 @@ public class HackAndSlash {
         LOGGER.entering(HackAndSlash.class.getName(), "getMaskedUrl", url);
 
         URI parsedUri = null;
-        String maskedUri = null;
+        String maskedUri;
 
         try {
             parsedUri = new URI(url);
@@ -129,6 +137,15 @@ public class HackAndSlash {
 
         if (parsedUri.isAbsolute()) {
             maskedUri = publicURI + parsedUri.getPath();
+
+            /* if url has query part */
+            if (parsedUri.getQuery() != null) {
+                maskedUri = maskedUri + "?" + parsedUri.getQuery();
+            }
+            /* if url is using fragment (#service) */
+            if (parsedUri.getFragment() != null) {
+                maskedUri = maskedUri + "#" + parsedUri.getFragment();
+            }
         } else {
             maskedUri = publicURI + url;
         }
