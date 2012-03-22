@@ -119,7 +119,7 @@ public class HackAndSlash {
 
         LOGGER.info("getMaskedUrl's param: " + url);
         LOGGER.entering(HackAndSlash.class.getName(), "getMaskedUrl", url);
-
+        url = url.trim();
         URI parsedUri = null;
         String maskedUri;
 
