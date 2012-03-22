@@ -4,6 +4,7 @@ import fi.silverskin.secureproxy.EPICRequest;
 import fi.silverskin.secureproxy.EPICTextResponse;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -119,7 +120,8 @@ public class HackAndSlash {
 
         LOGGER.info("getMaskedUrl's param: " + url);
         LOGGER.entering(HackAndSlash.class.getName(), "getMaskedUrl", url);
-        url = url.trim();
+        /* fixing common mistakes in page sources */
+        url = url.trim().replace(" ", "%20");
         URI parsedUri = null;
         String maskedUri;
 
@@ -178,6 +180,9 @@ public class HackAndSlash {
          * in page: http://www.cs.helsinki.fi/alumni
          */
         else if (url.toString().startsWith("file:")) {
+            return false;
+        }
+        else if (url.toString().startsWith("news:")) {
             return false;
         }
 
