@@ -4,7 +4,6 @@ import fi.silverskin.secureproxy.EPICRequest;
 import fi.silverskin.secureproxy.EPICTextResponse;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -13,19 +12,6 @@ import java.util.regex.Pattern;
 
 public class HackAndSlash {
 
-    private final String[][] tagsAndAttributes = {
-        {"a", "href"}, {"applet", "codebase", "archive"}, {"area", "href"},
-        {"audio", "src"},
-        {"base", "href"}, {"blockquate", "cite"}, {"body", "background"},
-        {"button", "formaction"}, {"command", "icon"},
-        {"del", "cite"}, {"embed", "src"},{"form", "action"}, {"frame", "src", "longdesc"},
-        {"head", "profile"}, {"html", "manifest"}, {"iframe", "src", "longdesc"},
-        {"img", "src", "longdesc", "usemap"}, {"input", "src", "formaction"}, {"ins", "cite"},
-        {"link", "href"}, {"meta", "scheme"},
-        {"object", "data", "classid", "archive", "codebase", "usemap"},
-        {"q", "cite"}, {"script", "src"}, {"source", "src"}, {"track", "src"}, 
-        {"video", "poster", "src"}
-    };
     private static final Logger LOGGER = Logger.getLogger(HackAndSlash.class.getName(), null);
     private URI privateURI;
     private String privatePort;
@@ -75,32 +61,9 @@ public class HackAndSlash {
      */
     public EPICTextResponse hackAndSlashOut(EPICTextResponse response) {
         LOGGER.entering(HackAndSlash.class.getName(), "hackAndSlashOut", response);
-        String oldResponse = response.getBody(), newResponse = "";
-        for (int i = 0; i < tagsAndAttributes.length; i++) {
-            newResponse = "";
-            // Find all strings beginning with '<', containing a tag keyword and ending with '>'
-            Pattern tagPattern = Pattern.compile("<(\\s)*" + tagsAndAttributes[i][0] + "[^>]*>");
-            Matcher tagMatcher = tagPattern.matcher(oldResponse);
-            int index = 0;
-            while (tagMatcher.find()) {
-                if (tagMatcher.start() > index) {
-                    newResponse += oldResponse.substring(index, tagMatcher.start());
-                }
-                index = tagMatcher.end();
-                String tag = tagMatcher.group();
-                // Find attributes, that may contain a URL, and convert URLs if needed
-                for (int j = 1; j < tagsAndAttributes[i].length; j++) {
-                    tag = convertUrlInTag(tag, tagsAndAttributes[i][j]);
-                }
-                newResponse += tag;
-            }
-            if (index == 0) {
-                newResponse = oldResponse;
-            } else if (index < oldResponse.length()) {
-                newResponse += oldResponse.substring(index);
-            }
-            oldResponse = newResponse;
-        }
+        String oldResponse = response.getBody();
+        String newResponse = oldResponse.replaceAll(privateURI.toString(), publicURI.toString());
+        
         response.setBody(newResponse);
         response = updateContentLength(response);
         

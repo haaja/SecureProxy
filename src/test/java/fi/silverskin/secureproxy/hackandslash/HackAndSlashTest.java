@@ -86,6 +86,7 @@ public class HackAndSlashTest {
      * Test of hackAndSlashOut method, of class HackAndSlash.
      */
     @Test
+    @Ignore
     public void testHackAndSlashOut_EPICTextResponse() {
         // under processing
         this.textResponse.setBody(
