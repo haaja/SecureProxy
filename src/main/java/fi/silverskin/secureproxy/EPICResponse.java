@@ -6,6 +6,9 @@ import java.util.regex.Pattern;
 
 public class EPICResponse extends EPICAbstraction {
 
+    /* HTTP status code */
+    private int statusCode;
+
     public EPICResponse() {
     }
 
@@ -26,5 +29,14 @@ public class EPICResponse extends EPICAbstraction {
         Pattern pattern = Pattern.compile("text/.*");
         Matcher isText = pattern.matcher(contentType);
         return isText.matches();
+    }
+
+
+    public void setStatusCode(int statusCode) {
+        this.statusCode = statusCode;
+    }
+
+    public int getStatusCode() {
+        return statusCode;
     }
 }

@@ -46,8 +46,9 @@ public class EPICTomcat {
     private void fillResponse(HttpServletResponse response, EPICResponse epic) {
         LOGGER.entering(EPICTomcat.class.getName(), "fillResponse", new Object[] {response, epic});
 
+        response.setStatus(epic.getStatusCode());
+
         try {
-            //response.reset();
             for (Map.Entry<String, String> header : epic.getHeaders().entrySet()) {
                 response.addHeader(header.getKey(), header.getValue());
             }

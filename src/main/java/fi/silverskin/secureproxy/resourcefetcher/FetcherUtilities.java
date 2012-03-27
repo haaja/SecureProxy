@@ -39,8 +39,10 @@ public class FetcherUtilities {
     public static EPICTextResponse toEPICText(HttpResponse response) {
         LOGGER.entering(FetcherUtilities.class.getName(), "toEPICText", response);
         EPICTextResponse e = new EPICTextResponse();
+
+        e.setStatusCode(response.getStatusLine().getStatusCode());
+
         try {
-            //        e.setBody(getBody(response.getEntity()));
             e.setBody(EntityUtils.toString(response.getEntity()));
             e.setHeaders(getHeaders(response));
             EntityUtils.consume(response.getEntity());
@@ -56,6 +58,8 @@ public class FetcherUtilities {
     public static EPICBinaryResponse toEPICBinary(HttpResponse response) {
         LOGGER.entering(FetcherUtilities.class.getName(), "toEPICBinary", response);
         EPICBinaryResponse e = new EPICBinaryResponse();
+
+        e.setStatusCode(response.getStatusLine().getStatusCode());
 
         try {
             e.setBody(EntityUtils.toByteArray(response.getEntity()));
