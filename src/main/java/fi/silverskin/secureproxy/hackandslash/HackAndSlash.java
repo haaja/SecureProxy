@@ -2,9 +2,7 @@ package fi.silverskin.secureproxy.hackandslash;
 
 import fi.silverskin.secureproxy.EPICRequest;
 import fi.silverskin.secureproxy.EPICTextResponse;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URLEncoder;
+import java.net.*;
 import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -125,12 +123,30 @@ public class HackAndSlash {
         URI parsedUri = null;
         String maskedUri;
 
+        if (hasInvalidProtocols(url)) {
+            return url;
+        }
+
         try {
-            parsedUri = new URI(url);
+            URL tempUrl = new URL(url);
+            parsedUri = new URI(tempUrl.getProtocol(),
+                                tempUrl.getAuthority(),
+                                tempUrl.getPath(),
+                                tempUrl.getQuery(),
+                                tempUrl.getRef());
         } catch (NullPointerException ex) {
-          LOGGER.log(Level.SEVERE, "Received NullPointerException", ex);
+            LOGGER.log(Level.SEVERE, "Received NullPointerException with: " + url, ex);
         } catch (URISyntaxException ex) {
-            LOGGER.log(Level.SEVERE, "Received URISyntaxException", ex);
+            LOGGER.log(Level.SEVERE, "Received URISyntaxException with: " + url, ex);
+        } catch (MalformedURLException ex) {
+            try {
+                parsedUri = new URI(url);
+            } catch (NullPointerException e) {
+                LOGGER.log(Level.SEVERE, "Received NullPointerException with: " + url, e);
+            } catch (URISyntaxException e) {
+                LOGGER.log(Level.SEVERE, "Received URISyntaxException with: " + url, e);
+            }
+            LOGGER.log(Level.SEVERE, "Received MalformedURLException with " + url, ex);
         }
 
         if (!isProtectedUrl(parsedUri)) {
@@ -174,21 +190,6 @@ public class HackAndSlash {
         if (!url.isAbsolute()) {
             return true;
         }
-        /* this came up on cs.helsinki.fi: <a href="mailto:it-web[at-remove]cs.helsinki.fi">Webmaster</a>
-         * there might be more special cases and we need to take them into acount
-         */
-        else if (url.toString().startsWith("mailto:")) {
-            return false;
-        }
-        /* Quick fix for <img src="file:///C:/Users/TVIKBE~1.003/AppData/Local/Temp/moz-screenshot.png" alt="" />
-         * in page: http://www.cs.helsinki.fi/alumni
-         */
-        else if (url.toString().startsWith("file:")) {
-            return false;
-        }
-        else if (url.toString().startsWith("news:")) {
-            return false;
-        }
 
         String hostname = url.getHost();
         LOGGER.info("Hostname: " + hostname);
@@ -201,6 +202,35 @@ public class HackAndSlash {
             LOGGER.exiting(HackAndSlash.class.getName(), "isProtectedUrl", false);
             return false;
         }
+    }
+
+    private boolean hasInvalidProtocols(String url) {
+        if (url.startsWith("mailto:")) {
+            return true;
+        }
+        /* this came up on cs.helsinki.fi: <a href="mailto:it-web[at-remove]cs.helsinki.fi">Webmaster</a>
+         * there might be more special cases and we need to take them into acount
+         */
+        else if (url.toString().startsWith("mailto:")) {
+            return true;
+        }
+        /* Quick fix for <img src="file:///C:/Users/TVIKBE~1.003/AppData/Local/Temp/moz-screenshot.png" alt="" />
+         * in page: http://www.cs.helsinki.fi/alumni
+         */
+        else if (url.toString().startsWith("file:")) {
+            return true;
+        }
+        else if (url.toString().startsWith("news:")) {
+            return true;
+        } else if (url.startsWith("#")) {
+            return true;
+        } else if (url.startsWith("\"")) {
+            return true;
+        } else if (url.startsWith("javascript")) {
+            return true;
+        }
+
+        return false;
     }
 
     /**
