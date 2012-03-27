@@ -19,7 +19,7 @@ public class HeaderCleaner {
      * @return HTTP request with cleaned headers
      */
     public static EPICRequest cleanHeaders(EPICRequest request, Properties configuration) {
-        LOGGER.entering(HeaderCleaner.class.getCanonicalName(),
+        LOGGER.entering(HeaderCleaner.class.getName(),
                         "cleanHeaders",
                         request);
 
@@ -55,13 +55,13 @@ public class HeaderCleaner {
 
         Map<String, String> originalHeaders = response.getHeaders();
         URI locationUri = null;
-        URI protectedUri = null;
+        URI privateUri = null;
 
         if (originalHeaders.containsKey("Location")) {
             String location = originalHeaders.get("Location");
 
             try {
-                protectedUri = new URI(configuration.getProperty("protectedHost"));
+                privateUri = new URI(configuration.getProperty("privateURI"));
                 locationUri = new URI(location);
             } catch (NullPointerException e) {
                 LOGGER.log(Level.SEVERE,
@@ -73,7 +73,7 @@ public class HeaderCleaner {
                            e);
             }
 
-            if (isProtectedUrl(protectedUri, locationUri)) {
+            if (isProtectedUrl(privateUri, locationUri)) {
                 String mutilatedUrl = configuration.getProperty("publicURI") + locationUri.getPath();
                 HashMap<String, String> mutilatedHeaders = new HashMap(originalHeaders);
                 mutilatedHeaders.put("Location", mutilatedUrl);
@@ -93,15 +93,18 @@ public class HeaderCleaner {
      * @return true if location url is the one we are protecting, otherwise
      *         false
      */
-    private static boolean isProtectedUrl(URI protectedUri, URI locationUri) {
+    private static boolean isProtectedUrl(URI privateUri, URI locationUri) {
         LOGGER.entering(HeaderCleaner.class.getName(),
                         "isProtectedUrl",
-                        new Object[] { protectedUri, locationUri});
+                        new Object[] { privateUri, locationUri});
+
+        LOGGER.info("PROTECTEDURI: " +privateUri.getHost());
+        LOGGER.info("LOCATIONURI: "+ locationUri.getHost());
 
         boolean retVal = false;
         String hostname = locationUri.getHost();
 
-        if (hostname.equals(protectedUri.getHost())) {
+        if (hostname.equals(privateUri.getHost())) {
             retVal = true;
         } else {
             retVal = false;
