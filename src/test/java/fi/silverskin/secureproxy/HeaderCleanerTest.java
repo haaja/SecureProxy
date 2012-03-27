@@ -46,7 +46,6 @@ public class HeaderCleanerTest {
     /**
      * Test of cleanHeaders method, of class HeaderCleaner.
      */
-
     @Test
     public void testCleanHeaders() {
         System.out.println("Testing cleanHeaders method of class HeaderCleaner.java");
@@ -67,5 +66,32 @@ public class HeaderCleanerTest {
         EPICRequest result = HeaderCleaner.cleanHeaders(request, configuration);
         assertEquals(expectedHeaders, new HashMap<String, String>(result.getHeaders()));
         
+    }
+
+    /**
+     * Test of cleanHeaders method, of class HeaderCleaner.
+     */
+    @Test
+    public void testCleanHeaders2() {
+        System.out.println("Testing cleanHeaders method of class HeaderCleaner.java");
+        HashMap expectedHeaders = new HashMap();
+        HashMap testHeaders = new HashMap();
+
+        testHeaders.put("host", "google.com");
+        testHeaders.put("user-agent", "Mozilla/5.0 (iPad; U; CPU OS 3_2_1 like Mac OS X; en-us) AppleWebKit/531.21.10 (KHTML, like Gecko) Mobile/7B405");
+        testHeaders.put("etag", "318274123FDASDFasdfasdfsdf");
+        testHeaders.put("if-modified-since", "long time ago");
+        testHeaders.put("from", "127.0.0.1");
+        testHeaders.put("cookie", "PART_NUMBER=RIDING_ROCKET_0023; PART_NUMBER=ROCKET_LAUNCHER_0001");
+        testHeaders.put("content-type", "text/html");
+
+        expectedHeaders.put("cookie", "PART_NUMBER=RIDING_ROCKET_0023; PART_NUMBER=ROCKET_LAUNCHER_0001");
+        expectedHeaders.put("host", "tkt_palo.users.cs.helsinki.fi");
+        expectedHeaders.put("content-type", "text/html");
+
+        request.setHeaders(testHeaders);
+        EPICRequest result = HeaderCleaner.cleanHeaders(request, configuration);
+        assertEquals(expectedHeaders, new HashMap<String, String>(result.getHeaders()));
+
     }
 }

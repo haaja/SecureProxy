@@ -45,6 +45,7 @@ public class ProxyController {
             LOGGER.log(Level.INFO, response.toString());
         }
 
+        /* Change location header in case it exists */
         response = HeaderCleaner.maskLocationHeader(response, configuration);
 
         LOGGER.exiting(ProxyController.class.getName(), "handleRequest", response);

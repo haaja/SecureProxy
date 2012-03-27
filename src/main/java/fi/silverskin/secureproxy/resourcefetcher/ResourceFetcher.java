@@ -92,6 +92,7 @@ public class ResourceFetcher {
             LOGGER.log(Level.INFO, "POST Request \"" + req.getUri() +"\"");
             HttpPost post = new HttpPost(req.getUri());
             FetcherUtilities.copyHeaders(req, post);
+            FetcherUtilities.copyBody(req, post);
             HttpResponse res = httpclient.execute(post);
             if (FetcherUtilities.contentIsText(res)) {
                 return (EPICResponse) FetcherUtilities.toEPICText(res);
@@ -116,6 +117,7 @@ public class ResourceFetcher {
             LOGGER.log(Level.INFO, "PUT Request \"" + req.getUri() +"\"");
             HttpPut put = new HttpPut(req.getUri());
             FetcherUtilities.copyHeaders(req, put);
+            FetcherUtilities.copyBody(req, put);
             HttpResponse res = httpclient.execute(put);
             if (FetcherUtilities.contentIsText(res)) {
                 return (EPICResponse) FetcherUtilities.toEPICText(res);

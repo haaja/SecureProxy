@@ -11,7 +11,7 @@ import java.util.logging.Logger;
 public class HeaderCleaner {
 
     private static final Logger LOGGER = Logger.getLogger(HeaderCleaner.class.getName(), null);
-    private static String[] headersToBePreserved = { "cookie" };
+    private static String[] headersToBePreserved = { "cookie", "content-type" };
 
     /**
      * Cleans request headers of everything else except the required ones.
@@ -27,8 +27,10 @@ public class HeaderCleaner {
         Map<String, String> originalHeaders = request.getHeaders();
 
         for (int i=0; i<headersToBePreserved.length; i++) {
-            cleanedHeaders.put(headersToBePreserved[i],
-            originalHeaders.get(headersToBePreserved[i]));
+            if (originalHeaders.containsKey(headersToBePreserved[i])) {
+                cleanedHeaders.put(headersToBePreserved[i],
+                originalHeaders.get(headersToBePreserved[i]));
+            }
         }
 
         cleanedHeaders.put("host",
@@ -59,7 +61,7 @@ public class HeaderCleaner {
             String location = originalHeaders.get("Location");
 
             try {
-                protectedUri = new URI(configuration.getProperty("protectedURI"));
+                protectedUri = new URI(configuration.getProperty("protectedHost"));
                 locationUri = new URI(location);
             } catch (NullPointerException e) {
                 LOGGER.log(Level.SEVERE,
