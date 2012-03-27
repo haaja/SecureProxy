@@ -16,12 +16,12 @@ public class HackAndSlash {
         {"audio", "src"},
         {"base", "href"}, {"blockquate", "cite"}, {"body", "background"},
         {"button", "formaction"}, {"command", "icon"},
-        {"del", "cite"}, {"embed", "src"},{"form", "action"}, {"frame", "src", "longdesc"},
+        {"del", "cite"}, {"embed", "src"}, {"form", "action"}, {"frame", "src", "longdesc"},
         {"head", "profile"}, {"html", "manifest"}, {"iframe", "src", "longdesc"},
         {"img", "src", "longdesc", "usemap"}, {"input", "src", "formaction"}, {"ins", "cite"},
         {"link", "href"}, {"meta", "scheme"},
         {"object", "data", "classid", "archive", "codebase", "usemap"},
-        {"q", "cite"}, {"script", "src"}, {"source", "src"}, {"track", "src"}, 
+        {"q", "cite"}, {"script", "src"}, {"source", "src"}, {"track", "src"},
         {"video", "poster", "src"}
     };
     private static final Logger LOGGER = Logger.getLogger(HackAndSlash.class.getName(), null);
@@ -53,7 +53,7 @@ public class HackAndSlash {
             if (uri.getFragment() != null) {
                 modifiedUri = modifiedUri + "#" + uri.getFragment();
             }
-            
+
             request.setUri(modifiedUri);
             LOGGER.info("HackAndSlashIn modified URI: " + request.getUri().toString());
         } catch (URISyntaxException ex) {
@@ -74,6 +74,7 @@ public class HackAndSlash {
     public EPICTextResponse hackAndSlashOut(EPICTextResponse response) {
         LOGGER.entering(HackAndSlash.class.getName(), "hackAndSlashOut", response);
         String oldResponse = response.getBody(), newResponse = "";
+        oldResponse = convertCss(oldResponse);
         for (int i = 0; i < tagsAndAttributes.length; i++) {
             newResponse = "";
             // Find all strings beginning with '<', containing a tag keyword and ending with '>'
@@ -101,7 +102,7 @@ public class HackAndSlash {
         }
         response.setBody(newResponse);
         response = updateContentLength(response);
-        
+
         LOGGER.exiting(HackAndSlash.class.getName(), "hackAndSlashOut", response);
         return response;
     }
@@ -118,7 +119,9 @@ public class HackAndSlash {
 
         LOGGER.info("getMaskedUrl's param: " + url);
         LOGGER.entering(HackAndSlash.class.getName(), "getMaskedUrl", url);
-        /* fixing common mistakes in page sources */
+        /*
+         * fixing common mistakes in page sources
+         */
         url = url.trim().replace(" ", "%20");
         URI parsedUri = null;
         String maskedUri;
@@ -130,10 +133,10 @@ public class HackAndSlash {
         try {
             URL tempUrl = new URL(url);
             parsedUri = new URI(tempUrl.getProtocol(),
-                                tempUrl.getAuthority(),
-                                tempUrl.getPath(),
-                                tempUrl.getQuery(),
-                                tempUrl.getRef());
+                    tempUrl.getAuthority(),
+                    tempUrl.getPath(),
+                    tempUrl.getQuery(),
+                    tempUrl.getRef());
         } catch (NullPointerException ex) {
             LOGGER.log(Level.SEVERE, "Received NullPointerException with: " + url, ex);
         } catch (URISyntaxException ex) {
@@ -156,11 +159,15 @@ public class HackAndSlash {
         if (parsedUri.isAbsolute()) {
             maskedUri = publicURI + parsedUri.getPath();
 
-            /* if url has query part */
+            /*
+             * if url has query part
+             */
             if (parsedUri.getQuery() != null) {
                 maskedUri = maskedUri + "?" + parsedUri.getQuery();
             }
-            /* if url is using fragment (#service) */
+            /*
+             * if url is using fragment (#service)
+             */
             if (parsedUri.getFragment() != null) {
                 maskedUri = maskedUri + "#" + parsedUri.getFragment();
             }
@@ -210,20 +217,19 @@ public class HackAndSlash {
 
         if (url.startsWith("mailto:")) {
             retVal = true;
-        }
-        /* this came up on cs.helsinki.fi: <a href="mailto:it-web[at-remove]cs.helsinki.fi">Webmaster</a>
-         * there might be more special cases and we need to take them into acount
-         */
-        else if (url.startsWith("mailto:")) {
+        } /*
+         * this came up on cs.helsinki.fi: <a
+         * href="mailto:it-web[at-remove]cs.helsinki.fi">Webmaster</a> there
+         * might be more special cases and we need to take them into acount
+         */ else if (url.startsWith("mailto:")) {
             retVal = true;
-        }
-        /* Quick fix for <img src="file:///C:/Users/TVIKBE~1.003/AppData/Local/Temp/moz-screenshot.png" alt="" />
-         * in page: http://www.cs.helsinki.fi/alumni
-         */
-        else if (url.startsWith("file:")) {
+        } /*
+         * Quick fix for <img
+         * src="file:///C:/Users/TVIKBE~1.003/AppData/Local/Temp/moz-screenshot.png"
+         * alt="" /> in page: http://www.cs.helsinki.fi/alumni
+         */ else if (url.startsWith("file:")) {
             retVal = true;
-        }
-        else if (url.startsWith("news:")) {
+        } else if (url.startsWith("news:")) {
             retVal = true;
         } else if (url.startsWith("#")) {
             retVal = true;
@@ -238,6 +244,58 @@ public class HackAndSlash {
     }
 
     /**
+     * Changes URIs in CSS code
+     *
+     * @param oldResponse HTML page or CSS style sheet
+     * @return HTML page or CSS style sheet with masked URIs
+     */
+    public String convertCss(String oldResponse) {
+        Pattern cssPattern = Pattern.compile("url\\([^\\)]*\\)");
+        Matcher cssMatcher = cssPattern.matcher(oldResponse.toLowerCase());
+        String newResponse = "";
+        int index = 0;
+        while (cssMatcher.find()) {
+            if (cssMatcher.start() > index) {
+                newResponse += oldResponse.substring(index, cssMatcher.start());
+            }
+            index = cssMatcher.end();
+            String cssUrl = cssMatcher.group();
+            // Convert URL if needed
+            cssUrl = convertUrlInCss(cssUrl);
+            newResponse += cssUrl;
+        } 
+        if (index == 0) {
+            newResponse = oldResponse;
+        } else if (index < oldResponse.length()) {
+            newResponse += oldResponse.substring(index);
+        }
+        return newResponse;
+    }
+
+    
+    /**
+     * Changes original URI in CSS url attribute to a masked one.
+     * 
+     * @param urlAttribute CSS url attribute
+     * @return CSS url attribute with masked URI
+     */
+    public String convertUrlInCss(String urlAttribute) {
+        Pattern sourcePattern = Pattern.compile("('[^']*')|(\"[^\"]*)\"|"
+                + "(\\([^'\"\\)][^\\)]*[^'\"\\)]\\))");
+        Matcher sourceMatcher = sourcePattern.matcher(urlAttribute);
+        if ((sourceMatcher.find())) {
+            String url = sourceMatcher.group();
+            // Cut off first and last character
+            url = url.substring(1, url.length() - 1);
+            if (!url.equals("")) { System.out.println(url);
+                url = getMaskedUrl(url.trim());
+                urlAttribute = urlAttribute.substring(0, sourceMatcher.start() + 1)+ url + urlAttribute.substring(sourceMatcher.end() - 1);
+            }
+        }
+        return urlAttribute;
+    }
+
+    /**
      * Changes original URI in HTML tag to a masked one.
      *
      * @param tag HTML tag
@@ -245,12 +303,8 @@ public class HackAndSlash {
      * @return HTML tag with masked URI
      */
     public String convertUrlInTag(String tag, String attributeName) {
+        LOGGER.entering(HackAndSlash.class.getName(), "convertUrlInTag", new Object[]{tag, attributeName});
 
-
-        
-
-        LOGGER.entering(HackAndSlash.class.getName(), "convertUrlInTag", new Object[] {tag, attributeName});
-        
         // Extract given attribute and its value(s) from tag
         Pattern sourcePattern = Pattern.compile(attributeName + "(\\s)*=((\\s)*(\"[^\"]*\")|([^\\s]*))");
         Matcher sourceMatcher = sourcePattern.matcher(tag.toLowerCase());
@@ -279,11 +333,11 @@ public class HackAndSlash {
                     } else {
                         newUrl = getMaskedUrl(url.trim());
                     }
-                    
+
                     String convertedTag = tag.substring(0, attributeStart + urlMatcher.start() + 1)
                             + newUrl + tag.substring(attributeEnd - 1);
                     LOGGER.exiting(HackAndSlash.class.getName(), "convertUrlInTag", convertedTag);
-                    
+
                     return convertedTag;
                 }
             }
@@ -294,17 +348,20 @@ public class HackAndSlash {
 
     /**
      * Updates Content-Length header with a new value after masking the urls.
-     * 
+     *
      * See: https://en.wikipedia.org/wiki/Chunked_transfer_encoding
+     *
      * @param response Response with modified Content-Length value or unmodified
-     *        response in case chunked encoding is used
+     * response in case chunked encoding is used
      *
      */
     private EPICTextResponse updateContentLength(EPICTextResponse response) {
 
         //if the http server uses chunked encoding
         if (!response.getHeaders().containsKey("Transfer-Encoding")) {
-            /* Update Content-Lenght with new size */
+            /*
+             * Update Content-Lenght with new size
+             */
             HashMap<String, String> headers = new HashMap<String, String>(response.getHeaders());
             headers.put("Content-Length", Integer.toString(response.getBody().getBytes().length));
             response.setHeaders(headers);

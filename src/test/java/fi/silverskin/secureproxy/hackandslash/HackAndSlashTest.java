@@ -89,13 +89,19 @@ public class HackAndSlashTest {
     public void testHackAndSlashOut_EPICTextResponse() {
         // under processing
         this.textResponse.setBody(
-                "<html> <body>"
+                "<html> <head> <style type=\"text/css\">"
+                + "body {background-image:url(\"" +
+                privateURI + ":" + privatePort + "\");}"
+                + "</style> </head> <body>"
                 + "<p> This is a test case: </p>"
                 + "<a href=\"" + privateURI + ":" + privatePort + "\">"
                 + "</a></body></html>"
                 );
         String controlBody =
-                "<html> <body>"
+                
+                "<html> <head> <style type=\"text/css\">"
+                + "body {background-image:url(\"" + publicURI + "\");}"
+                + "</style> </head> <body>"
                 + "<p> This is a test case: </p>"
                 + "<a href=\"" + publicURI + "\">"
                 + "</a></body></html>";
