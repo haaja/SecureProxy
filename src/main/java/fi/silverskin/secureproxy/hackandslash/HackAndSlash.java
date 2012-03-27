@@ -209,25 +209,25 @@ public class HackAndSlash {
     public String convertUrlInTag(String tag, String attributeName) {
 
 
-        // what about if quotation marks are missing
+        
 
         LOGGER.entering(HackAndSlash.class.getName(), "convertUrlInTag", new Object[] {tag, attributeName});
-        // what about if quotation marks missing
+        
         // Extract given attribute and its value(s) from tag
-        Pattern sourcePattern = Pattern.compile(attributeName + "(\\s)*=(\\s)*\"[^\"]*\"");
+        Pattern sourcePattern = Pattern.compile(attributeName + "(\\s)*=(\\s)*(\"[^\"]*\" | [^\\s]*)");
         Matcher sourceMatcher = sourcePattern.matcher(tag.toLowerCase());
 
         if (sourceMatcher.find()) {
             int attributeStart = sourceMatcher.start();
             int attributeEnd = sourceMatcher.end();
             String temp = tag.substring(attributeStart, attributeEnd);
-            // Extract attribute value(s) including quotation marks
-            Pattern urlPattern = Pattern.compile("\"[^\"]+\"");
+            // Extract attribute value(s) including possible quotation marks
+            Pattern urlPattern = Pattern.compile("\"[^\"]+\" | =(\\s)*[^\\s]*(\\s)+");
             Matcher urlMatcher = urlPattern.matcher(temp);
 
             if ((urlMatcher.find())) {
                 String url = urlMatcher.group();
-                // Cut off quotation marks
+                // Cut off first and last character
                 url = url.substring(1, url.length() - 1);
                 if (!url.equals("")) {
                     String newUrl = "";
@@ -239,7 +239,7 @@ public class HackAndSlash {
                         }
                         newUrl = newUrl.trim();
                     } else {
-                        newUrl = getMaskedUrl(url);
+                        newUrl = getMaskedUrl(url.trim());
                     }
                     
                     String convertedTag = tag.substring(0, attributeStart + urlMatcher.start() + 1)
