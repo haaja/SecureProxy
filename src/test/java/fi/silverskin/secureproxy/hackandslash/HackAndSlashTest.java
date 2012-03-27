@@ -100,6 +100,8 @@ public class HackAndSlashTest {
                 + "<a href=\"" + publicURI + "\">"
                 + "</a></body></html>";
         EPICTextResponse resultResponse = has.hackAndSlashOut(textResponse); 
+        System.out.println(resultResponse.getBody());
+        System.out.println("\n"+controlBody);
         assertEquals(controlBody, resultResponse.getBody());
     }
 
