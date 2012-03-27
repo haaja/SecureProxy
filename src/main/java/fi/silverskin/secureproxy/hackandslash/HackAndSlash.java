@@ -57,7 +57,7 @@ public class HackAndSlash {
             }
             
             request.setUri(modifiedUri);
-            LOGGER.log(Level.INFO, request.getUri().toString());
+            LOGGER.info("HackAndSlashIn modified URI: " + request.getUri().toString());
         } catch (URISyntaxException ex) {
             LOGGER.log(Level.SEVERE, null, ex);
         }
@@ -149,7 +149,11 @@ public class HackAndSlash {
                 maskedUri = maskedUri + "#" + parsedUri.getFragment();
             }
         } else {
-            maskedUri = publicURI + url;
+            if (url.startsWith("/")) {
+                maskedUri = publicURI + url;
+            } else {
+                maskedUri = publicURI + "/" + url;
+            }
         }
 
         LOGGER.log(Level.INFO, "Returning masked url: {0}", maskedUri);
