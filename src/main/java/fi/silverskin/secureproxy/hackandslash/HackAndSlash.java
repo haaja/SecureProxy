@@ -123,7 +123,7 @@ public class HackAndSlash {
         URI parsedUri = null;
         String maskedUri;
 
-        if (hasInvalidProtocols(url)) {
+        if (hasInvalidProtocol(url)) {
             return url;
         }
 
@@ -204,33 +204,37 @@ public class HackAndSlash {
         }
     }
 
-    private boolean hasInvalidProtocols(String url) {
+    private boolean hasInvalidProtocol(String url) {
+        LOGGER.entering(HackAndSlash.class.getName(), "hasInvalidProtocol", url);
+        boolean retVal = false;
+
         if (url.startsWith("mailto:")) {
-            return true;
+            retVal = true;
         }
         /* this came up on cs.helsinki.fi: <a href="mailto:it-web[at-remove]cs.helsinki.fi">Webmaster</a>
          * there might be more special cases and we need to take them into acount
          */
-        else if (url.toString().startsWith("mailto:")) {
-            return true;
+        else if (url.startsWith("mailto:")) {
+            retVal = true;
         }
         /* Quick fix for <img src="file:///C:/Users/TVIKBE~1.003/AppData/Local/Temp/moz-screenshot.png" alt="" />
          * in page: http://www.cs.helsinki.fi/alumni
          */
-        else if (url.toString().startsWith("file:")) {
-            return true;
+        else if (url.startsWith("file:")) {
+            retVal = true;
         }
-        else if (url.toString().startsWith("news:")) {
-            return true;
+        else if (url.startsWith("news:")) {
+            retVal = true;
         } else if (url.startsWith("#")) {
-            return true;
+            retVal = true;
         } else if (url.startsWith("\"")) {
-            return true;
+            retVal = true;
         } else if (url.startsWith("javascript")) {
-            return true;
+            retVal = true;
         }
 
-        return false;
+        LOGGER.exiting(HackAndSlash.class.getName(), "hasInvalidProtocol", retVal);
+        return retVal;
     }
 
     /**
