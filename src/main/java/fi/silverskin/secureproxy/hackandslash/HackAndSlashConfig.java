@@ -1,7 +1,6 @@
 
 package fi.silverskin.secureproxy.hackandslash;
 
-import fi.silverskin.secureproxy.ProxyConfigurer;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Properties;
