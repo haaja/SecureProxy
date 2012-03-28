@@ -2,10 +2,9 @@ package fi.silverskin.secureproxy.hackandslash;
 
 import fi.silverskin.secureproxy.EPICRequest;
 import fi.silverskin.secureproxy.EPICTextResponse;
-import java.net.MalformedURLException;
+import fi.silverskin.secureproxy.SecureProxyUtilities;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URL;
 import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -130,9 +129,8 @@ public class HackAndSlash {
             return url;
         }
 
-        URI parsedUri = makeUriFromString(url);
-
-        if (!isProtectedUrl(parsedUri)) {
+        URI parsedUri = SecureProxyUtilities.makeUriFromString(url);
+        if (!SecureProxyUtilities.isProtectedUrl(privateURI, parsedUri)) {
             return url;
         }
 
@@ -159,32 +157,6 @@ public class HackAndSlash {
         LOGGER.exiting(HackAndSlash.class.getName(), "getMaskedUrl", maskedUri);
 
         return maskedUri;
-    }
-
-    /**
-     * Checks if url is own by protected service
-     *
-     * @param url Original URI
-     * @return
-     */
-    private boolean isProtectedUrl(URI url) {
-        LOGGER.entering(HackAndSlash.class.getName(), "isProtectedUrl", url);
-
-        if (!url.isAbsolute()) {
-            return true;
-        }
-
-        String hostname = url.getHost();
-        LOGGER.info("Hostname: " + hostname);
-        LOGGER.info("privateURI hostname: " + privateURI.getHost());
-
-        if (hostname.equals(privateURI.getHost())) {
-            LOGGER.exiting(HackAndSlash.class.getName(), "isProtectedUrl", true);
-            return true;
-        } else {
-            LOGGER.exiting(HackAndSlash.class.getName(), "isProtectedUrl", false);
-            return false;
-        }
     }
 
     private boolean hasInvalidProtocol(String url) {
@@ -278,39 +250,6 @@ public class HackAndSlash {
 
         LOGGER.exiting(HackAndSlash.class.getName(), "convertUrlInCss", urlAttribute);
         return urlAttribute;
-    }
-
-    /*
-     * Tries to make URI object from String
-     * @param url URL in string
-     * @return URI object formed from the parameter or null
-     */
-    private URI makeUriFromString(String url) {
-        LOGGER.entering(HackAndSlash.class.getName(), "makeUriFromString", url);
-        URI uri = null;
-
-        try {
-            URL tempURL = new URL(url);
-            uri = new URI(tempURL.getProtocol(),
-                          tempURL.getAuthority(),
-                          tempURL.getPath(),
-                          tempURL.getQuery(),
-                          tempURL.getRef());
-        } catch (MalformedURLException ex) {
-            LOGGER.log(Level.SEVERE, "Received MalformedURLException with: " + url, ex);
-            try {
-                uri = new URI(url);
-            } catch (URISyntaxException e) {
-                LOGGER.log(Level.SEVERE, "Received URISyntaxException with: " + url, e);
-            } catch (NullPointerException e) {
-                LOGGER.log(Level.SEVERE, "Received NullPointerException with: " + url, e);
-            }
-        } catch (URISyntaxException ex) {
-                LOGGER.log(Level.SEVERE, "Received URISyntaxException with: " + url, ex);
-        }
-
-        LOGGER.exiting(HackAndSlash.class.getName(), "makeUriFromString", uri);
-        return uri;
     }
 
     /**
