@@ -12,47 +12,46 @@ public class SecureProxyUtilities {
     private static final Logger LOGGER = Logger.getLogger(SecureProxyUtilities.class.getName(), null);
 
     /*
-     * Tries to make URI object from String
-     * @param url URL in string
-     * @return URI object formed from the parameter or null
+     * Tries to make URI object from String @param url URL in string @return URI
+     * object formed from the parameter or null
      */
     public static URI makeUriFromString(String url) {
-        LOGGER.entering(SecureProxyUtilities.class.getName(), 
-                        "makeUriFromString",
-                        url);
+        LOGGER.entering(SecureProxyUtilities.class.getName(),
+                "makeUriFromString",
+                url);
         URI uri = null;
 
         try {
             URL tempURL = new URL(url);
             uri = new URI(tempURL.getProtocol(),
-                          tempURL.getAuthority(),
-                          tempURL.getPath(),
-                          tempURL.getQuery(),
-                          tempURL.getRef());
+                    tempURL.getAuthority(),
+                    tempURL.getPath(),
+                    tempURL.getQuery(),
+                    tempURL.getRef());
         } catch (MalformedURLException ex) {
-            LOGGER.log(Level.SEVERE, 
-                       "Received MalformedURLException with: " + url,
-                       ex);
+            LOGGER.log(Level.SEVERE,
+                    "Received MalformedURLException with: " + url,
+                    ex);
             try {
                 uri = new URI(url);
             } catch (URISyntaxException e) {
-                LOGGER.log(Level.SEVERE, 
-                           "Received URISyntaxException with: " + url,
-                           e);
+                LOGGER.log(Level.SEVERE,
+                        "Received URISyntaxException with: " + url,
+                        e);
             } catch (NullPointerException e) {
-                LOGGER.log(Level.SEVERE, 
-                           "Received NullPointerException with: " + url,
-                           e);
+                LOGGER.log(Level.SEVERE,
+                        "Received NullPointerException with: " + url,
+                        e);
             }
         } catch (URISyntaxException ex) {
-                LOGGER.log(Level.SEVERE, 
-                           "Received URISyntaxException with: " + url,
-                           ex);
+            LOGGER.log(Level.SEVERE,
+                    "Received URISyntaxException with: " + url,
+                    ex);
         }
 
-        LOGGER.exiting(SecureProxyUtilities.class.getName(), 
-                       "makeUriFromString",
-                       uri);
+        LOGGER.exiting(SecureProxyUtilities.class.getName(),
+                "makeUriFromString",
+                uri);
         return uri;
     }
 
@@ -60,23 +59,25 @@ public class SecureProxyUtilities {
      * Checks if uri is protected uri
      *
      * @param protectedUri Url of the protected service
-     * @param locationUri  Url in the location header
+     * @param locationUri Url in the location header
      * @return true if location url is the one we are protecting, otherwise
-     *         false
+     * false
      */
     public static boolean isProtectedUrl(URI privateUri, URI locationUri) {
         LOGGER.entering(HeaderCleaner.class.getName(),
-                        "isProtectedUrl",
-                        new Object[] {privateUri, locationUri});
+                "isProtectedUrl",
+                new Object[]{privateUri, locationUri});
 
         if (!locationUri.isAbsolute()) {
             LOGGER.exiting(SecureProxyUtilities.class.getName(),
-                           "isProtectedUrl", true);
+                    "isProtectedUrl", true);
             return true;
         }
 
         boolean retVal = false;
         String hostname = locationUri.getHost();
+        LOGGER.log(Level.INFO, "Public host: ''{0}''", locationUri.getHost());
+        LOGGER.log(Level.INFO, "Private host: ''{0}''", privateUri.getHost());
 
         if (hostname.equals(privateUri.getHost())) {
             retVal = true;
@@ -84,10 +85,10 @@ public class SecureProxyUtilities {
             retVal = false;
         }
 
-        LOGGER.exiting(SecureProxyUtilities.class.getName(), 
-                       "isProtectedUrl",
-                       retVal);
+        LOGGER.exiting(SecureProxyUtilities.class.getName(),
+                "isProtectedUrl",
+                retVal);
         return retVal;
-        
+
     }
 }

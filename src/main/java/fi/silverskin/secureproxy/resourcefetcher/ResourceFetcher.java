@@ -19,6 +19,7 @@ public class ResourceFetcher {
     public ResourceFetcher() {
         httpclient = new CachingHttpClient();
         httpclient.getParams().removeParameter("http.useragent");
+        httpclient.getParams().setBooleanParameter("http.protocol.handle-redirects", false);
     }
 
     /**
