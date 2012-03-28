@@ -72,8 +72,8 @@ public class HackAndSlashTest {
         
         try { 
             URI path = new URI(testUri);
-             String controlUrl = privateURI + ":" + privatePort + 
-                path.getPath();
+            String controlUrl = privateURI + ":" + privatePort + 
+                                path.getPath();
         
             EPICRequest resultRequest = has.hackAndSlashIn(this.request);
             assertEquals(controlUrl, resultRequest.getUri());
