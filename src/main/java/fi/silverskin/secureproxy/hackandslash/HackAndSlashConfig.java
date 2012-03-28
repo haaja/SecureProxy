@@ -1,8 +1,8 @@
 
 package fi.silverskin.secureproxy.hackandslash;
 
+import fi.silverskin.secureproxy.SecureProxyUtilities;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.Properties;
 
 
@@ -11,18 +11,18 @@ public class HackAndSlashConfig {
     private String privatePort;
     private URI publicURI;
     
-    public HackAndSlashConfig (Properties configuration) throws URISyntaxException {
-        privateURI = new URI(configuration.getProperty("privateURI"));
+    public HackAndSlashConfig (Properties configuration) {
+        privateURI = SecureProxyUtilities.makeUriFromString(configuration.getProperty("privateURI"));
         privatePort = configuration.getProperty("privatePort");
-        publicURI = new URI(configuration.getProperty("publicURI"));    
+        publicURI = SecureProxyUtilities.makeUriFromString(configuration.getProperty("publicURI"));
     }
 
     public HackAndSlashConfig(String privateURI, 
                               String privatePort,
-                              String publicURI) throws URISyntaxException {
-        this.privateURI = new URI(privateURI);
+                              String publicURI) {
+        this.privateURI = SecureProxyUtilities.makeUriFromString(privateURI);
         this.privatePort = privatePort;
-        this.publicURI = new URI(publicURI);
+        this.publicURI = SecureProxyUtilities.makeUriFromString(publicURI);
     }
      
     public URI getpublicURI() {
