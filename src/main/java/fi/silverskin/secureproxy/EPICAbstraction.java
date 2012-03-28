@@ -1,13 +1,9 @@
 package fi.silverskin.secureproxy;
 
-import java.net.MalformedURLException;
 import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public abstract class EPICAbstraction {
@@ -58,41 +54,7 @@ public abstract class EPICAbstraction {
      */
     public void setUri(String uri) {
         LOGGER.entering(EPICAbstraction.class.getName(), "setUri", uri);
-        this.uri = makeUriFromString(uri);
-
+        this.uri = SecureProxyUtilities.makeUriFromString(uri);
         LOGGER.exiting(EPICAbstraction.class.getName(), "setUri");
-    }
-
-    /**
-     * Tries to make URI object from String
-     * @param url URL in string
-     * @return URI object formed from the parameter or null
-     */
-    private URI makeUriFromString(String url) {
-        LOGGER.entering(EPICAbstraction.class.getName(), "makeUriFromString", url);
-        URI uri = null;
-
-        try {
-            URL tempURL = new URL(url);
-            uri = new URI(tempURL.getProtocol(),
-                          tempURL.getAuthority(),
-                          tempURL.getPath(),
-                          tempURL.getQuery(),
-                          tempURL.getRef());
-        } catch (MalformedURLException ex) {
-            LOGGER.log(Level.SEVERE, "Received MalformedURLException with: " + url, ex);
-            try {
-                uri = new URI(url);
-            } catch (URISyntaxException e) {
-                LOGGER.log(Level.SEVERE, "Received URISyntaxException with: " + url, e);
-            } catch (NullPointerException e) {
-                LOGGER.log(Level.SEVERE, "Received NullPointerException with: " + url, e);
-            }
-        } catch (URISyntaxException ex) {
-                LOGGER.log(Level.SEVERE, "Received URISyntaxException with: " + url, ex);
-        }
-
-        LOGGER.exiting(EPICAbstraction.class.getName(), "makeUriFromString", uri);
-        return uri;
-    }
+    }   
 }

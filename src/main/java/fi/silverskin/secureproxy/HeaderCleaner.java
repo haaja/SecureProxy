@@ -41,11 +41,12 @@ public class HeaderCleaner {
         return request;
     }
 
-        /**
+    /**
      * Masks Location header url if it contains our protected url
      * @param response HTTP response received from the protected service
      * @param configuration Configuration of our proxy
-     * @return
+     * @return Response with location header masked if needed or original
+     *         response
      */
     public static EPICResponse maskLocationHeader(EPICResponse response,
                                                Properties configuration) {
@@ -73,7 +74,7 @@ public class HeaderCleaner {
                            e);
             }
 
-            if (isProtectedUrl(privateUri, locationUri)) {
+            if (SecureProxyUtilities.isProtectedUrl(privateUri, locationUri)) {
                 String mutilatedUrl = configuration.getProperty("publicURI") + locationUri.getRawPath();
                 HashMap<String, String> mutilatedHeaders = new HashMap(originalHeaders);
                 mutilatedHeaders.put("Location", mutilatedUrl);
@@ -83,31 +84,5 @@ public class HeaderCleaner {
 
         LOGGER.exiting(HeaderCleaner.class.getName(), "maskLocationHeader", response);
         return response;
-    }
-
-    /**
-     * Checks if uri is protected uri
-     *
-     * @param protectedUri Url of the protected service
-     * @param locationUri  Url in the location header
-     * @return true if location url is the one we are protecting, otherwise
-     *         false
-     */
-    private static boolean isProtectedUrl(URI privateUri, URI locationUri) {
-        LOGGER.entering(HeaderCleaner.class.getName(),
-                        "isProtectedUrl",
-                        new Object[] { privateUri, locationUri});
-
-        boolean retVal = false;
-        String hostname = locationUri.getHost();
-
-        if (hostname.equals(privateUri.getHost())) {
-            retVal = true;
-        } else {
-            retVal = false;
-        }
-
-        LOGGER.exiting(HeaderCleaner.class.getName(), "isProtectedUrl", retVal);
-        return retVal;
     }
 }
