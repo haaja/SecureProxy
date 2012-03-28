@@ -52,6 +52,7 @@ public class ResourceFetcher {
      * @return Response for the handled request or empty response.
      */
     private EPICResponse handleGet(EPICRequest req) {
+        LOGGER.entering(ResourceFetcher.class.getName(), "handleGet", req);
         EPICResponse retVal = null;
         try {
             LOGGER.log(Level.INFO, "GET Request \"{0}\"", req.getUri());
@@ -76,7 +77,8 @@ public class ResourceFetcher {
         }  catch (Throwable ex) {
             LOGGER.log(Level.SEVERE, "Exception in GET:{0}", ex);
         }
-        
+
+        LOGGER.exiting(ResourceFetcher.class.getName(), "handleGet", retVal);
         return retVal;
     }
 
