@@ -11,7 +11,7 @@ public class SecureProxyUtilities {
 
     private static final Logger LOGGER = Logger.getLogger(SecureProxyUtilities.class.getName(), null);
 
-        /*
+    /*
      * Tries to make URI object from String
      * @param url URL in string
      * @return URI object formed from the parameter or null
