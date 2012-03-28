@@ -270,7 +270,7 @@ public class HackAndSlash {
             String url = sourceMatcher.group();
             // Cut off first and last character
             url = url.substring(1, url.length() - 1);
-            if (!url.equals("")) { System.out.println(url);
+            if (!url.equals("")) { 
                 url = getMaskedUrl(url.trim());
                 urlAttribute = urlAttribute.substring(0, sourceMatcher.start() + 1)+ url + urlAttribute.substring(sourceMatcher.end() - 1);
             }
@@ -334,10 +334,10 @@ public class HackAndSlash {
             int attributeEnd = sourceMatcher.end();
             String temp = tag.substring(attributeStart, attributeEnd);
             // Extract attribute value(s) including possible quotation marks
-            Pattern urlPattern = Pattern.compile("(\"[^\"]+\")|(=(\\s)*[^\\s]*(\\s)+)");
+            Pattern urlPattern = Pattern.compile("(\"[^\"]+\")|(=(\\s)*[^\"][^\\s\"]*[^\"])");
             Matcher urlMatcher = urlPattern.matcher(temp);
-
-            if ((urlMatcher.find())) {
+            
+            if ((urlMatcher.find())) { 
                 String url = urlMatcher.group();
                 // Cut off first and last character
                 url = url.substring(1, url.length() - 1);
