@@ -46,21 +46,19 @@ public class HackAndSlash {
     public EPICRequest hackAndSlashIn(EPICRequest request) {
         LOGGER.entering(HackAndSlash.class.getName(), "hackAndSlashIn", request);
         String modifiedUri;
-        try {
-            URI uri = new URI(request.getUri());
-            modifiedUri = privateURI + ":" + privatePort + uri.getPath();
-            if (uri.getQuery() != null) {
-                modifiedUri = modifiedUri + "?" + uri.getQuery();
-            }
-            if (uri.getFragment() != null) {
-                modifiedUri = modifiedUri + "#" + uri.getFragment();
-            }
 
-            request.setUri(modifiedUri);
-            LOGGER.info("HackAndSlashIn modified URI: " + request.getUri().toString());
-        } catch (URISyntaxException ex) {
-            LOGGER.log(Level.SEVERE, null, ex);
+        URI uri = SecureProxyUtilities.makeUriFromString(request.getUri());
+        modifiedUri = privateURI + ":" + privatePort + uri.getPath();
+
+        if (uri.getQuery() != null) {
+            modifiedUri = modifiedUri + "?" + uri.getQuery();
         }
+        if (uri.getFragment() != null) {
+            modifiedUri = modifiedUri + "#" + uri.getFragment();
+        }
+
+        request.setUri(modifiedUri);
+        LOGGER.info("HackAndSlashIn modified URI: " + request.getUri().toString());
 
         LOGGER.exiting(HackAndSlash.class.getName(), "hackAndSlashIn", request);
 
