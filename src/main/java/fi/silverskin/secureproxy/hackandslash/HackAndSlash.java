@@ -76,8 +76,23 @@ public class HackAndSlash {
      */
     public EPICTextResponse hackAndSlashOut(EPICTextResponse response) {
         LOGGER.entering(HackAndSlash.class.getName(), "hackAndSlashOut", response);
-        String oldResponse = response.getBody(), newResponse = "";
+        String oldResponse = response.getBody();
         oldResponse = convertCss(oldResponse);
+        oldResponse = convertTags(oldResponse);
+        response.setBody(oldResponse);
+        response = updateContentLength(response);
+        LOGGER.exiting(HackAndSlash.class.getName(), "hackAndSlashOut", response);
+        return response;
+    }
+    
+    /**
+     * Changes URIs in HTML tags
+     * 
+     * @param oldResponse HTML page
+     * @return HTML page with masked URIs
+     */
+    public String convertTags(String oldResponse){
+        String newResponse = "";
         for (int i = 0; i < tagsAndAttributes.length; i++) {
             newResponse = "";
             // Find all strings beginning with '<', containing a tag keyword and ending with '>'
@@ -103,11 +118,7 @@ public class HackAndSlash {
             }
             oldResponse = newResponse;
         }
-        response.setBody(newResponse);
-        response = updateContentLength(response);
-
-        LOGGER.exiting(HackAndSlash.class.getName(), "hackAndSlashOut", response);
-        return response;
+        return newResponse;
     }
 
     /**
