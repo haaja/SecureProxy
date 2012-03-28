@@ -74,7 +74,7 @@ public class HeaderCleaner {
             }
 
             if (isProtectedUrl(privateUri, locationUri)) {
-                String mutilatedUrl = configuration.getProperty("publicURI") + locationUri.getPath();
+                String mutilatedUrl = configuration.getProperty("publicURI") + locationUri.getRawPath();
                 HashMap<String, String> mutilatedHeaders = new HashMap(originalHeaders);
                 mutilatedHeaders.put("Location", mutilatedUrl);
                 response.setHeaders(mutilatedHeaders);
@@ -97,9 +97,6 @@ public class HeaderCleaner {
         LOGGER.entering(HeaderCleaner.class.getName(),
                         "isProtectedUrl",
                         new Object[] { privateUri, locationUri});
-
-        LOGGER.info("PROTECTEDURI: " +privateUri.getHost());
-        LOGGER.info("LOCATIONURI: "+ locationUri.getHost());
 
         boolean retVal = false;
         String hostname = locationUri.getHost();
