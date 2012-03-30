@@ -53,35 +53,24 @@ public class HeaderCleaner {
         LOGGER.entering(HeaderCleaner.class.getName(),
                 "maskLocationHeader",
                 new Object[] {response, configuration});
-
+        
         Map<String, String> originalHeaders = response.getHeaders();
-        URI locationUri = null;
-        URI privateUri = null;
-
         if (originalHeaders.containsKey("Location")) {
-            String location = originalHeaders.get("Location");
-
-            try {
-                privateUri = new URI(configuration.getProperty("privateURI"));
-                locationUri = new URI(location);
-            } catch (NullPointerException e) {
-                LOGGER.log(Level.SEVERE,
-                           "Received NullPointerException",
-                           e);
-            } catch (URISyntaxException e) {
-                LOGGER.log(Level.SEVERE,
-                           "Received URISyntaxException",
-                           e);
-            }
+            String locationUrl = originalHeaders.get("Location");
+            URI privateUri = SecureProxyUtilities.makeUriFromString(configuration.getProperty("privateURI"));
+            URI locationUri = SecureProxyUtilities.makeUriFromString(locationUrl);
 
             if (SecureProxyUtilities.isProtectedUrl(privateUri, locationUri)) {
-                String mutilatedUrl = configuration.getProperty("publicURI") + locationUri.getRawPath();
+                String mutilatedUrl = configuration.getProperty("publicURI")
+                                      + locationUri.getRawPath();
+                LOGGER.info("locationURI: "+locationUri.getRawPath());
+                LOGGER.info("mutilatedURI: "+mutilatedUrl);
                 HashMap<String, String> mutilatedHeaders = new HashMap(originalHeaders);
                 mutilatedHeaders.put("Location", mutilatedUrl);
                 response.setHeaders(mutilatedHeaders);
             }
-        }
 
+        }
         LOGGER.exiting(HeaderCleaner.class.getName(), "maskLocationHeader", response);
         return response;
     }
