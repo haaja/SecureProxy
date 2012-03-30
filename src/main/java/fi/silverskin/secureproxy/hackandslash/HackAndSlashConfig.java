@@ -25,15 +25,15 @@ public class HackAndSlashConfig {
         this.publicURI = SecureProxyUtilities.makeUriFromString(publicURI);
     }
      
-    public URI getpublicURI() {
+    public URI getPublicURI() {
         return publicURI;
     }
 
-    public String getprivatePort() {
+    public String getPrivatePort() {
         return privatePort;
     }
 
-    public URI getprivateURI() {
+    public URI getPrivateURI() {
         return privateURI;
     }
     

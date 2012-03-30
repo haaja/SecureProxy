@@ -32,9 +32,9 @@ public class HackAndSlash {
     private URI publicURI;
 
     public HackAndSlash(HackAndSlashConfig conf) {
-        privateURI = conf.getprivateURI();
-        privatePort = conf.getprivatePort();
-        publicURI = conf.getpublicURI();
+        privateURI = conf.getPrivateURI();
+        privatePort = conf.getPrivatePort();
+        publicURI = conf.getPublicURI();
     }
 
     /**
