@@ -61,8 +61,8 @@ public class HeaderCleaner {
             URI locationUri = SecureProxyUtilities.makeUriFromString(locationUrl);
 
             if (SecureProxyUtilities.isProtectedUrl(privateUri, locationUri)) {
-                String mutilatedUrl = configuration.getProperty("publicURI")
-                                      + locationUri.getRawPath();
+                String mutilatedUrl = buildMaskedUrl(locationUri, configuration);
+                
                 LOGGER.info("locationURI: "+locationUri.getRawPath());
                 LOGGER.info("mutilatedURI: "+mutilatedUrl);
                 HashMap<String, String> mutilatedHeaders = new HashMap(originalHeaders);
@@ -73,5 +73,16 @@ public class HeaderCleaner {
         }
         LOGGER.exiting(HeaderCleaner.class.getName(), "maskLocationHeader", response);
         return response;
+    }
+
+    private static String buildMaskedUrl(URI locationUri, Properties conf) {
+        LOGGER.entering(HeaderCleaner.class.getName(),
+                        "buildMaskedUrl",
+                        new Object[] {locationUri, conf});
+       
+        String maskedUrl = conf.getProperty("publicURI")+locationUri.getRawPath();
+
+        LOGGER.exiting(HeaderCleaner.class.getName(), "buildMaskedUrl", maskedUrl);
+        return maskedUrl;
     }
 }
