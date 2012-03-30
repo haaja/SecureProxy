@@ -27,6 +27,7 @@ public class EPICRequest extends EPICAbstraction {
     public EPICRequest(RequestType type, HashMap<String, String> headers, String body) {
         super(headers);
         this.body = body;
+        this.type = type;
     }
 
     /**
