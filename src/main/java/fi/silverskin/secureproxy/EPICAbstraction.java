@@ -32,26 +32,5 @@ public abstract class EPICAbstraction {
     public void setHeaders(HashMap<String, String> headers) {
         this.headers = headers;
     }
-
-    /**
-     * Returns the URI of the request or response.
-     *
-     * @return A string representation of the URI.
-     */
-    public URI getUri() {
-        LOGGER.entering(EPICAbstraction.class.getName(), "getUri");
-        LOGGER.exiting(EPICAbstraction.class.getName(), "getUri", uri);
-        return uri;
-    }
-
-    /**
-     * Sets the URI of the request or response.
-     *
-     * @param uri A string representation of the URI.
-     */
-    public void setUri(String uri) {
-        LOGGER.entering(EPICAbstraction.class.getName(), "setUri", uri);
-        this.uri = SecureProxyUtilities.makeUriFromString(uri);
-        LOGGER.exiting(EPICAbstraction.class.getName(), "setUri");
-    }   
+ 
 }

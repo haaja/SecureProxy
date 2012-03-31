@@ -88,4 +88,36 @@ public class EPICRequestTest {
                 ;
         assertEquals(controlCase, request.toString());
     }
+
+    /**
+     * Test of getUri method, of class EPICAbstraction.
+     */
+    @Test
+    public void testGetUri() {
+        HashMap <String, String> headers = new HashMap <String, String>();
+        headers.put("HEADER_1", "value 1");
+        headers.put("HEADER_2", "value 2");
+        String body = "Test case body";
+        String uri = "http://www.cs.helsinki.fi/opiskelu";
+        EPICRequest request = new EPICRequest(RequestType.GET, headers, body);
+        request.setUri(uri);
+        assertEquals(uri, request.getUri().toString());
+    }
+
+    /**
+     * Test of setUri method, of class EPICAbstraction.
+     */
+    @Test
+    public void testSetUri() {
+        HashMap <String, String> headers = new HashMap <String, String>();
+        headers.put("HEADER_1", "value 1");
+        headers.put("HEADER_2", "value 2");
+        String body = "Test case body";
+        String uri = "http://www.cs.helsinki.fi/opiskelu";
+        EPICRequest request = new EPICRequest(RequestType.POST,
+                                                  headers,
+                                                  body);
+        request.setUri(uri);
+        assertEquals(uri, request.getUri().toString());
+    }
 }

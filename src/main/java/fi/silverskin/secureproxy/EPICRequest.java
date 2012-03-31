@@ -1,5 +1,6 @@
 package fi.silverskin.secureproxy;
 
+import java.net.URI;
 import java.util.HashMap;
 import java.util.Map.Entry;
 import java.util.logging.Level;
@@ -12,6 +13,7 @@ public class EPICRequest extends EPICAbstraction {
     
     private String body;
     private RequestType type;
+    private URI uri;
     private static final Logger LOGGER = Logger.getLogger(EPICRequest.class.getName(), null);
 
     public EPICRequest(RequestType type) {
@@ -79,7 +81,29 @@ public class EPICRequest extends EPICAbstraction {
             LOGGER.log(Level.SEVERE, "Invalid request type: " +type);
             throw new RuntimeException("Invalid request type '"+type+"'");
                     
-    }    
+    }
+
+        /**
+     * Returns the URI of the request or response.
+     *
+     * @return A string representation of the URI.
+     */
+    public URI getUri() {
+        LOGGER.entering(EPICAbstraction.class.getName(), "getUri");
+        LOGGER.exiting(EPICAbstraction.class.getName(), "getUri", uri);
+        return uri;
+    }
+
+    /**
+     * Sets the URI of the request or response.
+     *
+     * @param uri A string representation of the URI.
+     */
+    public void setUri(String uri) {
+        LOGGER.entering(EPICAbstraction.class.getName(), "setUri", uri);
+        this.uri = SecureProxyUtilities.makeUriFromString(uri);
+        LOGGER.exiting(EPICAbstraction.class.getName(), "setUri");
+    }  
 
     /**
      * Returns a string representation of the request.
