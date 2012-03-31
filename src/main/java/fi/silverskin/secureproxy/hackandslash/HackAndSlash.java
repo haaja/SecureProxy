@@ -27,13 +27,19 @@ public class HackAndSlash {
     };
     private static final Logger LOGGER = Logger.getLogger(HackAndSlash.class.getName(), null);
     private URI privateURI;
-    private String privatePort;
+    private String privateHttpPort;
+    private String privateHttpsPort;
     private URI publicURI;
+    private String publicHttpPort;
+    private String publicHttpsPort;
 
     public HackAndSlash(HackAndSlashConfig conf) {
         privateURI = conf.getPrivateURI();
-        privatePort = conf.getPrivatePort();
+        privateHttpPort = conf.getPrivateHttpPort();
+        privateHttpsPort = conf.getPrivateHttpsPort();
         publicURI = conf.getPublicURI();
+        publicHttpPort = conf.getPublicHttpPort();
+        publicHttpsPort = conf.getPublicHttpsPort();
     }
 
     /**
@@ -47,7 +53,7 @@ public class HackAndSlash {
         String modifiedUri;
 
         URI uri = SecureProxyUtilities.makeUriFromString(request.getUri().toString());
-        modifiedUri = privateURI + ":" + privatePort + uri.getPath();
+        modifiedUri = privateURI + ":" + privateHttpPort + uri.getPath();
 
         if (uri.getQuery() != null) {
             modifiedUri = modifiedUri + "?" + uri.getQuery();
@@ -143,7 +149,14 @@ public class HackAndSlash {
         }
 
         if (parsedUri.isAbsolute()) {
-            maskedUri = publicURI + parsedUri.getPath();
+
+            String port = parsedUri.getScheme().equals("http") ?
+                          publicHttpPort : publicHttpsPort;
+            LOGGER.info("PORT: "+ port);
+            
+            maskedUri = parsedUri.getScheme() + "://" +
+                        publicURI.getHost() + ":" + port +
+                        parsedUri.getPath();
 
             //if url has query part
             if (parsedUri.getQuery() != null) {
@@ -154,11 +167,7 @@ public class HackAndSlash {
                 maskedUri = maskedUri + "#" + parsedUri.getFragment();
             }
         } else {
-            if (url.startsWith("/")) {
-                maskedUri = publicURI + url;
-            } else {
-                maskedUri = publicURI + "/" + url;
-            }
+            maskedUri = url;
         }
 
         LOGGER.log(Level.INFO, "Returning masked url: {0}", maskedUri);

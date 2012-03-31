@@ -8,37 +8,64 @@ import java.util.Properties;
 
 public class HackAndSlashConfig {
     private URI privateURI;
-    private String privatePort;
+    private String privateHttpPort;
+    private String privateHttpsPort;
     private URI publicURI;
+    private String publicHttpPort;
+    private String publicHttpsPort;
     
     public HackAndSlashConfig (Properties configuration) {
         String tmpPrivateUri = configuration.getProperty("privateURI").trim();
-        String tmpPrivatePort = configuration.getProperty("privatePort").trim();
+        String tmpPrivateHttpPort = configuration.getProperty("privateHttpPort").trim();
+        String tmpPrivateHttpsPort = configuration.getProperty("privateHttpsPort").trim();
         String tmpPublicUri = configuration.getProperty("publicURI").trim();
-        
+        String tmpPublicHttpPort = configuration.getProperty("publicHttpPort").trim();
+        String tmpPublicHttpsPort = configuration.getProperty("publicHttpsPort").trim();
+
         privateURI = SecureProxyUtilities.makeUriFromString(tmpPrivateUri);
-        privatePort = tmpPrivatePort;
+        privateHttpPort = tmpPrivateHttpPort;
+        privateHttpsPort = tmpPrivateHttpsPort;
         publicURI = SecureProxyUtilities.makeUriFromString(tmpPublicUri);
+        publicHttpPort = tmpPublicHttpPort;
+        publicHttpsPort = tmpPublicHttpsPort;
     }
 
     public HackAndSlashConfig(String privateURI, 
-                              String privatePort,
-                              String publicURI) {
+                              String privateHttpPort,
+                              String privateHttpsPort,
+                              String publicURI,
+                              String publicHttpPort,
+                              String publicHttpsPort) {
         this.privateURI = SecureProxyUtilities.makeUriFromString(privateURI);
-        this.privatePort = privatePort;
+        this.privateHttpPort = privateHttpPort;
+        this.privateHttpsPort = privateHttpsPort;
         this.publicURI = SecureProxyUtilities.makeUriFromString(publicURI);
+        this.publicHttpPort = publicHttpPort;
+        this.publicHttpsPort = publicHttpsPort;
     }
      
     public URI getPublicURI() {
         return publicURI;
     }
 
-    public String getPrivatePort() {
-        return privatePort;
+    public String getPublicHttpPort() {
+        return publicHttpPort;
+    }
+
+    public String getPublicHttpsPort() {
+        return publicHttpsPort;
     }
 
     public URI getPrivateURI() {
         return privateURI;
+    }
+
+    public String getPrivateHttpPort() {
+        return privateHttpPort;
+    }
+
+    public String getPrivateHttpsPort() {
+        return this.privateHttpsPort;
     }
     
 }
