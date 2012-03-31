@@ -3,7 +3,6 @@ package fi.silverskin.secureproxy;
 import fi.silverskin.secureproxy.hackandslash.HackAndSlash;
 import fi.silverskin.secureproxy.hackandslash.HackAndSlashConfig;
 import fi.silverskin.secureproxy.resourcefetcher.ResourceFetcher;
-import java.net.URISyntaxException;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -16,7 +15,7 @@ public class ProxyController {
     private ProxyConfigurer configurer;
     private Properties configuration;
  
-    public ProxyController() throws URISyntaxException {
+    public ProxyController() {
         fetcher = new ResourceFetcher();
         configurer = new ProxyConfigurer();
         configuration = configurer.getConfigurationProperties();

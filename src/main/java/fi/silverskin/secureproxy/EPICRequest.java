@@ -1,5 +1,6 @@
 package fi.silverskin.secureproxy;
 
+import java.net.URI;
 import java.util.HashMap;
 import java.util.Map.Entry;
 import java.util.logging.Level;
@@ -12,6 +13,7 @@ public class EPICRequest extends EPICAbstraction {
     
     private String body;
     private RequestType type;
+    private URI uri;
     private static final Logger LOGGER = Logger.getLogger(EPICRequest.class.getName(), null);
 
     public EPICRequest(RequestType type) {
@@ -27,6 +29,7 @@ public class EPICRequest extends EPICAbstraction {
     public EPICRequest(RequestType type, HashMap<String, String> headers, String body) {
         super(headers);
         this.body = body;
+        this.type = type;
     }
 
     /**
@@ -78,7 +81,29 @@ public class EPICRequest extends EPICAbstraction {
             LOGGER.log(Level.SEVERE, "Invalid request type: " +type);
             throw new RuntimeException("Invalid request type '"+type+"'");
                     
-    }    
+    }
+
+        /**
+     * Returns the URI of the request or response.
+     *
+     * @return A string representation of the URI.
+     */
+    public URI getUri() {
+        LOGGER.entering(EPICAbstraction.class.getName(), "getUri");
+        LOGGER.exiting(EPICAbstraction.class.getName(), "getUri", uri);
+        return uri;
+    }
+
+    /**
+     * Sets the URI of the request or response.
+     *
+     * @param uri A string representation of the URI.
+     */
+    public void setUri(String uri) {
+        LOGGER.entering(EPICAbstraction.class.getName(), "setUri", uri);
+        this.uri = SecureProxyUtilities.makeUriFromString(uri);
+        LOGGER.exiting(EPICAbstraction.class.getName(), "setUri");
+    }  
 
     /**
      * Returns a string representation of the request.
@@ -90,9 +115,7 @@ public class EPICRequest extends EPICAbstraction {
         StringBuilder sb = new StringBuilder();
         
         sb.append("Type: ").append(type).append('\n');
-        
-        sb.append("URI : ").append(getUri()).append('\n');
-        
+        sb.append("URI : ").append(getUri().toString()).append('\n');
         sb.append("Headers:\n");
         for(Entry entry : getHeaders().entrySet()) {
             sb.append('\t').append(entry.getKey()).append(":").append(entry.getValue()).append('\n');

@@ -1,11 +1,9 @@
 package fi.silverskin.secureproxy;
 
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class HeaderCleaner {
@@ -41,73 +39,67 @@ public class HeaderCleaner {
         return request;
     }
 
-        /**
+    /**
      * Masks Location header url if it contains our protected url
      * @param response HTTP response received from the protected service
      * @param configuration Configuration of our proxy
-     * @return
+     * @return Response with location header masked if needed or original
+     *         response
      */
     public static EPICResponse maskLocationHeader(EPICResponse response,
                                                Properties configuration) {
         LOGGER.entering(HeaderCleaner.class.getName(),
                 "maskLocationHeader",
                 new Object[] {response, configuration});
-
+        
         Map<String, String> originalHeaders = response.getHeaders();
-        URI locationUri = null;
-        URI privateUri = null;
-
         if (originalHeaders.containsKey("Location")) {
-            String location = originalHeaders.get("Location");
+            String locationUrl = originalHeaders.get("Location");
+            URI privateUri = SecureProxyUtilities.makeUriFromString(configuration.getProperty("privateURI"));
+            URI locationUri = SecureProxyUtilities.makeUriFromString(locationUrl);
 
-            try {
-                privateUri = new URI(configuration.getProperty("privateURI"));
-                locationUri = new URI(location);
-            } catch (NullPointerException e) {
-                LOGGER.log(Level.SEVERE,
-                           "Received NullPointerException",
-                           e);
-            } catch (URISyntaxException e) {
-                LOGGER.log(Level.SEVERE,
-                           "Received URISyntaxException",
-                           e);
-            }
-
-            if (isProtectedUrl(privateUri, locationUri)) {
-                String mutilatedUrl = configuration.getProperty("publicURI") + locationUri.getRawPath();
+            if (SecureProxyUtilities.isProtectedUrl(privateUri, locationUri)) {
+                String mutilatedUrl = buildMaskedLocationUrl(locationUri, configuration);
                 HashMap<String, String> mutilatedHeaders = new HashMap(originalHeaders);
                 mutilatedHeaders.put("Location", mutilatedUrl);
                 response.setHeaders(mutilatedHeaders);
             }
-        }
 
+        }
         LOGGER.exiting(HeaderCleaner.class.getName(), "maskLocationHeader", response);
         return response;
     }
 
-    /**
-     * Checks if uri is protected uri
-     *
-     * @param protectedUri Url of the protected service
-     * @param locationUri  Url in the location header
-     * @return true if location url is the one we are protecting, otherwise
-     *         false
-     */
-    private static boolean isProtectedUrl(URI privateUri, URI locationUri) {
-        LOGGER.entering(HeaderCleaner.class.getName(),
-                        "isProtectedUrl",
-                        new Object[] { privateUri, locationUri});
+    private static String buildMaskedLocationUrl(URI locationUri,
+                                                 Properties conf) {
+        LOGGER.entering(HeaderCleaner.class.getName(), 
+                        "buildMaskedUrl",
+                        new Object[] {locationUri, conf});
+        URI publicUri = null;
+        String maskedUrl = null;
 
-        boolean retVal = false;
-        String hostname = locationUri.getHost();
-
-        if (hostname.equals(privateUri.getHost())) {
-            retVal = true;
+        if (locationUri.isAbsolute()) {
+            publicUri = SecureProxyUtilities.makeUriFromString(conf.getProperty("publicURI"));
+            String scheme = locationUri.getScheme();
+            String port;
+            if (scheme != null) {
+                port = scheme.equals("http") ? 
+                       conf.getProperty("publicHttpPort") :
+                       conf.getProperty("publicHttpsPort");
+                maskedUrl = scheme + "://" +
+                            publicUri.getHost() +
+                            ":" + port +
+                            locationUri.getRawPath();
+            }
         } else {
-            retVal = false;
+            /* Should never go here as location header is required to be absolute
+             * Nevertheless assuming HTTP protocol
+             */
+            maskedUrl = "http://" + publicUri.getHost() + locationUri.getRawPath();
         }
 
-        LOGGER.exiting(HeaderCleaner.class.getName(), "isProtectedUrl", retVal);
-        return retVal;
+        LOGGER.info("MaskedUrlBuilt: " + maskedUrl);
+        LOGGER.exiting(HeaderCleaner.class.getName(), "buildMaskedUrl", maskedUrl);
+        return maskedUrl;
     }
 }

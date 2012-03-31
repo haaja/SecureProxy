@@ -67,8 +67,7 @@ public class EPICTextResponseTest {
         headers.put("HEADER_2", "value 2");
         String body = "Test case body";
         EPICTextResponse response = new EPICTextResponse(headers, body);
-        String controlCase = "URI : \n"
-                + "Headers:\n"
+        String controlCase = "Headers:\n"
                 + "\tHEADER_1:value 1\n"
                 + "\tHEADER_2:value 2\n"
                 + "Body:\n"

@@ -2,10 +2,8 @@ package fi.silverskin.secureproxy.hackandslash;
 
 import fi.silverskin.secureproxy.EPICRequest;
 import fi.silverskin.secureproxy.EPICTextResponse;
-import java.net.MalformedURLException;
+import fi.silverskin.secureproxy.SecureProxyUtilities;
 import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
 import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -29,13 +27,19 @@ public class HackAndSlash {
     };
     private static final Logger LOGGER = Logger.getLogger(HackAndSlash.class.getName(), null);
     private URI privateURI;
-    private String privatePort;
+    private String privateHttpPort;
+    private String privateHttpsPort;
     private URI publicURI;
+    private String publicHttpPort;
+    private String publicHttpsPort;
 
     public HackAndSlash(HackAndSlashConfig conf) {
-        privateURI = conf.getprivateURI();
-        privatePort = conf.getprivatePort();
-        publicURI = conf.getpublicURI();
+        privateURI = conf.getPrivateURI();
+        privateHttpPort = conf.getPrivateHttpPort();
+        privateHttpsPort = conf.getPrivateHttpsPort();
+        publicURI = conf.getPublicURI();
+        publicHttpPort = conf.getPublicHttpPort();
+        publicHttpsPort = conf.getPublicHttpsPort();
     }
 
     /**
@@ -46,23 +50,34 @@ public class HackAndSlash {
      */
     public EPICRequest hackAndSlashIn(EPICRequest request) {
         LOGGER.entering(HackAndSlash.class.getName(), "hackAndSlashIn", request);
-        String modifiedUri;
-        try {
-            URI uri = new URI(request.getUri());
-            modifiedUri = privateURI + ":" + privatePort + uri.getPath();
-            if (uri.getQuery() != null) {
-                modifiedUri = modifiedUri + "?" + uri.getQuery();
-            }
-            if (uri.getFragment() != null) {
-                modifiedUri = modifiedUri + "#" + uri.getFragment();
-            }
 
-            request.setUri(modifiedUri);
-            LOGGER.info("HackAndSlashIn modified URI: " + request.getUri().toString());
-        } catch (URISyntaxException ex) {
-            LOGGER.log(Level.SEVERE, null, ex);
+        URI uri = request.getUri();
+        String modifiedUri;
+
+        if (uri.getScheme() != null) {
+            String port = uri.getScheme().equals("http") ? privateHttpPort : privateHttpsPort;
+            LOGGER.info("hackAndSlashIn port: " + port);
+            modifiedUri = uri.getScheme() + "://"
+                          + privateURI.getHost()
+                          + ":" + port
+                          + uri.getPath();
+        } else {
+            LOGGER.info("hackAndSlashIn got relative url as param");
+            modifiedUri = "http://"
+                          + privateURI.getHost()
+                          + ":" + privateHttpPort
+                          + uri.getPath();
         }
 
+        if (uri.getQuery() != null) {
+            modifiedUri = modifiedUri + "?" + uri.getQuery();
+        }
+        if (uri.getFragment() != null) {
+            modifiedUri = modifiedUri + "#" + uri.getFragment();
+        }
+
+        request.setUri(modifiedUri);
+        LOGGER.info("HackAndSlashIn modified URI: " + request.getUri().toString());
         LOGGER.exiting(HackAndSlash.class.getName(), "hackAndSlashIn", request);
 
         return request;
@@ -76,8 +91,23 @@ public class HackAndSlash {
      */
     public EPICTextResponse hackAndSlashOut(EPICTextResponse response) {
         LOGGER.entering(HackAndSlash.class.getName(), "hackAndSlashOut", response);
-        String oldResponse = response.getBody(), newResponse = "";
+        String oldResponse = response.getBody();
         oldResponse = convertCss(oldResponse);
+        oldResponse = convertTags(oldResponse);
+        response.setBody(oldResponse);
+        response = updateContentLength(response);
+        LOGGER.exiting(HackAndSlash.class.getName(), "hackAndSlashOut", response);
+        return response;
+    }
+    
+    /**
+     * Changes URIs in HTML tags
+     * 
+     * @param oldResponse HTML page
+     * @return HTML page with masked URIs
+     */
+    public String convertTags(String oldResponse){
+        String newResponse = "";
         for (int i = 0; i < tagsAndAttributes.length; i++) {
             newResponse = "";
             // Find all strings beginning with '<', containing a tag keyword and ending with '>'
@@ -103,11 +133,7 @@ public class HackAndSlash {
             }
             oldResponse = newResponse;
         }
-        response.setBody(newResponse);
-        response = updateContentLength(response);
-
-        LOGGER.exiting(HackAndSlash.class.getName(), "hackAndSlashOut", response);
-        return response;
+        return newResponse;
     }
 
     /**
@@ -130,14 +156,20 @@ public class HackAndSlash {
             return url;
         }
 
-        URI parsedUri = makeUriFromString(url);
-
-        if (!isProtectedUrl(parsedUri)) {
+        URI parsedUri = SecureProxyUtilities.makeUriFromString(url);
+        if (!SecureProxyUtilities.isProtectedUrl(privateURI, parsedUri)) {
             return url;
         }
 
         if (parsedUri.isAbsolute()) {
-            maskedUri = publicURI + parsedUri.getPath();
+
+            String port = parsedUri.getScheme().equals("http") ?
+                          publicHttpPort : publicHttpsPort;
+            LOGGER.info("PORT: "+ port);
+            
+            maskedUri = parsedUri.getScheme() + "://" +
+                        publicURI.getHost() + ":" + port +
+                        parsedUri.getPath();
 
             //if url has query part
             if (parsedUri.getQuery() != null) {
@@ -148,11 +180,7 @@ public class HackAndSlash {
                 maskedUri = maskedUri + "#" + parsedUri.getFragment();
             }
         } else {
-            if (url.startsWith("/")) {
-                maskedUri = publicURI + url;
-            } else {
-                maskedUri = publicURI + "/" + url;
-            }
+            maskedUri = url;
         }
 
         LOGGER.log(Level.INFO, "Returning masked url: {0}", maskedUri);
@@ -161,44 +189,16 @@ public class HackAndSlash {
         return maskedUri;
     }
 
-    /**
-     * Checks if url is own by protected service
-     *
-     * @param url Original URI
-     * @return
-     */
-    private boolean isProtectedUrl(URI url) {
-        LOGGER.entering(HackAndSlash.class.getName(), "isProtectedUrl", url);
-
-        if (!url.isAbsolute()) {
-            return true;
-        }
-
-        String hostname = url.getHost();
-        LOGGER.info("Hostname: " + hostname);
-        LOGGER.info("privateURI hostname: " + privateURI.getHost());
-
-        if (hostname.equals(privateURI.getHost())) {
-            LOGGER.exiting(HackAndSlash.class.getName(), "isProtectedUrl", true);
-            return true;
-        } else {
-            LOGGER.exiting(HackAndSlash.class.getName(), "isProtectedUrl", false);
-            return false;
-        }
-    }
-
     private boolean hasInvalidProtocol(String url) {
         LOGGER.entering(HackAndSlash.class.getName(), "hasInvalidProtocol", url);
         boolean retVal = false;
 
-        if (url.startsWith("mailto:")) {
-            retVal = true;
-        }
         /*
          * this came up on cs.helsinki.fi: <a
          * href="mailto:it-web[at-remove]cs.helsinki.fi">Webmaster</a> there
          * might be more special cases and we need to take them into acount
-         */ else if (url.startsWith("mailto:")) {
+         */
+        if (url.startsWith("mailto:")) {
             retVal = true;
         }
         /*
@@ -216,7 +216,13 @@ public class HackAndSlash {
         } else if (url.startsWith("javascript")) {
             retVal = true;
         }
-
+        /* Thank you CS department for your awesome www pages
+         * http://www.cs.helsinki.fi/story/63467/windows-phone-7-tutuksi-koodausleirill
+         */
+        else if (url.startsWith("http:///")) {
+            retVal = true;
+        }
+        
         LOGGER.exiting(HackAndSlash.class.getName(), "hasInvalidProtocol", retVal);
         return retVal;
     }
@@ -270,7 +276,7 @@ public class HackAndSlash {
             String url = sourceMatcher.group();
             // Cut off first and last character
             url = url.substring(1, url.length() - 1);
-            if (!url.equals("")) { System.out.println(url);
+            if (!url.equals("")) { 
                 url = getMaskedUrl(url.trim());
                 urlAttribute = urlAttribute.substring(0, sourceMatcher.start() + 1)+ url + urlAttribute.substring(sourceMatcher.end() - 1);
             }
@@ -278,39 +284,6 @@ public class HackAndSlash {
 
         LOGGER.exiting(HackAndSlash.class.getName(), "convertUrlInCss", urlAttribute);
         return urlAttribute;
-    }
-
-    /*
-     * Tries to make URI object from String
-     * @param url URL in string
-     * @return URI object formed from the parameter or null
-     */
-    private URI makeUriFromString(String url) {
-        LOGGER.entering(HackAndSlash.class.getName(), "makeUriFromString", url);
-        URI uri = null;
-
-        try {
-            URL tempURL = new URL(url);
-            uri = new URI(tempURL.getProtocol(),
-                          tempURL.getAuthority(),
-                          tempURL.getPath(),
-                          tempURL.getQuery(),
-                          tempURL.getRef());
-        } catch (MalformedURLException ex) {
-            LOGGER.log(Level.SEVERE, "Received MalformedURLException with: " + url, ex);
-            try {
-                uri = new URI(url);
-            } catch (URISyntaxException e) {
-                LOGGER.log(Level.SEVERE, "Received URISyntaxException with: " + url, e);
-            } catch (NullPointerException e) {
-                LOGGER.log(Level.SEVERE, "Received NullPointerException with: " + url, e);
-            }
-        } catch (URISyntaxException ex) {
-                LOGGER.log(Level.SEVERE, "Received URISyntaxException with: " + url, ex);
-        }
-
-        LOGGER.exiting(HackAndSlash.class.getName(), "makeUriFromString", uri);
-        return uri;
     }
 
     /**
@@ -334,10 +307,10 @@ public class HackAndSlash {
             int attributeEnd = sourceMatcher.end();
             String temp = tag.substring(attributeStart, attributeEnd);
             // Extract attribute value(s) including possible quotation marks
-            Pattern urlPattern = Pattern.compile("(\"[^\"]+\")|(=(\\s)*[^\\s]*(\\s)+)");
+            Pattern urlPattern = Pattern.compile("(\"[^\"]+\")|(=(\\s)*[^\"][^\\s\"]*[^\"])");
             Matcher urlMatcher = urlPattern.matcher(temp);
-
-            if ((urlMatcher.find())) {
+            
+            if ((urlMatcher.find())) { 
                 String url = urlMatcher.group();
                 // Cut off first and last character
                 url = url.substring(1, url.length() - 1);

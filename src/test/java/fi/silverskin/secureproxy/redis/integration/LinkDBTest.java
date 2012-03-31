@@ -37,46 +37,47 @@ public class LinkDBTest {
         linkDB.flushAll();
     }
 
-    
+    @Ignore
     @Test
     public void testGlobalLinkDB() {
         linkDB.addLink("first_key", "first_value");
         assertEquals("Link pair should have been set.",
                 "first_key", linkDB.fetchOriginal("first_value"));
-        
+
         linkDB.addLink("first_key", "modified_value");
         assertEquals("Already added link pair should not be modified.",
                 "first_key", linkDB.fetchOriginal("first_value"));
         assertEquals("When adding with existing key, querying new value should give empty string.",
                 "", linkDB.fetchOriginal("modified_value"));
-        
+
         assertEquals("Not existing value should give empty string",
                 "", linkDB.fetchOriginal("not existing value"));
     }
 
-
+    @Ignore
     @Test
     public void testSessionLinkDB() {
         String session1 = "session00001";
         String session2 = "000002session";
         linkDB.addLink("first_key", "first_value", session1, 6000);
         linkDB.addLink("second_key", "second_value", session2, 6000);
-        
-        assertEquals("Link pair should have been set.", 
+
+        assertEquals("Link pair should have been set.",
                 "first_key", linkDB.fetchOriginal("first_value", session1));
-        assertEquals("Link pair should not be reached from global storage.", 
+        assertEquals("Link pair should not be reached from global storage.",
                 "", linkDB.fetchOriginal("first_value"));
-        assertEquals("Link pair should not be reached from not existing session.", 
+        assertEquals("Link pair should not be reached from not existing session.",
                 "", linkDB.fetchOriginal("first_value"));
-        assertEquals("Link pair should not be reached from another session.", 
+        assertEquals("Link pair should not be reached from another session.",
                 "", linkDB.fetchOriginal("first_value", session2));
     }
-    
+
+    @Ignore
     @Test
     public void testSessionLinkDBTimeouts() throws InterruptedException {
         linkDB.addLink("first_key", "first_value", "sessionid", 1);
         Thread.sleep(2000);
-        assertEquals("Session should have expired.", 
+        assertEquals("Session should have expired.",
                 "", linkDB.fetchOriginal("first_value", "sessionid"));
     }
 }

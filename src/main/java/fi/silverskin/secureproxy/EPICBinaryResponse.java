@@ -58,7 +58,6 @@ public class EPICBinaryResponse extends EPICResponse {
     public String toString() {
         StringBuilder sb = new StringBuilder();
 
-        sb.append("URI : ").append(getUri()).append('\n');
         sb.append("Headers:\n");
         for (Map.Entry entry : getHeaders().entrySet()) {
             sb.append('\t').append(entry.getKey()).append(":").append(entry.getValue()).append('\n');

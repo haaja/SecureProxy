@@ -19,6 +19,8 @@ public class ResourceFetcher {
     public ResourceFetcher() {
         httpclient = new CachingHttpClient();
         httpclient.getParams().removeParameter("http.useragent");
+        httpclient.getParams().setBooleanParameter("http.protocol.handle-redirects",
+                                                   false);
     }
 
     /**
@@ -55,7 +57,7 @@ public class ResourceFetcher {
         LOGGER.entering(ResourceFetcher.class.getName(), "handleGet", req);
         EPICResponse retVal = null;
         try {
-            LOGGER.log(Level.INFO, "GET Request \"{0}\"", req.getUri());
+            LOGGER.log(Level.INFO, "GET Request \"{0}\"", req.getUri().toString());
             LOGGER.log(Level.INFO, "Request Headers {0}", req.getHeaders());
 
             HttpGet get = new HttpGet(req.getUri());
@@ -91,7 +93,7 @@ public class ResourceFetcher {
     private EPICResponse handlePost(EPICRequest req) {
 
         try {
-            LOGGER.log(Level.INFO, "POST Request \"" + req.getUri() +"\"");
+            LOGGER.log(Level.INFO, "POST Request \"" + req.getUri().toString() +"\"");
             HttpPost post = new HttpPost(req.getUri());
             FetcherUtilities.copyHeaders(req, post);
             FetcherUtilities.copyBody(req, post);
@@ -116,7 +118,7 @@ public class ResourceFetcher {
     private EPICResponse handlePut(EPICRequest req) {
 
         try {
-            LOGGER.log(Level.INFO, "PUT Request \"" + req.getUri() +"\"");
+            LOGGER.log(Level.INFO, "PUT Request \"" + req.getUri().toString() +"\"");
             HttpPut put = new HttpPut(req.getUri());
             FetcherUtilities.copyHeaders(req, put);
             FetcherUtilities.copyBody(req, put);
@@ -140,7 +142,7 @@ public class ResourceFetcher {
      */
     private EPICResponse handleDelete(EPICRequest req) {
         try {
-            LOGGER.log(Level.INFO, "DELETE Request \"" + req.getUri() +"\"");
+            LOGGER.log(Level.INFO, "DELETE Request \"" + req.getUri().toString() +"\"");
             HttpDelete delete = new HttpDelete(req.getUri());
             FetcherUtilities.copyHeaders(req, delete);
             HttpResponse res = httpclient.execute(delete);
@@ -163,7 +165,7 @@ public class ResourceFetcher {
      */
     private EPICResponse handleHead(EPICRequest req) {
         try {
-            LOGGER.log(Level.INFO, "HEAD Request \"" + req.getUri() +"\"");
+            LOGGER.log(Level.INFO, "HEAD Request \"" + req.getUri().toString() +"\"");
             HttpHead head = new HttpHead(req.getUri());
             FetcherUtilities.copyHeaders(req, head);
             HttpResponse res = httpclient.execute(head);

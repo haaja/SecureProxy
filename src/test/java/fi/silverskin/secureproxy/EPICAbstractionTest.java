@@ -60,28 +60,6 @@ public class EPICAbstractionTest {
         assertEquals(controlHeaders, abstraction.getHeaders());
     }
 
-    /**
-     * Test of getUri method, of class EPICAbstraction.
-     */
-    @Test
-    public void testGetUri() {
-        String uri = "http://www.cs.helsinki.fi/opiskelu";
-        EPICAbstraction abstraction = new EPICAbstractionImpl();
-        abstraction.setUri(uri);
-        assertEquals(uri, abstraction.getUri());
-    }
-
-    /**
-     * Test of setUri method, of class EPICAbstraction.
-     */
-    @Test
-    public void testSetUri() {
-        String uri = "http://www.cs.helsinki.fi/opiskelu";
-        EPICAbstraction abstraction = new EPICAbstractionImpl();
-        abstraction.setUri(uri);
-        assertEquals(uri, abstraction.getUri());
-    }
-
     public class EPICAbstractionImpl extends EPICAbstraction {
         public EPICAbstractionImpl(HashMap<String, String> headers) {
             this.headers = headers;
