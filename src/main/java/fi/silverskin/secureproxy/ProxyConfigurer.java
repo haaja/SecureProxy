@@ -104,6 +104,6 @@ public class ProxyConfigurer {
      *         cannot be found
      */
     public String getProperty(String key) {
-        return configures.getProperty(key);
+        return configures.getProperty(key).trim();
     }
 }

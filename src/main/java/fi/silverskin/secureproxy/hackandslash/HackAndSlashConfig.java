@@ -12,9 +12,13 @@ public class HackAndSlashConfig {
     private URI publicURI;
     
     public HackAndSlashConfig (Properties configuration) {
-        privateURI = SecureProxyUtilities.makeUriFromString(configuration.getProperty("privateURI"));
-        privatePort = configuration.getProperty("privatePort");
-        publicURI = SecureProxyUtilities.makeUriFromString(configuration.getProperty("publicURI"));
+        String tmpPrivateUri = configuration.getProperty("privateURI").trim();
+        String tmpPrivatePort = configuration.getProperty("privatePort").trim();
+        String tmpPublicUri = configuration.getProperty("publicURI").trim();
+        
+        privateURI = SecureProxyUtilities.makeUriFromString(tmpPrivateUri);
+        privatePort = tmpPrivatePort;
+        publicURI = SecureProxyUtilities.makeUriFromString(tmpPublicUri);
     }
 
     public HackAndSlashConfig(String privateURI, 
