@@ -1,11 +1,9 @@
 package fi.silverskin.secureproxy;
 
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class HeaderCleaner {
@@ -61,10 +59,7 @@ public class HeaderCleaner {
             URI locationUri = SecureProxyUtilities.makeUriFromString(locationUrl);
 
             if (SecureProxyUtilities.isProtectedUrl(privateUri, locationUri)) {
-                String mutilatedUrl = buildMaskedUrl(locationUri, configuration);
-                
-                LOGGER.info("locationURI: "+locationUri.getRawPath());
-                LOGGER.info("mutilatedURI: "+mutilatedUrl);
+                String mutilatedUrl = buildMaskedLocationUrl(locationUri, configuration);
                 HashMap<String, String> mutilatedHeaders = new HashMap(originalHeaders);
                 mutilatedHeaders.put("Location", mutilatedUrl);
                 response.setHeaders(mutilatedHeaders);
@@ -75,13 +70,35 @@ public class HeaderCleaner {
         return response;
     }
 
-    private static String buildMaskedUrl(URI locationUri, Properties conf) {
-        LOGGER.entering(HeaderCleaner.class.getName(),
+    private static String buildMaskedLocationUrl(URI locationUri,
+                                                 Properties conf) {
+        LOGGER.entering(HeaderCleaner.class.getName(), 
                         "buildMaskedUrl",
                         new Object[] {locationUri, conf});
-       
-        String maskedUrl = conf.getProperty("publicURI")+locationUri.getRawPath();
+        URI publicUri = null;
+        String maskedUrl = null;
 
+        if (locationUri.isAbsolute()) {
+            publicUri = SecureProxyUtilities.makeUriFromString(conf.getProperty("publicURI"));
+            String scheme = locationUri.getScheme();
+            String port;
+            if (scheme != null) {
+                port = scheme.equals("http") ? 
+                       conf.getProperty("publicHttpPort") :
+                       conf.getProperty("publicHttpsPort");
+                maskedUrl = scheme + "://" +
+                            publicUri.getHost() +
+                            ":" + port +
+                            locationUri.getRawPath();
+            }
+        } else {
+            /* Should never go here as location header is required to be absolute
+             * Nevertheless assuming HTTP protocol
+             */
+            maskedUrl = "http://" + publicUri.getHost() + locationUri.getRawPath();
+        }
+
+        LOGGER.info("MaskedUrlBuilt: " + maskedUrl);
         LOGGER.exiting(HeaderCleaner.class.getName(), "buildMaskedUrl", maskedUrl);
         return maskedUrl;
     }

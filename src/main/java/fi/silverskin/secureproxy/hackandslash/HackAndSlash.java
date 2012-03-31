@@ -50,10 +50,24 @@ public class HackAndSlash {
      */
     public EPICRequest hackAndSlashIn(EPICRequest request) {
         LOGGER.entering(HackAndSlash.class.getName(), "hackAndSlashIn", request);
+
+        URI uri = request.getUri();
         String modifiedUri;
 
-        URI uri = SecureProxyUtilities.makeUriFromString(request.getUri().toString());
-        modifiedUri = privateURI + ":" + privateHttpPort + uri.getPath();
+        if (uri.getScheme() != null) {
+            String port = uri.getScheme().equals("http") ? privateHttpPort : privateHttpsPort;
+            LOGGER.info("hackAndSlashIn port: " + port);
+            modifiedUri = uri.getScheme() + "://"
+                          + privateURI.getHost()
+                          + ":" + port
+                          + uri.getPath();
+        } else {
+            LOGGER.info("hackAndSlashIn got relative url as param");
+            modifiedUri = "http://"
+                          + privateURI.getHost()
+                          + ":" + privateHttpPort
+                          + uri.getPath();
+        }
 
         if (uri.getQuery() != null) {
             modifiedUri = modifiedUri + "?" + uri.getQuery();
@@ -64,7 +78,6 @@ public class HackAndSlash {
 
         request.setUri(modifiedUri);
         LOGGER.info("HackAndSlashIn modified URI: " + request.getUri().toString());
-
         LOGGER.exiting(HackAndSlash.class.getName(), "hackAndSlashIn", request);
 
         return request;
@@ -180,14 +193,12 @@ public class HackAndSlash {
         LOGGER.entering(HackAndSlash.class.getName(), "hasInvalidProtocol", url);
         boolean retVal = false;
 
-        if (url.startsWith("mailto:")) {
-            retVal = true;
-        }
         /*
          * this came up on cs.helsinki.fi: <a
          * href="mailto:it-web[at-remove]cs.helsinki.fi">Webmaster</a> there
          * might be more special cases and we need to take them into acount
-         */ else if (url.startsWith("mailto:")) {
+         */
+        if (url.startsWith("mailto:")) {
             retVal = true;
         }
         /*
@@ -205,7 +216,13 @@ public class HackAndSlash {
         } else if (url.startsWith("javascript")) {
             retVal = true;
         }
-
+        /* Thank you CS department for your awesome www pages
+         * http://www.cs.helsinki.fi/story/63467/windows-phone-7-tutuksi-koodausleirill
+         */
+        else if (url.startsWith("http:///")) {
+            retVal = true;
+        }
+        
         LOGGER.exiting(HackAndSlash.class.getName(), "hasInvalidProtocol", retVal);
         return retVal;
     }
