@@ -4,7 +4,6 @@ import fi.silverskin.secureproxy.EPICRequest;
 import fi.silverskin.secureproxy.EPICTextResponse;
 import fi.silverskin.secureproxy.SecureProxyUtilities;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -47,7 +46,7 @@ public class HackAndSlash {
         LOGGER.entering(HackAndSlash.class.getName(), "hackAndSlashIn", request);
         String modifiedUri;
 
-        URI uri = SecureProxyUtilities.makeUriFromString(request.getUri());
+        URI uri = SecureProxyUtilities.makeUriFromString(request.getUri().toString());
         modifiedUri = privateURI + ":" + privatePort + uri.getPath();
 
         if (uri.getQuery() != null) {

@@ -38,13 +38,10 @@ public abstract class EPICAbstraction {
      *
      * @return A string representation of the URI.
      */
-    public String getUri() {
+    public URI getUri() {
         LOGGER.entering(EPICAbstraction.class.getName(), "getUri");
-        if (uri == null) {
-            return "";
-        }
-        LOGGER.exiting(EPICAbstraction.class.getName(), "getUri", uri.toString());
-        return uri.toString();
+        LOGGER.exiting(EPICAbstraction.class.getName(), "getUri", uri);
+        return uri;
     }
 
     /**

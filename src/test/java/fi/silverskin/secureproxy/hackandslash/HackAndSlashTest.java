@@ -76,7 +76,7 @@ public class HackAndSlashTest {
                                 path.getPath();
         
             EPICRequest resultRequest = has.hackAndSlashIn(this.request);
-            assertEquals(controlUrl, resultRequest.getUri());
+            assertEquals(controlUrl, resultRequest.getUri().toString());
         } catch (URISyntaxException ex) { 
             fail(); 
         }

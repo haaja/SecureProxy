@@ -68,7 +68,7 @@ public class EPICAbstractionTest {
         String uri = "http://www.cs.helsinki.fi/opiskelu";
         EPICAbstraction abstraction = new EPICAbstractionImpl();
         abstraction.setUri(uri);
-        assertEquals(uri, abstraction.getUri());
+        assertEquals(uri, abstraction.getUri().toString());
     }
 
     /**
@@ -79,7 +79,7 @@ public class EPICAbstractionTest {
         String uri = "http://www.cs.helsinki.fi/opiskelu";
         EPICAbstraction abstraction = new EPICAbstractionImpl();
         abstraction.setUri(uri);
-        assertEquals(uri, abstraction.getUri());
+        assertEquals(uri, abstraction.getUri().toString());
     }
 
     public class EPICAbstractionImpl extends EPICAbstraction {

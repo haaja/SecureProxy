@@ -77,8 +77,9 @@ public class EPICRequestTest {
         headers.put("HEADER_2", "value 2");
         String body = "Test case body";
         EPICRequest request = new EPICRequest(RequestType.POST, headers, body);
+        request.setUri("http://www.cs.helsinki.fi");
         String controlCase = "Type: POST\n"
-                + "URI : \n"
+                + "URI : http://www.cs.helsinki.fi\n"
                 + "Headers:\n"
                 + "\tHEADER_1:value 1\n"
                 + "\tHEADER_2:value 2\n"
