@@ -19,7 +19,13 @@ import org.apache.http.util.EntityUtils;
 public class FetcherUtilities {
 
     private static final Logger LOGGER = Logger.getLogger(FetcherUtilities.class.getName(), null);
-  
+
+    /**
+     * Checks if the reponse contains text or binary data
+     *
+     * @param response HTTP response received from httpclient
+     * @return true if content is text, otherwise false
+     */
     public static boolean contentIsText(HttpResponse response) {
         LOGGER.entering(FetcherUtilities.class.getName(), "contextIsText", response);
         Header contentType = response.getFirstHeader("content-type");
@@ -36,6 +42,12 @@ public class FetcherUtilities {
         return false;
     }
 
+    /**
+     * Converts HttpResponse to EPICTextResponse
+     *
+     * @param response HTTP response received from httpclient
+     * @return Supplied HTTP response in EPICTextResponse format
+     */
     public static EPICTextResponse toEPICText(HttpResponse response) {
         LOGGER.entering(FetcherUtilities.class.getName(), "toEPICText", response);
         EPICTextResponse e = new EPICTextResponse();
@@ -54,7 +66,12 @@ public class FetcherUtilities {
         return e;
     }
 
-    
+    /**
+     * Converts HttpResponse  to EPICBinaryResponse
+     *
+     * @param response HTTP response received from httpclient
+     * @return Supplied HTTP response in EPICBinaryResponse format
+     */
     public static EPICBinaryResponse toEPICBinary(HttpResponse response) {
         LOGGER.entering(FetcherUtilities.class.getName(), "toEPICBinary", response);
         EPICBinaryResponse e = new EPICBinaryResponse();
@@ -75,6 +92,12 @@ public class FetcherUtilities {
         return e;
     }
 
+    /**
+     * Returns the body of the HttpEntity
+     *
+     * @param e
+     * @return Body of the HTTP entity as String
+     */
     public static String getBody(HttpEntity e) {
         LOGGER.entering(FetcherUtilities.class.getName(), "getBody", e);
         StringBuilder sb = null;
@@ -100,7 +123,13 @@ public class FetcherUtilities {
         LOGGER.exiting(FetcherUtilities.class.getName(), "getBody", sb.toString());
         return sb.toString();
     }
-
+    
+    /**
+     * Returns headers of the HttpResponse
+     *
+     * @param e HTTP response received from httpclient
+     * @return HashMap containing response headers
+     */
     public static HashMap<String, String> getHeaders(HttpResponse e) {
         LOGGER.entering(FetcherUtilities.class.getName(), "getHeaders", e);
         Header[] headers = e.getAllHeaders();
@@ -113,6 +142,12 @@ public class FetcherUtilities {
         return map;
     }
 
+    /**
+     * Copies headers from EPICRequest to HttpRequest
+     *
+     * @param epic Request where headers are to be copied from
+     * @param req Request where headers are to be copied to
+     */
     public static void copyHeaders(EPICRequest epic, HttpRequest req) {
         LOGGER.entering(FetcherUtilities.class.getName(), "copyHeaders", new Object[] {epic, req});
         for (Map.Entry<String, String> k : epic.getHeaders().entrySet()) {

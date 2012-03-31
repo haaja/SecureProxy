@@ -33,8 +33,9 @@ public class EPICResponse extends EPICAbstraction {
 
 
     /**
-     * Set HTTP status code
-     * @param statusCode
+     * Sets HTTP status code
+     *
+     * @param statusCode HTTP status code of the response
      */
     public void setStatusCode(int statusCode) {
         this.statusCode = statusCode;
@@ -42,6 +43,7 @@ public class EPICResponse extends EPICAbstraction {
 
     /**
      * Get HTTP status code
+     * 
      * @return HTTP status code of the response
      */
     public int getStatusCode() {

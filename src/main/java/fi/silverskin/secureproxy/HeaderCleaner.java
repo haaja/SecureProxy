@@ -13,6 +13,7 @@ public class HeaderCleaner {
 
     /**
      * Cleans request headers of everything else except the required ones.
+     * 
      * @param request Original HTTP request
      * @return HTTP request with cleaned headers
      */
@@ -41,6 +42,7 @@ public class HeaderCleaner {
 
     /**
      * Masks Location header url if it contains our protected url
+     * 
      * @param response HTTP response received from the protected service
      * @param configuration Configuration of our proxy
      * @return Response with location header masked if needed or original
@@ -70,6 +72,13 @@ public class HeaderCleaner {
         return response;
     }
 
+    /**
+     * Builds masked location url
+     * 
+     * @param locationUri Real location url found in response headers
+     * @param conf Configuration properties
+     * @return Masked location url
+     */
     private static String buildMaskedLocationUrl(URI locationUri,
                                                  Properties conf) {
         LOGGER.entering(HeaderCleaner.class.getName(), 
