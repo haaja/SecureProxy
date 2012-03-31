@@ -153,7 +153,7 @@ public class EPICTomcat {
         if (request.getQueryString() != null) {
             e.setUri(request.getRequestURL() + "?" + request.getQueryString());
         } else {
-            e.setUri(request.getRequestURI());
+            e.setUri(request.getRequestURL().toString());
         }
 
         LOGGER.exiting(EPICTomcat.class.getName(), "convertToEPICRequest", e);
