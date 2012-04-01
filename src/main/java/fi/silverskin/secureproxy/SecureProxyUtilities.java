@@ -11,9 +11,15 @@ public class SecureProxyUtilities {
 
     private static final Logger LOGGER = Logger.getLogger(SecureProxyUtilities.class.getName(), null);
 
-    /*
-     * Tries to make URI object from String @param url URL in string @return URI
-     * object formed from the parameter or null
+    /**
+     * Creates URI object from the String parameter
+     *
+     * Null return value should only occur in case of non standard compliant
+     * www page.
+     *
+     * @param url URL from which we are creating the URI
+     * @return URI created from the supplied parameter or null if the method
+     *         fails
      */
     public static URI makeUriFromString(String url) {
         LOGGER.entering(SecureProxyUtilities.class.getName(),
@@ -61,7 +67,7 @@ public class SecureProxyUtilities {
      * @param protectedUri Url of the protected service
      * @param locationUri Url in the location header
      * @return true if location url is the one we are protecting, otherwise
-     * false
+     *         false
      */
     public static boolean isProtectedUrl(URI privateUri, URI locationUri) {
         LOGGER.entering(HeaderCleaner.class.getName(),

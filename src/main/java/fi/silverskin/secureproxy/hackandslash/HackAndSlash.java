@@ -189,6 +189,13 @@ public class HackAndSlash {
         return maskedUri;
     }
 
+    /**
+     * Searches supplied parameter for common protocols and mistakes that will
+     * break our beloved proxy.
+     * 
+     * @param url String representation of the url
+     * @return true in case invalidies are found, otherwise false
+     */
     private boolean hasInvalidProtocol(String url) {
         LOGGER.entering(HackAndSlash.class.getName(), "hasInvalidProtocol", url);
         boolean retVal = false;
@@ -347,8 +354,8 @@ public class HackAndSlash {
      * See: https://en.wikipedia.org/wiki/Chunked_transfer_encoding
      *
      * @param response Response with modified Content-Length value or unmodified
-     * response in case chunked encoding is used
-     *
+     *        response in case chunked encoding is used
+     * @return Response containing updated Content-Length header
      */
     private EPICTextResponse updateContentLength(EPICTextResponse response) {
         LOGGER.entering(HackAndSlash.class.getName(), "updateContentLength", response);

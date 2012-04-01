@@ -20,6 +20,11 @@ public abstract class EPICAbstraction {
         this.headers = new HashMap<String, String>();
     }
 
+    /**
+     * Returns the headers as a unmodifiable Map object
+     * 
+     * @return Headers of the request or response
+     */
     public Map<String, String> getHeaders() {
         return Collections.unmodifiableMap(headers);
     }

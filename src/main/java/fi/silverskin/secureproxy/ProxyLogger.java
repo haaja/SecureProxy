@@ -46,6 +46,7 @@ public class ProxyLogger {
 
     /**
      * Initialized configuration file for logger with default values.
+     * 
      * If configuration file already exists, method does nothing
      */
     private static void initLogConfigFile() {
@@ -105,6 +106,7 @@ public class ProxyLogger {
 
     /**
      * Reads configuration file of the logger
+     * 
      * @return parsed configuration properties
      */
     private static Properties readConfigFile() {

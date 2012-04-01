@@ -29,7 +29,7 @@ public class EPICBinaryResponse extends EPICResponse {
 
     /**
      * Returns the body of the response.
-     *
+     * 
      * @return Body of the response.
      */
     public byte[] getBody() {
@@ -38,13 +38,18 @@ public class EPICBinaryResponse extends EPICResponse {
 
     /**
      * Returns the body of the response.
-     *
+     * 
      * @param body Body of the response.
      */
     public void setBody(InputStream body) {
         this.body = fromInputStream(body);
     }
-    
+
+    /**
+     * Sets the body of the response
+     *
+     * @param body body of the response to be
+     */
     public void setBody(byte[] body) {
         this.body = body;
     }
@@ -67,7 +72,12 @@ public class EPICBinaryResponse extends EPICResponse {
     }    
     
     
-    
+    /**
+     * Converts inputStream content (body of the response) to byte array
+     * 
+     * @param in InputStream containing body of the response
+     * @return byte array containing body of the response
+     */
     private byte[] fromInputStream(InputStream in) {
         LOGGER.entering(EPICBinaryResponse.class.getName(), "fromInputStream", in);
         ByteArrayOutputStream buff = new ByteArrayOutputStream();
@@ -88,7 +98,6 @@ public class EPICBinaryResponse extends EPICResponse {
         }
 
         LOGGER.exiting(EPICBinaryResponse.class.getName(), "fromInputStream", in);
-
         return buff.toByteArray();
     }
 }

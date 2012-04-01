@@ -89,6 +89,7 @@ public class ProxyConfigurer {
 
     /**
      * Getter for read configuration properties
+     * 
      * @return Properties of the read configuration file.
      */
     public Properties getConfigurationProperties() {
