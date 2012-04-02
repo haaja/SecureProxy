@@ -20,11 +20,16 @@ public class PostTest {
     public void SimplePostTest() {
         System.out.println("In SimplePostTest");
 
+        ProxyConfigurer configurer;
+
         String configPath = System.getProperty("secureproxy.integration.config");
 
-        System.out.println("Config read from: '" + configPath + "'");
-
-        ProxyConfigurer configurer = new ProxyConfigurer(configPath);
+        if (configPath == null) {
+            configurer = new ProxyConfigurer();
+        } else {
+            System.out.println("Config read from: '" + configPath + "'");
+            configurer = new ProxyConfigurer(configPath);
+        }
 
         String publicUri = configurer.getProperty("publicURI");
         String publicHttpPort = configurer.getProperty("publicHttpPort");
