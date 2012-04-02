@@ -23,8 +23,8 @@ public class PostTest {
         System.out.println("In SimplePostTest");
 
         Enumeration prop = System.getProperties().propertyNames();
-        while (prop.hasMoreElements()) {
-            System.out.println(prop);
+        while (prop.hasMoreElements()) {            
+            System.out.println(prop.nextElement());
         }
 
         String configPath = System.getProperty("secureproxy.integration.config");
