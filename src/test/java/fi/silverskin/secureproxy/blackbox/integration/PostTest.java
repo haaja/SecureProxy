@@ -5,6 +5,8 @@
 package fi.silverskin.secureproxy.blackbox.integration;
 
 import fi.silverskin.secureproxy.ProxyConfigurer;
+import java.util.Enumeration;
+import java.util.Properties;
 import org.junit.*;
 import static org.junit.Assert.*;
 import org.openqa.selenium.*;
@@ -19,6 +21,11 @@ public class PostTest {
     @Test
     public void SimplePostTest() {
         System.out.println("In SimplePostTest");
+
+        Enumeration prop = System.getProperties().propertyNames();
+        while (prop.hasMoreElements()) {
+            System.out.println(prop);
+        }
 
         String configPath = System.getProperty("secureproxy.integration.config");
 
