@@ -12,6 +12,8 @@ import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  *
@@ -20,6 +22,20 @@ import java.util.logging.Logger;
 public class ParamCheck implements SecureProxyPlugin {
     
     private static final Logger LOGGER = Logger.getLogger(ParamCheck.class.getName(), null);
+    
+    public boolean status;
+    
+    public ParamCheck() {
+        this.status = false;
+    }
+    
+    /**
+     * 
+     * @return status of plugin
+     */
+    public boolean getStatus() {
+        return status;
+    }
     
     @Override
     public String getName() {
@@ -31,10 +47,10 @@ public class ParamCheck implements SecureProxyPlugin {
         LOGGER.entering(ParamCheck.class.getName(), "run", epic);
         
         if (epic.getType() == RequestType.GET) 
-            handleGet(epic);
+            this.status = handleGet(epic);
         
         if (epic.getType() == RequestType.POST)
-            handlePost(epic);
+            this.status = handlePost(epic);
         
         LOGGER.exiting(ParamCheck.class.getName(), "run");
     }
@@ -55,12 +71,7 @@ public class ParamCheck implements SecureProxyPlugin {
     private boolean handleGet(EPICRequest epic) {
         LOGGER.entering(ParamCheck.class.getName(), "handleGet", epic);
         
-        URI uri = null;
-        try {
-            uri = new URI(epic.getUri());
-        } catch (URISyntaxException ex) {
-            LOGGER.log(Level.SEVERE, "Received URISyntaxException with: " + epic.getUri(), ex);
-        }
+        URI uri = epic.getUri();
         
         String query = uri.getQuery();
         if (query.isEmpty())
@@ -68,8 +79,20 @@ public class ParamCheck implements SecureProxyPlugin {
         
         // separate parameters to "name=value" pars
         String[] parsed = query.split("&");
-        checkParams(parsed);
         
+        // read pars and send values for checking
+        for (int i = 0; i < parsed.length; i++) {
+            String[] tmp = parsed[i].split("=");
+            String param = tmp[1];
+            boolean isValid = isValidParam(param);
+            if (isValid == false) {
+                // something was badly
+                LOGGER.exiting(ParamCheck.class.getName(), "handleGet", false);
+                return false;
+            }
+        }
+        
+        // everything went well
         LOGGER.exiting(ParamCheck.class.getName(), "handleGet", true);
         return true;
     }
@@ -86,9 +109,6 @@ public class ParamCheck implements SecureProxyPlugin {
         if (body.isEmpty())
             return false;
         
-        // bodyn parserointi
-        String[] parsed = null;
-        checkParams(parsed);
         
         LOGGER.exiting(ParamCheck.class.getName(), "handlePost", true);
         return true;
@@ -97,18 +117,23 @@ public class ParamCheck implements SecureProxyPlugin {
     /**
      * Checks "bad charecters".
      * 
-     * @param query 
+     * @param param
+     * @return boolean
      */
-    private void checkParams(String[] query) {
-        LOGGER.entering(ParamCheck.class.getName(), "parseQuery", query);
+    private boolean isValidParam(String param) {
+        LOGGER.entering(ParamCheck.class.getName(), "isValidParam", param);
         
-        for (int i = 0; i < query.length; i++) {
-            String[] tmp = query[i].split("=");
-            String value = tmp[1];
-            // regex tähän, ettei value sisällä pahoja parametreja
+        Pattern pattern = Pattern.compile("<|>|\"|\'");
+        Matcher matcher = pattern.matcher(param);
+        if (matcher.find()) {
+            // some bad character
+            LOGGER.exiting(ParamCheck.class.getName(), "isValidParam", false);
+            return false;
         }
-
-        LOGGER.exiting(ParamCheck.class.getName(), "parseQuery");
+        
+        // everything went well
+        LOGGER.exiting(ParamCheck.class.getName(), "isValidParam", true);
+        return true;
     }
 
 }
