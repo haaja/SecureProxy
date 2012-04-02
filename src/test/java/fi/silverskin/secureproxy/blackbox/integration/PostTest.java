@@ -16,22 +16,25 @@ import org.openqa.selenium.htmlunit.HtmlUnitDriver;
  */
 public class PostTest {
 
-    String configPath = System.getProperty("secureproxy.integration.config");
-    ProxyConfigurer configurer = new ProxyConfigurer(configPath);
-
     @Test
     public void SimplePostTest() {
+        System.out.println("In SimplePostTest");
+
+        String configPath = System.getProperty("secureproxy.integration.config");
+
         System.out.println("Config read from: '" + configPath + "'");
-        
-        WebDriver driver = new HtmlUnitDriver();
+
+        ProxyConfigurer configurer = new ProxyConfigurer(configPath);
 
         String publicUri = configurer.getProperty("publicURI");
         String publicHttpPort = configurer.getProperty("publicHttpPort");
-        
+
         String url = publicUri + ":" + publicHttpPort + "/post-form.php";
-        
+
         System.out.println("Fetching page: '" + url + "'");
-        
+
+        WebDriver driver = new HtmlUnitDriver();
+
         driver.get(url);
 
         System.out.println("Before POST, page title is: '" + driver.getTitle() + "'");
