@@ -45,23 +45,26 @@ public class ParamCheckTest {
      * Tests running plugin with EPICRequest GET.
      */
     @Test
-    public void testRunWithRequestGET() throws URISyntaxException {
+    public void testValidGET() throws URISyntaxException {
         
         EPICRequest request = new EPICRequest(RequestType.GET);
         String url = "http://cs.helsinki.fi/opiskelu?nimi=kissa&luku=1500&kurssi=perusteet";
         request.setUri(url);
-        URI uri = new URI(url);
-        System.out.println(uri.getQuery());
-    
+        check.run(request);
+        assertTrue(check.getStatus());
     }
+    
     /**
-     * Tests running plugin with EPICRequest POST.
+     * Tests running plugin with invalid GET, the bad param is <.
      */
     @Test
-    public void testRunWithRequestPOST() throws URISyntaxException {
+    public void testInvalidGET() throws URISyntaxException {
         
-        EPICRequest request = new EPICRequest(RequestType.POST);
-    
+        EPICRequest request = new EPICRequest(RequestType.GET);
+        String url = "http://cs.helsinki.fi/opiskelu?nimi=kissa&luku=1500&kurssi=<perusteet";
+        request.setUri(url);
+        check.run(request);
+        assertFalse(check.getStatus());
     }
 
 }
