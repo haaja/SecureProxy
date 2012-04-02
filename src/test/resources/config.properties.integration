@@ -1,0 +1,23 @@
+#Internal URL for the protected service
+privateURI = http://128.214.9.12
+
+#Internal port for HTTP traffic
+privateHttpPort = 80
+
+#Internal port for HTTPS traffic
+privateHttpsPort = 443
+
+#Public URL for the service
+publicURI = http://localhost
+
+#Public port for HTTP traffic
+publicHttpPort = 8084
+
+#Public port for HTTPS traffic
+publicHttpsPort = 443
+
+#No idea what these are
+tester = test1, test2, test3
+
+#Domain name for the protected service
+protectedHost = tkt_palo.users.cs.helsinki.fi

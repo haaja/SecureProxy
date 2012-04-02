@@ -13,5 +13,8 @@
                 <goal>test</goal>
                 <goal>verify</goal>
             </goals>
+            <properties>
+                <secureproxy.integration.config>config.properties.integration</secureproxy.integration.config>
+            </properties>
         </action>
     </actions>
