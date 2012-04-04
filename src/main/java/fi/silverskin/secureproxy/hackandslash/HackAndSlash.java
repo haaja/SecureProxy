@@ -111,7 +111,7 @@ public class HackAndSlash {
         LOGGER.entering(HackAndSlash.class.getName(),
                 "convertAbsoluteUrlsInText", oldResponse);
 
-        Pattern urlPattern = Pattern.compile(privateURI.getScheme() + "://"
+        Pattern urlPattern = Pattern.compile("(("+privateURI.getScheme() + "|http|https)://)?"
                 + privateURI.getHost() + "[^<\\s]*");
         Matcher urlMatcher = urlPattern.matcher(oldResponse.toLowerCase());
         String newResponse = "";
@@ -122,6 +122,7 @@ public class HackAndSlash {
             }
             index = urlMatcher.end();
             String url = urlMatcher.group();
+            if(!url.contains("://")) url = "http://"+url;
             // Convert URL if needed
             url = getMaskedUrl(url);
             newResponse += url;
