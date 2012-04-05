@@ -77,19 +77,9 @@ public class ParamCheck implements SecureProxyPlugin {
         if (query.isEmpty())
             return false;
         
-        // separate parameters to "name=value" pars
-        String[] parsed = query.split("&");
-        
-        // read pars and send values for checking
-        for (int i = 0; i < parsed.length; i++) {
-            String[] tmp = parsed[i].split("=");
-            String param = tmp[1];
-            boolean isValid = isValidParam(param);
-            if (isValid == false) {
-                // something was badly
-                LOGGER.exiting(ParamCheck.class.getName(), "handleGet", false);
-                return false;
-            }
+        if (!isValidQuery(query)) {
+            LOGGER.exiting(ParamCheck.class.getName(), "handleGet", false);
+            return false;
         }
         
         // everything went well
@@ -105,12 +95,43 @@ public class ParamCheck implements SecureProxyPlugin {
     private boolean handlePost(EPICRequest epic) {
         LOGGER.entering(ParamCheck.class.getName(), "handlePost", epic);
 
-        String body = epic.getBody();
-        if (body.isEmpty())
+        String query = epic.getBody();
+        if (query.isEmpty())
             return false;
         
+        if (!isValidQuery(query)) {
+            LOGGER.exiting(ParamCheck.class.getName(), "handlePost", false);
+            return false;
+        }
         
         LOGGER.exiting(ParamCheck.class.getName(), "handlePost", true);
+        return true;
+    }
+    
+    /**
+     * Parsers the query and calls validate checking isValidParam
+     * 
+     * @param query
+     * @return boolean
+     */
+    private boolean isValidQuery(String query) {
+    
+        // separate parameters to "name=value" pars
+        String[] parsed = query.split("&");
+        
+        // read pars and send values for checking
+        for (int i = 0; i < parsed.length; i++) {
+            String[] tmp = parsed[i].split("=");
+            String param = tmp[1];
+            boolean isValid = isValidParam(param);
+            if (isValid == false) {
+                // something was badly
+                LOGGER.exiting(ParamCheck.class.getName(), "parseQuery", false);
+                return false;
+            }
+        }
+        
+        LOGGER.exiting(ParamCheck.class.getName(), "parseQuery", true);
         return true;
     }
    
@@ -123,14 +144,16 @@ public class ParamCheck implements SecureProxyPlugin {
     private boolean isValidParam(String param) {
         LOGGER.entering(ParamCheck.class.getName(), "isValidParam", param);
         
+        // regex: bad charecters are >, <, " ja '
         Pattern pattern = Pattern.compile("<|>|\"|\'");
         Matcher matcher = pattern.matcher(param);
+        
         if (matcher.find()) {
             // some bad character
             LOGGER.exiting(ParamCheck.class.getName(), "isValidParam", false);
             return false;
         }
-        
+
         // everything went well
         LOGGER.exiting(ParamCheck.class.getName(), "isValidParam", true);
         return true;

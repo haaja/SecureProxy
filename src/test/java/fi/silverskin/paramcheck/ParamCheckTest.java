@@ -66,5 +66,31 @@ public class ParamCheckTest {
         check.run(request);
         assertFalse(check.getStatus());
     }
+    
+    /**
+     * Tests running plugin with EPICRequest POST.
+     */
+    @Test
+    public void testValidPOST() throws URISyntaxException {
+        
+        EPICRequest request = new EPICRequest(RequestType.POST);
+        String body = "nimi=kissa&luku=1500&kurssi=perusteet";
+        request.setBody(body);
+        check.run(request);
+        assertTrue(check.getStatus());
+    }
+    
+    /**
+     * Tests running plugin with invalid POST, the bad param is <.
+     */
+    @Test
+    public void testInvalidPOST() throws URISyntaxException {
+        
+        EPICRequest request = new EPICRequest(RequestType.POST);
+        String body = "nimi=kissa&luku=1500&kurssi=<perusteet";
+        request.setBody(body);
+        check.run(request);
+        assertFalse(check.getStatus());
+    }
 
 }
