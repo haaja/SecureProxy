@@ -91,7 +91,7 @@ public class HackAndSlash {
     }
     
     public void mutilateCookiesIn(HashMap<String, String> headers){
-        String cookieTag = headers.get("Cookie");
+        String cookieTag = headers.get("cookie");
         if(cookieTag == null) return;
         String[] cookies = cookieTag.split(";");
         cookieTag = "";
