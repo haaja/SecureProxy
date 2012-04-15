@@ -2,12 +2,15 @@ package fi.silverskin.secureproxy.plugins;
 
 import java.io.File;
 import java.io.FileFilter;
+import java.io.FileReader;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 
 public class PluginLoader {
 
@@ -17,11 +20,54 @@ public class PluginLoader {
      * Load plugins given in config sorted by load order.
      *
      * @param pluginConfig
-     * @return
+     * @return SecureProxyPlugin[] with
+     * @throws PluginLoadException if something goes wrong while loading plugins.
      */
-    public static SecureProxyPlugin[] loadPlugins(File pluginConfig) {
-        return new SecureProxyPlugin[0];
+    public static SecureProxyPlugin[] loadPlugins(File pluginConfig) 
+            throws PluginLoadException {
+        Properties conf = loadConfig(pluginConfig);
+
+        try {
+            PluginClassLoader loader = new PluginClassLoader(getPluginURLs(conf));
+            ArrayList<SecureProxyPlugin> plugins = new ArrayList<SecureProxyPlugin>();
+
+            for (String plugin : getPluginNames(conf)) {
+                Class<SecureProxyPlugin> clas = loader.findClass(plugin);
+                plugins.add(clas.newInstance());
+            }
+
+            return plugins.toArray(new SecureProxyPlugin[plugins.size()]);
+        } catch (MalformedURLException ex) {
+            LOGGER.log(Level.SEVERE, "MalformedURLException during plugin load.");
+            throw new PluginLoadException("MalformedURLException during plugin load.");
+        } catch (ClassNotFoundException ex) {
+            LOGGER.log(Level.SEVERE, "ClassNotFoundException during plugin load");
+            throw new PluginLoadException("ClassNotFoundException during plugin load");
+        } catch (InstantiationException ex) {
+            LOGGER.log(Level.SEVERE, "InstantationException during plugin load.");
+            throw new PluginLoadException("InstantationException during plugin load.");
+        } catch (IllegalAccessException ex) {
+            LOGGER.log(Level.SEVERE, "IllegalAccessException during plugin load.");
+            throw new PluginLoadException("IllegalAccessException during plugin load.");
+        }
     }
+
+    private static Properties loadConfig(File pluginConfig) throws PluginLoadException {
+        Properties conf;
+        try {
+            conf = new Properties();
+            conf.load(new FileReader(pluginConfig));
+            if (!validateConfig(conf)) {
+                LOGGER.log(Level.SEVERE, "Plugin loader config was not valid!");
+                throw new PluginLoadException("Given config was not valid!");
+            }
+        } catch (IOException ex) {
+            Logger.getLogger(PluginLoader.class.getName()).log(Level.SEVERE, null, ex);
+            throw new PluginLoadException("IOException while loading config.");
+        }
+        return conf;
+    }
+    
 
     /**
      * Get URLs to plugins in given plugin_dir mentioned in pluginConfig.
@@ -132,4 +178,15 @@ class JarFilter implements FileFilter {
             return false;
         }
     }
+}
+
+
+class PluginLoadException extends RuntimeException {
+    public PluginLoadException(String message) {
+        super(message);
+    }
+
+    public PluginLoadException() {
+    }
+
 }
