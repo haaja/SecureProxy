@@ -3,6 +3,7 @@ package fi.silverskin.secureproxy.hackandslash;
 import fi.silverskin.secureproxy.EPICRequest;
 import fi.silverskin.secureproxy.EPICTextResponse;
 import fi.silverskin.secureproxy.SecureProxyUtilities;
+import fi.silverskin.secureproxy.redis.LinkDB;
 import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
@@ -13,6 +14,7 @@ import java.util.regex.Pattern;
 
 public class HackAndSlash {
 
+    private final LinkDB cookieStore = new LinkDB();
     private final String[][] tagsAndAttributes = {
         {"a", "href"}, {"applet", "codebase", "archive"}, {"area", "href"},
         {"audio", "src"},
@@ -91,7 +93,7 @@ public class HackAndSlash {
     }
     
     public void mutilateCookiesIn(HashMap<String, String> headers){
-        String cookieTag = headers.get("Cookie");
+        String cookieTag = headers.get("cookie");
         if(cookieTag == null) return;
         String[] cookies = cookieTag.split(";");
         cookieTag = "";
@@ -144,9 +146,10 @@ public class HackAndSlash {
         String cookie = headers.get("Set-Cookie");
         if(cookie==null) return;
         String[] cookies = cookie.split("=");
-        cookie = "xxx"+cookies[0]+"=";
-        if(cookies.length > 1) cookie += "yyy" + cookies[1];
-        headers.put("Set-Cookie", cookie);
+        String newCookie = "xxx"+cookies[0]+"=";
+        if(cookies.length > 1) newCookie += "yyy" + cookies[1];
+        headers.put("Set-Cookie", newCookie);
+        cookieStore.addLink(cookie, newCookie);
     }
 
 
