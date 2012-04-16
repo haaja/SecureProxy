@@ -26,6 +26,9 @@ public class ProxyController {
         hackAndSlash = new HackAndSlash(conf);
         
         File confFile = configurer.getConfigFile();
+        if (confFile == null) {
+            LOGGER.info("Missing configuration file.");
+        }
         pluginRunner = new PluginRunner(confFile);
         
     }
@@ -40,15 +43,26 @@ public class ProxyController {
         LOGGER.entering(ProxyController.class.getName(), "handleRequest", request);
         request = hackAndSlash.hackAndSlashIn(request);
         request = HeaderCleaner.cleanHeaders(request, configuration);
+        
+        LOGGER.info("Runnin security plugins with request");
+        pluginRunner.run(request);
        
         EPICResponse response = fetcher.handleRequest(request);
         LOGGER.log(Level.INFO, response.toString());
-
+        
         if (response.isText()) {
+            LOGGER.info("Running security plugins with text response");
+            pluginRunner.run((EPICTextResponse)response);
+            
             LOGGER.info("Sending response to HackAndSlash");
             response = hackAndSlash.hackAndSlashOut((EPICTextResponse)response);
             LOGGER.info("Mutilated response:");
             LOGGER.log(Level.INFO, response.toString());
+        }
+        
+        else {
+            LOGGER.info("Running security plugins with binary response");
+            pluginRunner.run((EPICBinaryResponse)response);
         }
 
         /* Change location header in case it exists */
