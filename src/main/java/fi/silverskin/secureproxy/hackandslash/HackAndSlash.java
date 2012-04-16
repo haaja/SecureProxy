@@ -5,6 +5,7 @@ import fi.silverskin.secureproxy.EPICTextResponse;
 import fi.silverskin.secureproxy.SecureProxyUtilities;
 import java.net.URI;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
@@ -77,10 +78,42 @@ public class HackAndSlash {
         }
 
         request.setUri(modifiedUri);
+        HashMap<String, String> headers =
+                new HashMap<String, String>(request.getHeaders());
+        mutilateCookiesIn(headers);
+        
+        request.setHeaders(headers);
+       
         LOGGER.info("HackAndSlashIn modified URI: " + request.getUri().toString());
         LOGGER.exiting(HackAndSlash.class.getName(), "hackAndSlashIn", request);
 
         return request;
+    }
+    
+    public void mutilateCookiesIn(HashMap<String, String> headers){
+        String cookieTag = headers.get("cookie");
+        if(cookieTag == null) return;
+        String[] cookies = cookieTag.split(";");
+        cookieTag = "";
+        for(String cookie: cookies){
+            String[] cookieParts = cookie.split("=");
+            cookieParts[0] = cookieParts[0].trim();
+            if(cookieParts[0].length() > 3 && (cookieParts[0].substring(0, 3)).
+                    equals("xxx")){
+                cookieParts[0] = cookieParts[0].substring(3);
+            }   
+            cookieTag += cookieParts[0]+"=";
+            if(cookieParts.length > 1){
+                cookieParts[1] = cookieParts[1].trim();
+                if(cookieParts[1].length() > 3 && (cookieParts[1].substring(0, 3)).
+                    equals("yyy")){
+                    cookieParts[1] = cookieParts[1].substring(3);
+                    cookieTag += cookieParts[1];
+                }
+            }
+            cookieTag += "; ";
+        }
+        cookieTag = cookieTag.substring(0, cookieTag.length()-2);
     }
 
     /**
@@ -97,9 +130,25 @@ public class HackAndSlash {
         oldResponse = convertAbsoluteUrlsInText(oldResponse);
         response.setBody(oldResponse);
         response = updateContentLength(response);
+        HashMap<String, String> headers =
+                new HashMap<String, String>(response.getHeaders());
+        mutilateCookiesOut(headers);
+        
+        response.setHeaders(headers);
+        
         LOGGER.exiting(HackAndSlash.class.getName(), "hackAndSlashOut", response);
         return response;
     }
+    
+    public void mutilateCookiesOut(HashMap<String, String> headers){
+        String cookie = headers.get("Set-Cookie");
+        if(cookie==null) return;
+        String[] cookies = cookie.split("=");
+        cookie = "xxx"+cookies[0]+"=";
+        if(cookies.length > 1) cookie += "yyy" + cookies[1];
+        headers.put("Set-Cookie", cookie);
+    }
+
 
     /**
      * Changes protected URIs outside of tags and css

@@ -107,7 +107,7 @@ public class HackAndSlashTest {
                 + "</style> </head> <body>"
                 + "<p> This is a test case: </p>"
                 + "<a href=\"" + privateURI + ":" + privateHttpPort + "\">"
-                + privateURI + ":" + privateHttpPort + "</a></body></html>"
+                + /*privateURI + ":" + privateHttpPort + */"</a></body></html>"
                 );
         
         String controlBody =                
@@ -116,7 +116,7 @@ public class HackAndSlashTest {
                 + "</style> </head> <body>"
                 + "<p> This is a test case: </p>"
                 + "<a href=\"" + publicURI + ":" + publicHttpPort + "\">"
-                + publicURI + ":" + publicHttpPort + "</a></body></html>";
+                + /*publicURI + ":" + publicHttpPort + */"</a></body></html>";
         EPICTextResponse resultResponse = has.hackAndSlashOut(textResponse); 
         System.out.println(resultResponse.getBody());
         System.out.println("\n"+controlBody);
