@@ -2,7 +2,9 @@ package fi.silverskin.secureproxy;
 
 import fi.silverskin.secureproxy.hackandslash.HackAndSlash;
 import fi.silverskin.secureproxy.hackandslash.HackAndSlashConfig;
+import fi.silverskin.secureproxy.plugins.PluginRunner;
 import fi.silverskin.secureproxy.resourcefetcher.ResourceFetcher;
+import java.io.File;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -11,6 +13,7 @@ import java.util.logging.Logger;
 public class ProxyController {
     private ResourceFetcher fetcher;
     private HackAndSlash hackAndSlash;
+    private PluginRunner pluginRunner;
     private static final Logger LOGGER = Logger.getLogger(ProxyController.class.getName(), null);
     private ProxyConfigurer configurer;
     private Properties configuration;
@@ -21,6 +24,10 @@ public class ProxyController {
         configuration = configurer.getConfigurationProperties();
         HackAndSlashConfig conf = new HackAndSlashConfig(configuration);
         hackAndSlash = new HackAndSlash(conf);
+        
+        File confFile = configurer.getConfigFile();
+        pluginRunner = new PluginRunner(confFile);
+        
     }
 
     /**
