@@ -25,11 +25,11 @@ public class PostTest {
         String configPath = System.getProperty("secureproxy.integration.config");
 
         if (configPath == null) {
-            configurer = new ProxyConfigurer();
-        } else {
-            System.out.println("Config read from: '" + configPath + "'");
-            configurer = new ProxyConfigurer(configPath);
+            configPath = System.getProperty("user.home") + "/config.properties.integration";
         }
+
+        System.out.println("Config read from: '" + configPath + "'");
+        configurer = new ProxyConfigurer(configPath);
 
         String publicUri = configurer.getProperty("publicURI");
         String publicHttpPort = configurer.getProperty("publicHttpPort");
