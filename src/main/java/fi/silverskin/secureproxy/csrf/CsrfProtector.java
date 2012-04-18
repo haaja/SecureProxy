@@ -94,7 +94,7 @@ public class CsrfProtector implements SecureProxyPlugin {
             valuePair[0] = valuePair[0].trim();
             
             if (valuePair[0].equals(CSRFFIELD)) {
-                String paramCsrfKey = valuePair[0].trim();
+                String paramCsrfKey = valuePair[1].trim();
                 if (csrfKey.equals(paramCsrfKey)) {
                     retVal = true;
                 } else {
