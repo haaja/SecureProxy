@@ -4,13 +4,12 @@
  */
 package fi.silverskin.paramcheck;
 
-import fi.silverskin.secureproxy.plugins.*;
-import fi.silverskin.secureproxy.*;
+import fi.silverskin.secureproxy.EPICBinaryResponse;
+import fi.silverskin.secureproxy.EPICRequest;
 import fi.silverskin.secureproxy.EPICRequest.RequestType;
+import fi.silverskin.secureproxy.EPICTextResponse;
+import fi.silverskin.secureproxy.plugins.SecureProxyPlugin;
 import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.HashMap;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -115,48 +114,19 @@ public class ParamCheck implements SecureProxyPlugin {
      * @return boolean
      */
     private boolean isValidQuery(String query) {
-    
-        // separate parameters to "name=value" pars
-        String[] parsed = query.split("&");
-        
-        // read pars and send values for checking
-        for (int i = 0; i < parsed.length; i++) {
-            String[] tmp = parsed[i].split("=");
-            String param = tmp[1];
-            boolean isValid = isValidParam(param);
-            if (isValid == false) {
-                // something was badly
-                LOGGER.exiting(ParamCheck.class.getName(), "parseQuery", false);
-                return false;
-            }
-        }
-        
-        LOGGER.exiting(ParamCheck.class.getName(), "parseQuery", true);
-        return true;
-    }
-   
-    /**
-     * Checks "bad charecters".
-     * 
-     * @param param
-     * @return boolean
-     */
-    private boolean isValidParam(String param) {
-        LOGGER.entering(ParamCheck.class.getName(), "isValidParam", param);
-        
-        // regex: bad charecters are >, <, " ja '
-        Pattern pattern = Pattern.compile("<|>|\"|\'");
-        Matcher matcher = pattern.matcher(param);
-        
-        if (matcher.find()) {
-            // some bad character
-            LOGGER.exiting(ParamCheck.class.getName(), "isValidParam", false);
-            return false;
-        }
+        LOGGER.entering(ParamCheck.class.getName(), "isValidQuery", query);
 
-        // everything went well
-        LOGGER.exiting(ParamCheck.class.getName(), "isValidParam", true);
-        return true;
+        String rule = "([A-Za-z0-9_]*[=][A-Za-z0-9_&]*)*";
+        Pattern pattern = Pattern.compile(rule);
+        Matcher matcher = pattern.matcher(query);
+    
+        if (matcher.matches()) {
+            LOGGER.exiting(ParamCheck.class.getName(), "isValidQuery", true);
+            return true;
+        }
+        
+        LOGGER.exiting(ParamCheck.class.getName(), "isValidQuery", false);
+        return false;
     }
 
 }
