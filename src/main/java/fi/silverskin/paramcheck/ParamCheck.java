@@ -116,7 +116,8 @@ public class ParamCheck implements SecureProxyPlugin {
     private boolean isValidQuery(String query) {
         LOGGER.entering(ParamCheck.class.getName(), "isValidQuery", query);
 
-        String rule = "([A-Za-z0-9_]*[=][A-Za-z0-9_&]*)*";
+        // valid characters are checked by http://en.wikipedia.org/wiki/Query_string#URL_encoding
+        String rule = "([A-Za-z0-9_[-].~+%]*[=][A-Za-z0-9_[-].~+%&]*)*";
         Pattern pattern = Pattern.compile(rule);
         Matcher matcher = pattern.matcher(query);
     
