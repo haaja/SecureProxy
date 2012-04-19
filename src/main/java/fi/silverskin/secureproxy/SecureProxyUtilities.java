@@ -35,7 +35,7 @@ public class SecureProxyUtilities {
                     tempURL.getQuery(),
                     tempURL.getRef());
         } catch (MalformedURLException ex) {
-            LOGGER.log(Level.SEVERE,
+            LOGGER.log(Level.FINE,
                     "Received MalformedURLException with: " + url,
                     ex);
             try {
