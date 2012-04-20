@@ -20,7 +20,8 @@ public class ParamCheckTest {
     private ParamCheck check;
     
     public ParamCheckTest() {
-        check = new ParamCheck();
+        String rule = "([A-Za-z0-9_[-].~+%]*[=][A-Za-z0-9_[-].~+%&]*)*";
+        check = new ParamCheck(rule);
     }
 
     @BeforeClass
@@ -127,7 +128,7 @@ public class ParamCheckTest {
     }
         
     /*
-     * Tests that special marks $ is NOT ok to validator
+     * Tests that special mark $ is NOT ok to validator
      */
     @Test
     public void characterTestInvalidMark1() throws URISyntaxException {
@@ -139,7 +140,7 @@ public class ParamCheckTest {
     }
     
     /*
-     * Tests that special marks [ is NOT ok to validator
+     * Tests that special mark [ is NOT ok to validator
      */
     @Test
     public void characterTestInvalidMark2() throws URISyntaxException {

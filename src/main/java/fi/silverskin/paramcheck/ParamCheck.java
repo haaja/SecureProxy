@@ -22,10 +22,21 @@ public class ParamCheck implements SecureProxyPlugin {
     
     private static final Logger LOGGER = Logger.getLogger(ParamCheck.class.getName(), null);
     
+    // TODO: instead of boolean status, throw a EPICException
     public boolean status;
+    
+    // the rule of valid parameter query, readed from config file
+    public String rule; 
     
     public ParamCheck() {
         this.status = false;
+        ParamCheckConfig config = new ParamCheckConfig();
+        rule = config.getRule();
+    }
+    
+    public ParamCheck(String rule) {
+        this.status = false;
+        this.rule = rule;
     }
     
     /**
@@ -116,8 +127,6 @@ public class ParamCheck implements SecureProxyPlugin {
     private boolean isValidQuery(String query) {
         LOGGER.entering(ParamCheck.class.getName(), "isValidQuery", query);
 
-        // valid characters are checked by http://en.wikipedia.org/wiki/Query_string#URL_encoding
-        String rule = "([A-Za-z0-9_[-].~+%]*[=][A-Za-z0-9_[-].~+%&]*)*";
         Pattern pattern = Pattern.compile(rule);
         Matcher matcher = pattern.matcher(query);
     
