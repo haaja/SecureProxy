@@ -12,6 +12,10 @@ import org.apache.commons.lang.StringUtils;
 import static org.apache.commons.lang3.StringEscapeUtils.escapeHtml4;
 
 
+/**
+ * Protect against XSS attacks by escaping all content going to protected
+ * server.
+ */
 public class XssProtector implements SecureProxyPlugin {
 
     private static final Logger LOGGER = Logger.getLogger(XssProtector.class.getName(), null);
@@ -46,6 +50,10 @@ public class XssProtector implements SecureProxyPlugin {
 
 
 
+	/**
+	 * Escape query string.
+	 * @param epic
+	 */
 	private void handleGet(EPICRequest epic) {
 		LOGGER.entering(XssProtector.class.getName(), "handleGet", epic);
 
@@ -67,6 +75,10 @@ public class XssProtector implements SecureProxyPlugin {
 	}
 
 
+	/**
+	 * Escape POST body.
+	 * @param epic
+	 */
 	private void handlePost(EPICRequest epic) {
 		LOGGER.entering(XssProtector.class.getName(), "handlePost", epic);
 
@@ -77,6 +89,10 @@ public class XssProtector implements SecureProxyPlugin {
 	}
 
 
+	/**
+	 * Escape  PUT body.
+	 * @param epic
+	 */
 	private void handlePut(EPICRequest epic) {
 		LOGGER.entering(XssProtector.class.getName(), "handlePut", epic);
 
