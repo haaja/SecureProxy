@@ -27,6 +27,8 @@ public class XssProtector implements SecureProxyPlugin {
 			handleGet(epic);
 		} else if (type == EPICRequest.RequestType.POST) {
 			handlePost(epic);
+		} else if (type == EPICRequest.RequestType.PUT) {
+			handlePut(epic);
 		}
 	}
 
@@ -58,7 +60,16 @@ public class XssProtector implements SecureProxyPlugin {
 
 
 	private void handlePost(EPICRequest epic) {
+		String escapedBody = safelyEscape(epic.getBody());
+		epic.setBody(escapedBody);
 	}
+
+
+	private void handlePut(EPICRequest epic) {
+		String escapedBody = safelyEscape(epic.getBody());
+		epic.setBody(escapedBody);
+	}
+
 
 
 	/**
