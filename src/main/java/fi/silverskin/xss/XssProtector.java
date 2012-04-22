@@ -8,6 +8,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.apache.commons.lang.StringUtils;
 
 import static org.apache.commons.lang3.StringEscapeUtils.escapeHtml4;
 
@@ -84,14 +85,6 @@ public class XssProtector implements SecureProxyPlugin {
 			escaped[i] = escapeHtml4(pieces[i]);
 		}
 
-		StringBuilder sb = new StringBuilder();
-		for (int i=0; i<escaped.length; i++) {
-			if (i != 0)
-				sb.append("&");
-
-			sb.append(escaped[i]);
-		}
-
-		return sb.toString();
+		return StringUtils.join(escaped, "&");
 	}
 }
