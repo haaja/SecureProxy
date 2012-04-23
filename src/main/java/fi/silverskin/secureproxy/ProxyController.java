@@ -9,15 +9,15 @@ import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-
 public class ProxyController {
+
     private ResourceFetcher fetcher;
     private HackAndSlash hackAndSlash;
     private PluginRunner pluginRunner;
     private static final Logger LOGGER = Logger.getLogger(ProxyController.class.getName(), null);
     private ProxyConfigurer configurer;
     private Properties configuration;
- 
+
     public ProxyController() {
         fetcher = new ResourceFetcher();
         configurer = new ProxyConfigurer();
@@ -35,11 +35,11 @@ public class ProxyController {
 
     /**
      * Control logic for handling requests within SecureProxy.
-     * 
+     *
      * @param request HTTP request.
      * @return Modified HTTP response.
      */
-    public EPICResponse handleRequest(EPICRequest request) {
+    public EPICResponse handleRequest(EPICRequest request) throws EPICException {
         LOGGER.entering(ProxyController.class.getName(), "handleRequest", request);
         request = hackAndSlash.hackAndSlashIn(request);
         request = HeaderCleaner.cleanHeaders(request, configuration);
@@ -49,13 +49,13 @@ public class ProxyController {
        
         EPICResponse response = fetcher.handleRequest(request);
         LOGGER.log(Level.INFO, response.toString());
-        
+
         if (response.isText()) {
             LOGGER.info("Running security plugins with text response");
             pluginRunner.run((EPICTextResponse)response);
             
             LOGGER.info("Sending response to HackAndSlash");
-            response = hackAndSlash.hackAndSlashOut((EPICTextResponse)response);
+            response = hackAndSlash.hackAndSlashOut((EPICTextResponse) response);
             LOGGER.info("Mutilated response:");
             LOGGER.log(Level.INFO, response.toString());
         }
@@ -65,7 +65,7 @@ public class ProxyController {
             pluginRunner.run((EPICBinaryResponse)response);
         }
 
-        /* Change location header in case it exists */
+        //Change location header in case it exists
         response = HeaderCleaner.maskLocationHeader(response, configuration);
 
         LOGGER.exiting(ProxyController.class.getName(), "handleRequest", response);
