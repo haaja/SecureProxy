@@ -16,6 +16,7 @@ public class ProxyConfigurer {
 
     private final String CONFIGFILENAME = "config.properties";
     private Properties configures;
+    private File configFile;
     private static final Logger LOGGER = Logger.getLogger(ProxyConfigurer.class.getName(), null);
 
     public ProxyConfigurer() {
@@ -25,7 +26,7 @@ public class ProxyConfigurer {
         try {
             String basePath = System.getProperty("catalina.base");
             File baseDir = new File(basePath);
-            File configFile = new File(baseDir, "conf/secureproxy/" + CONFIGFILENAME);
+            configFile = new File(baseDir, "conf/secureproxy/" + CONFIGFILENAME);
 
             if (!configFile.exists()) {
                 LOGGER.log(Level.SEVERE, "Config file does not exist.");
@@ -106,5 +107,17 @@ public class ProxyConfigurer {
      */
     public String getProperty(String key) {
         return configures.getProperty(key).trim();
+    }
+    
+    /**
+     * Returns configuration file if possible. (Needed by PluginRunner)
+     * 
+     * @return config's file
+     */
+    
+    public File getConfigFile() {
+        if (configFile == null) 
+            return null;
+        else return configFile;
     }
 }
