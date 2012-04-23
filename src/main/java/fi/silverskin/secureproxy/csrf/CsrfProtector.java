@@ -37,7 +37,6 @@ public class CsrfProtector implements SecureProxyPlugin {
         String csrfKey = generateCsrfKey();
         injectCsrfKeyField(response, csrfKey);
         updateCookieWithCsrfKey(response, csrfKey);
-        updateContentLength(response);
     }
 
     //no need to modify binary responses
@@ -206,29 +205,5 @@ public class CsrfProtector implements SecureProxyPlugin {
         
         response.setHeaders(headers);
         LOGGER.exiting(CsrfProtector.class.getName(), "updateCookieWithCsrfKey");
-    }
-    
-    /**
-     * Updates Content-Length header with a new value after masking the urls.
-     *
-     * See: https://en.wikipedia.org/wiki/Chunked_transfer_encoding
-     *
-     * @param response Response with modified Content-Length value or unmodified
-     * response in case chunked encoding is used
-     * @return Response containing updated Content-Length header
-     */
-    public EPICTextResponse updateContentLength(EPICTextResponse response) {
-        LOGGER.entering(CsrfProtector.class.getName(), "updateContentLength", response);
-
-        //if the http server uses chunked encoding
-        if (!response.getHeaders().containsKey("Transfer-Encoding")) {
-            //Update Content-Lenght with new size
-            HashMap<String, String> headers = new HashMap<String, String>(response.getHeaders());
-            headers.put("Content-Length", Integer.toString(response.getBody().getBytes().length));
-            response.setHeaders(headers);
-        }
-
-        LOGGER.exiting(CsrfProtector.class.getName(), "updateContentLength", response);
-        return response;
     }
 }
