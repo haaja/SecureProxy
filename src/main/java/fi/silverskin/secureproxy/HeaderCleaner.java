@@ -8,7 +8,8 @@ import java.util.logging.Logger;
 
 public class HeaderCleaner {
 
-    private static final Logger LOGGER = Logger.getLogger(HeaderCleaner.class.getName(), null);
+    private static final Logger LOGGER = 
+            Logger.getLogger(HeaderCleaner.class.getName(), null);
     private static String[] headersToBePreserved = { "cookie", "content-type" };
 
     /**
@@ -17,7 +18,8 @@ public class HeaderCleaner {
      * @param request Original HTTP request
      * @return HTTP request with cleaned headers
      */
-    public static EPICRequest cleanHeaders(EPICRequest request, Properties configuration) {
+    public static EPICRequest cleanHeaders(EPICRequest request, 
+                                           Properties configuration) {
         LOGGER.entering(HeaderCleaner.class.getName(),
                         "cleanHeaders",
                         request);
@@ -57,18 +59,24 @@ public class HeaderCleaner {
         Map<String, String> originalHeaders = response.getHeaders();
         if (originalHeaders.containsKey("Location")) {
             String locationUrl = originalHeaders.get("Location");
-            URI privateUri = SecureProxyUtilities.makeUriFromString(configuration.getProperty("privateURI"));
+            URI privateUri = 
+                    SecureProxyUtilities.makeUriFromString(configuration.getProperty("privateURI"));
             URI locationUri = SecureProxyUtilities.makeUriFromString(locationUrl);
 
             if (SecureProxyUtilities.isProtectedUrl(privateUri, locationUri)) {
-                String mutilatedUrl = buildMaskedLocationUrl(locationUri, configuration);
-                HashMap<String, String> mutilatedHeaders = new HashMap(originalHeaders);
+                String mutilatedUrl = 
+                        buildMaskedLocationUrl(locationUri, configuration);
+                HashMap<String, String> mutilatedHeaders = 
+                        new HashMap(originalHeaders);
                 mutilatedHeaders.put("Location", mutilatedUrl);
                 response.setHeaders(mutilatedHeaders);
             }
+                    
 
         }
-        LOGGER.exiting(HeaderCleaner.class.getName(), "maskLocationHeader", response);
+        LOGGER.exiting(HeaderCleaner.class.getName(), 
+                       "maskLocationHeader", 
+                       response);
         return response;
     }
 
@@ -88,7 +96,8 @@ public class HeaderCleaner {
         String maskedUrl = null;
 
         if (locationUri.isAbsolute()) {
-            publicUri = SecureProxyUtilities.makeUriFromString(conf.getProperty("publicURI"));
+            publicUri = 
+                    SecureProxyUtilities.makeUriFromString(conf.getProperty("publicURI"));
             String scheme = locationUri.getScheme();
             String port;
             if (scheme != null) {
@@ -101,14 +110,17 @@ public class HeaderCleaner {
                             locationUri.getRawPath();
             }
         } else {
-            /* Should never go here as location header is required to be absolute
-             * Nevertheless assuming HTTP protocol
+            /* 
+             * Should never go here as location header is required to be 
+             * absolute. Nevertheless assuming HTTP protocol
              */
             maskedUrl = "http://" + publicUri.getHost() + locationUri.getRawPath();
         }
 
         LOGGER.info("MaskedUrlBuilt: " + maskedUrl);
-        LOGGER.exiting(HeaderCleaner.class.getName(), "buildMaskedUrl", maskedUrl);
+        LOGGER.exiting(HeaderCleaner.class.getName(), 
+                       "buildMaskedUrl", 
+                       maskedUrl);
         return maskedUrl;
     }
 }
