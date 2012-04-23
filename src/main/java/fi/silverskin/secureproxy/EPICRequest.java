@@ -14,7 +14,8 @@ public class EPICRequest extends EPICAbstraction {
     private String body;
     private RequestType type;
     private URI uri;
-    private static final Logger LOGGER = Logger.getLogger(EPICRequest.class.getName(), null);
+    private static final Logger LOGGER = 
+            Logger.getLogger(EPICRequest.class.getName(), null);
 
     public EPICRequest(RequestType type) {
         this.type = type;

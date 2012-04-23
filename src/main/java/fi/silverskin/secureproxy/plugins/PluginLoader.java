@@ -14,7 +14,8 @@ import java.util.logging.Logger;
 
 public class PluginLoader {
 
-    private static final Logger LOGGER = Logger.getLogger(PluginLoader.class.getName(), null);
+    private static final Logger LOGGER = 
+            Logger.getLogger(PluginLoader.class.getName(), null);
 
     /**
      * Load plugins given in config sorted by load order.

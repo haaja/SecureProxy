@@ -18,7 +18,8 @@ import org.apache.http.util.EntityUtils;
 
 public class FetcherUtilities {
 
-    private static final Logger LOGGER = Logger.getLogger(FetcherUtilities.class.getName(), null);
+    private static final Logger LOGGER = 
+            Logger.getLogger(FetcherUtilities.class.getName(), null);
 
     /**
      * Checks if the reponse contains text or binary data
@@ -31,7 +32,8 @@ public class FetcherUtilities {
         Header contentType = response.getFirstHeader("content-type");
 
         Header[] contenttypes = response.getHeaders("Content-Type");
-        LOGGER.log(Level.INFO, "Content-Type: {0}", (contenttypes == null ? null : contenttypes.length));
+        LOGGER.log(Level.INFO, "Content-Type: {0}", 
+                   (contenttypes == null ? null : contenttypes.length));
 
         if (contentType == null || contentType.getValue().matches("text/.*")) {
             LOGGER.exiting(FetcherUtilities.class.getName(), "contextIsText", true);
@@ -59,7 +61,7 @@ public class FetcherUtilities {
             e.setHeaders(getHeaders(response));
             EntityUtils.consume(response.getEntity());
         } catch (IOException ex) {
-            Logger.getLogger(FetcherUtilities.class.getName()).log(Level.SEVERE, null, ex);
+            LOGGER.log(Level.SEVERE, null, ex);
         }
 
         LOGGER.entering(FetcherUtilities.class.getName(), "toEPICText", e);
@@ -149,7 +151,8 @@ public class FetcherUtilities {
      * @param req Request where headers are to be copied to
      */
     public static void copyHeaders(EPICRequest epic, HttpRequest req) {
-        LOGGER.entering(FetcherUtilities.class.getName(), "copyHeaders", new Object[] {epic, req});
+        LOGGER.entering(FetcherUtilities.class.getName(), 
+                        "copyHeaders", new Object[] {epic, req});
         for (Map.Entry<String, String> k : epic.getHeaders().entrySet()) {
             req.addHeader(k.getKey(), k.getValue());
         }
@@ -164,7 +167,8 @@ public class FetcherUtilities {
      * @param req HttpPost or HttpPut to modify
      */
     public static void copyBody(EPICRequest epic, HttpEntityEnclosingRequestBase req) {
-        LOGGER.entering(FetcherUtilities.class.getName(), "copyBody", new Object[] {epic, req});
+        LOGGER.entering(FetcherUtilities.class.getName(), 
+                        "copyBody", new Object[] {epic, req});
         try {
             req.setEntity(new StringEntity(epic.getBody()));
         } catch (UnsupportedEncodingException ex) {

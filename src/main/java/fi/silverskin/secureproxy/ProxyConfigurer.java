@@ -17,7 +17,8 @@ public class ProxyConfigurer {
     private final String CONFIGFILENAME = "config.properties";
     private Properties configures;
     private File configFile;
-    private static final Logger LOGGER = Logger.getLogger(ProxyConfigurer.class.getName(), null);
+    private static final Logger LOGGER = 
+            Logger.getLogger(ProxyConfigurer.class.getName(), null);
 
     public ProxyConfigurer() {
         configures = new Properties();

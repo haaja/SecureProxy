@@ -25,7 +25,8 @@ public class ProxyLogger {
                                          CONFIGFILENAME);
         }
         else {
-            LOGGER.info("Configuration file was invalid. Generating default configuration file.");
+            LOGGER.info("Configuration file was invalid. "
+                    + "Generating default configuration file.");
             initLogConfigFile();
             systemProperties.setProperty("java.util.logging.config.file",
                                          CONFIGFILENAME);

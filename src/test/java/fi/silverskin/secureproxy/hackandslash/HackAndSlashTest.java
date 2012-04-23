@@ -160,7 +160,8 @@ public class HackAndSlashTest {
         String tag = "<a href=\"http://128.214.9.12:80/testing\">Boo</a>";
         String attribute = "href";
         String resultTag = has.convertUrlInTag(tag, attribute);
-        String expectedTag = "<a href=\"http://palomuuri.users.cs.helsinki.fi:"+publicHttpPort+"/testing\">Boo</a>";
+        String expectedTag = "<a href=\"http://palomuuri.users.cs.helsinki.fi:"
+                +publicHttpPort+"/testing\">Boo</a>";
         assertEquals(expectedTag, resultTag);
     }
 }

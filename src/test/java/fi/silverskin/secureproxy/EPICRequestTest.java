@@ -5,9 +5,9 @@
 package fi.silverskin.secureproxy;
 
 import fi.silverskin.secureproxy.EPICRequest.RequestType;
-import java.util.*;
+import java.util.HashMap;
+import static org.junit.Assert.assertEquals;
 import org.junit.*;
-import static org.junit.Assert.*;
 
 /**
  *

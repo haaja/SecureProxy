@@ -6,7 +6,6 @@ import fi.silverskin.secureproxy.SecureProxyUtilities;
 import fi.silverskin.secureproxy.redis.LinkDB;
 import java.net.URI;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
@@ -259,9 +258,7 @@ public class HackAndSlash {
         LOGGER.entering(HackAndSlash.class.getName(), "getMaskedUrl", url);
         LOGGER.info("getMaskedUrl's param: " + url);
 
-        /*
-         * fixing common mistakes in page sources
-         */
+        //fixing common mistakes in page sources
         url = url.trim().replace(" ", "%20");
         String maskedUri;
 
@@ -320,11 +317,13 @@ public class HackAndSlash {
          */
         if (url.startsWith("mailto:")) {
             retVal = true;
-        } /*
+        } 
+        /*
          * Quick fix for <img
          * src="file:///C:/Users/TVIKBE~1.003/AppData/Local/Temp/moz-screenshot.png"
          * alt="" /> in page: http://www.cs.helsinki.fi/alumni
-         */ else if (url.startsWith("file:")) {
+         */ 
+        else if (url.startsWith("file:")) {
             retVal = true;
         } else if (url.startsWith("news:")) {
             retVal = true;
@@ -334,10 +333,12 @@ public class HackAndSlash {
             retVal = true;
         } else if (url.startsWith("javascript")) {
             retVal = true;
-        } /*
+        } 
+        /*
          * Thank you CS department for your awesome www pages
          * http://www.cs.helsinki.fi/story/63467/windows-phone-7-tutuksi-koodausleirill
-         */ else if (url.startsWith("http:///")) {
+         */ 
+        else if (url.startsWith("http:///")) {
             retVal = true;
         }
 

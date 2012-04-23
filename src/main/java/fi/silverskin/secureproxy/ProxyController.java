@@ -14,7 +14,8 @@ public class ProxyController {
     private ResourceFetcher fetcher;
     private HackAndSlash hackAndSlash;
     private PluginRunner pluginRunner;
-    private static final Logger LOGGER = Logger.getLogger(ProxyController.class.getName(), null);
+    private static final Logger LOGGER = 
+            Logger.getLogger(ProxyController.class.getName(), null);
     private ProxyConfigurer configurer;
     private Properties configuration;
 

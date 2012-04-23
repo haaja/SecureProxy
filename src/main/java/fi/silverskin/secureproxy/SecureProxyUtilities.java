@@ -10,7 +10,8 @@ import java.util.logging.Logger;
 
 public class SecureProxyUtilities {
 
-    private static final Logger LOGGER = Logger.getLogger(SecureProxyUtilities.class.getName(), null);
+    private static final Logger LOGGER = 
+            Logger.getLogger(SecureProxyUtilities.class.getName(), null);
 
     /**
      * Creates URI object from the String parameter

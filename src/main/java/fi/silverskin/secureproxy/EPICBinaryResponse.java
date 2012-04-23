@@ -11,7 +11,8 @@ import java.util.logging.Logger;
 
 public class EPICBinaryResponse extends EPICResponse {
     private byte[] body;
-    private static final Logger LOGGER = Logger.getLogger(EPICBinaryResponse.class.getName());
+    private static final Logger LOGGER = 
+            Logger.getLogger(EPICBinaryResponse.class.getName());
 
     public EPICBinaryResponse() {
         super();
@@ -22,7 +23,8 @@ public class EPICBinaryResponse extends EPICResponse {
         this.body = fromInputStream(body);
     }
     
-    public EPICBinaryResponse(HashMap<String, String> headers, InputStream body) {
+    public EPICBinaryResponse(HashMap<String, String> headers, 
+                              InputStream body) {
         super(headers);
         this.body = fromInputStream(body);
     }
@@ -79,7 +81,8 @@ public class EPICBinaryResponse extends EPICResponse {
      * @return byte array containing body of the response
      */
     private byte[] fromInputStream(InputStream in) {
-        LOGGER.entering(EPICBinaryResponse.class.getName(), "fromInputStream", in);
+        LOGGER.entering(EPICBinaryResponse.class.getName(), 
+                        "fromInputStream", in);
         ByteArrayOutputStream buff = new ByteArrayOutputStream();
         
         try {            
@@ -97,7 +100,8 @@ public class EPICBinaryResponse extends EPICResponse {
             return new byte[0];
         }
 
-        LOGGER.exiting(EPICBinaryResponse.class.getName(), "fromInputStream", in);
+        LOGGER.exiting(EPICBinaryResponse.class.getName(), 
+                       "fromInputStream", in);
         return buff.toByteArray();
     }
 }

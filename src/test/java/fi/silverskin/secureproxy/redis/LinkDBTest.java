@@ -1,6 +1,5 @@
 package fi.silverskin.secureproxy.redis;
 
-import fi.silverskin.secureproxy.redis.LinkDB;
 import static org.junit.Assert.*;
 import org.junit.*;
 
@@ -39,7 +38,8 @@ public class LinkDBTest {
         linkDB.addLink("first_key", "modified_value");
         assertEquals("Already added link pair should not be modified.",
                 "first_key", linkDB.fetchKey("first_value"));
-        assertEquals("When adding with existing key, querying new value should give empty string.",
+        assertEquals("When adding with existing key, querying new value should "
+                + "give empty string.",
                 "", linkDB.fetchKey("modified_value"));
 
         assertEquals("Not existing value should give empty string",
@@ -75,18 +75,18 @@ public class LinkDBTest {
 	@Test
 	public void testAddLinkReturnValue() {
         boolean retval = linkDB.addLink("1_key", "first_value");
-		assertTrue("Retval should be true when insert stores something.", retval);
+            assertTrue("Retval should be true when insert stores something.", retval);
 
         retval = linkDB.addLink("1_key", "first_value");
-		assertFalse("Retval should be false when insert doesn't store..", retval);
+            assertFalse("Retval should be false when insert doesn't store..", retval);
 	}
 
 
 	@Test
 	public void testFetchValue() {
         linkDB.addLink("first_key", "first_value");
-		String actual = linkDB.fetchValue("first_key");
+            String actual = linkDB.fetchValue("first_key");
 
-		assertEquals("first_value", actual);
+            assertEquals("first_value", actual);
 	}
 }

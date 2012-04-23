@@ -16,7 +16,8 @@ import javax.servlet.http.HttpServletResponse;
 public class EPICTomcat {
 
     private ProxyController proxy;
-    private static final Logger LOGGER = Logger.getLogger(EPICTomcat.class.getName());
+    private static final Logger LOGGER = 
+            Logger.getLogger(EPICTomcat.class.getName());
 
     public EPICTomcat() throws URISyntaxException {
         proxy = new ProxyController();
@@ -28,8 +29,10 @@ public class EPICTomcat {
      * @param request HTTP request coming from servlet.
      * @param response HTTP response coming from servlet.
      */
-    public void handleRequest(HttpServletRequest request, HttpServletResponse response) {
-        LOGGER.entering(EPICTomcat.class.getName(), "handleRequest", new Object[] {request, response});
+    public void handleRequest(HttpServletRequest request, 
+                              HttpServletResponse response) {
+        LOGGER.entering(EPICTomcat.class.getName(), 
+                        "handleRequest", new Object[] {request, response});
         EPICRequest convertedRequest = convertToEPICRequest(request);
         
         try {
@@ -40,7 +43,7 @@ public class EPICTomcat {
             try {
                 response.sendError(404);
             } catch (IOException ex) {
-                Logger.getLogger(EPICTomcat.class.getName()).log(Level.SEVERE, null, ex);
+                LOGGER.log(Level.SEVERE, null, ex);
             }
         }
         
@@ -54,7 +57,8 @@ public class EPICTomcat {
      * @param epic Internal response used by SecureProxy.
      */
     private void fillResponse(HttpServletResponse response, EPICResponse epic) {
-        LOGGER.entering(EPICTomcat.class.getName(), "fillResponse", new Object[] {response, epic});
+        LOGGER.entering(EPICTomcat.class.getName(), 
+                        "fillResponse", new Object[] {response, epic});
 
         response.setStatus(epic.getStatusCode());
 
@@ -84,7 +88,8 @@ public class EPICTomcat {
      * @param epic Internal response used by SecureProxy.
      */
     private void fillText(HttpServletResponse response, EPICTextResponse epic) {
-        LOGGER.entering(EPICTomcat.class.getName(), "fillText", new Object[] {response, epic});
+        LOGGER.entering(EPICTomcat.class.getName(), 
+                        "fillText", new Object[] {response, epic});
         
         try {
             PrintWriter out = response.getWriter();
@@ -105,7 +110,8 @@ public class EPICTomcat {
      * @param epic Internal response used by SecureProxy.
      */
     private void fillBinary(HttpServletResponse response, EPICBinaryResponse epic) {
-        LOGGER.entering(EPICTomcat.class.getName(), "fillBinary", new Object[] {response, epic});
+        LOGGER.entering(EPICTomcat.class.getName(), 
+                        "fillBinary", new Object[] {response, epic});
         
         try {
             ServletOutputStream out = response.getOutputStream();
@@ -126,7 +132,8 @@ public class EPICTomcat {
      * @return HTTP request converted to internal EPICRequest.
      */
     private EPICRequest convertToEPICRequest(HttpServletRequest request) {
-        LOGGER.entering(EPICTomcat.class.getName(), "convertToEPICRequest", request);
+        LOGGER.entering(EPICTomcat.class.getName(), 
+                        "convertToEPICRequest", request);
         HashMap<String, String> headers = new HashMap();
         String body = new String();
         

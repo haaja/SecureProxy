@@ -14,7 +14,8 @@ import org.apache.http.impl.client.cache.CachingHttpClient;
 public class ResourceFetcher {
 
     HttpClient httpclient;
-    private static final Logger LOGGER = Logger.getLogger(ResourceFetcher.class.getName(), null);
+    private static final Logger LOGGER = 
+            Logger.getLogger(ResourceFetcher.class.getName(), null);
 
     public ResourceFetcher() {
         httpclient = new CachingHttpClient();
@@ -65,7 +66,8 @@ public class ResourceFetcher {
 
             HttpResponse res = httpclient.execute(get);
             LOGGER.info("HTTP response status line: "+res.getStatusLine());
-            LOGGER.log(Level.INFO, "HTTP response Headers Before Anything: {0}", res.getAllHeaders().length);
+            LOGGER.log(Level.INFO, "HTTP response Headers Before Anything: {0}", 
+                       res.getAllHeaders().length);
 
             for (Header h : res.getAllHeaders()) {
                 System.err.println("\t" + h);

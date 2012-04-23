@@ -10,7 +10,8 @@ public abstract class EPICAbstraction {
 
     protected HashMap<String, String> headers;
     private URI uri;
-    private static final Logger LOGGER = Logger.getLogger(EPICAbstraction.class.getName(), null);
+    private static final Logger LOGGER = 
+            Logger.getLogger(EPICAbstraction.class.getName(), null);
 
     public EPICAbstraction(HashMap<String, String> header) {
         this.headers = header;

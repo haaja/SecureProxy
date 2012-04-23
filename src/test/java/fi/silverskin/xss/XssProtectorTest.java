@@ -1,9 +1,11 @@
 package fi.silverskin.xss;
 
 import fi.silverskin.secureproxy.EPICRequest;
-import java.net.URI;
-import org.junit.*;
-import static org.junit.Assert.*;
+import org.junit.After;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
  * Test output validation could be more specific, now we are just checking that

@@ -8,8 +8,8 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.apache.commons.lang3.StringUtils;
 import static org.apache.commons.lang3.StringEscapeUtils.escapeHtml4;
+import org.apache.commons.lang3.StringUtils;
 
 
 /**
@@ -18,34 +18,37 @@ import static org.apache.commons.lang3.StringEscapeUtils.escapeHtml4;
  */
 public class XssProtector implements SecureProxyPlugin {
 
-    private static final Logger LOGGER = Logger.getLogger(XssProtector.class.getName(), null);
+    private static final Logger LOGGER = 
+            Logger.getLogger(XssProtector.class.getName(), null);
 
 	public String getName() {
-		return "XssProtector";
+            return "XssProtector";
 	}
 
 	public void run(EPICRequest epic) {
-		LOGGER.entering(XssProtector.class.getName(), "run", epic);
+            LOGGER.entering(XssProtector.class.getName(), "run", epic);
 
-		EPICRequest.RequestType type = epic.getType();
+            EPICRequest.RequestType type = epic.getType();
 
-		if (type == EPICRequest.RequestType.GET) {
-			handleGet(epic);
-		} else if (type == EPICRequest.RequestType.POST) {
-			handlePost(epic);
-		} else if (type == EPICRequest.RequestType.PUT) {
-			handlePut(epic);
-		}
+            if (type == EPICRequest.RequestType.GET) {
+                    handleGet(epic);
+            } else if (type == EPICRequest.RequestType.POST) {
+                    handlePost(epic);
+            } else if (type == EPICRequest.RequestType.PUT) {
+                    handlePut(epic);
+            }
 
-		LOGGER.exiting(XssProtector.class.getName(), "run", epic);
+            LOGGER.exiting(XssProtector.class.getName(), "run", epic);
 	}
 
 	public void run(EPICTextResponse epic) {
-		LOGGER.log(Level.WARNING, "XssProtector.run() was called with EPICTextResponse.");
+            LOGGER.log(Level.WARNING, 
+                        "XssProtector.run() was called with EPICTextResponse.");
 	}
 
 	public void run(EPICBinaryResponse epic) {
-		LOGGER.log(Level.WARNING, "XssProtector.run() was called with EPICBinaryResponse.");
+            LOGGER.log(Level.WARNING, 
+                        "XssProtector.run() was called with EPICBinaryResponse.");
 	}
 
 
@@ -55,23 +58,23 @@ public class XssProtector implements SecureProxyPlugin {
 	 * @param epic
 	 */
 	private void handleGet(EPICRequest epic) {
-		LOGGER.entering(XssProtector.class.getName(), "handleGet", epic);
+            LOGGER.entering(XssProtector.class.getName(), "handleGet", epic);
 
-		try {
-			URI uri = epic.getUri();
-			String path = uri.getPath();
-			String query = uri.getQuery();
+            try {
+                URI uri = epic.getUri();
+                String path = uri.getPath();
+                String query = uri.getQuery();
 
-			String escaped = safelyEscape(query);
-			URI newUri = new URI(uri.getScheme(), uri.getUserInfo(), uri.getHost(),
-				uri.getPort(), uri.getPath(), escaped, uri.getFragment());
+                String escaped = safelyEscape(query);
+                URI newUri = new URI(uri.getScheme(), uri.getUserInfo(), uri.getHost(),
+                        uri.getPort(), uri.getPath(), escaped, uri.getFragment());
 
-			epic.setUri(newUri.toString());
-		} catch (URISyntaxException ex) {
-			LOGGER.exiting(XssProtector.class.getName(), "handleGet", ex);
-		}
+                epic.setUri(newUri.toString());
+            } catch (URISyntaxException ex) {
+                LOGGER.exiting(XssProtector.class.getName(), "handleGet", ex);
+            }
 
-		LOGGER.exiting(XssProtector.class.getName(), "handleGet", epic);
+            LOGGER.exiting(XssProtector.class.getName(), "handleGet", epic);
 	}
 
 
@@ -80,12 +83,12 @@ public class XssProtector implements SecureProxyPlugin {
 	 * @param epic
 	 */
 	private void handlePost(EPICRequest epic) {
-		LOGGER.entering(XssProtector.class.getName(), "handlePost", epic);
+            LOGGER.entering(XssProtector.class.getName(), "handlePost", epic);
 
-		String escapedBody = safelyEscape(epic.getBody());
-		epic.setBody(escapedBody);
+            String escapedBody = safelyEscape(epic.getBody());
+            epic.setBody(escapedBody);
 
-		LOGGER.exiting(XssProtector.class.getName(), "handlePost", epic);
+            LOGGER.exiting(XssProtector.class.getName(), "handlePost", epic);
 	}
 
 
@@ -94,12 +97,12 @@ public class XssProtector implements SecureProxyPlugin {
 	 * @param epic
 	 */
 	private void handlePut(EPICRequest epic) {
-		LOGGER.entering(XssProtector.class.getName(), "handlePut", epic);
+            LOGGER.entering(XssProtector.class.getName(), "handlePut", epic);
 
-		String escapedBody = safelyEscape(epic.getBody());
-		epic.setBody(escapedBody);
+            String escapedBody = safelyEscape(epic.getBody());
+            epic.setBody(escapedBody);
 
-		LOGGER.exiting(XssProtector.class.getName(), "handlePut", epic);
+            LOGGER.exiting(XssProtector.class.getName(), "handlePut", epic);
 	}
 
 
@@ -109,17 +112,17 @@ public class XssProtector implements SecureProxyPlugin {
 	 * those pairs intact.
 	 */
 	private String safelyEscape(String str) {
-		LOGGER.entering(XssProtector.class.getName(), "safelyEscape", str);
+            LOGGER.entering(XssProtector.class.getName(), "safelyEscape", str);
 
-		String[] pieces = str.split("&");
-		String[] escaped = new String[pieces.length];
+            String[] pieces = str.split("&");
+            String[] escaped = new String[pieces.length];
 
-		for (int i=0; i<pieces.length; i++) {
-			escaped[i] = escapeHtml4(pieces[i]);
-		}
+            for (int i=0; i<pieces.length; i++) {
+                escaped[i] = escapeHtml4(pieces[i]);
+            }
 
-		String retval = StringUtils.join(escaped, "&");
-		LOGGER.exiting(XssProtector.class.getName(), "safelyEscape", retval);
-		return retval;
+            String retval = StringUtils.join(escaped, "&");
+            LOGGER.exiting(XssProtector.class.getName(), "safelyEscape", retval);
+            return retval;
 	}
 }
