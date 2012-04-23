@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 import java.util.UUID;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -15,7 +16,8 @@ import java.util.regex.Pattern;
 public class CsrfProtector implements SecureProxyPlugin {
 
     private static final String PLUGINNAME = "CsrfProtector";
-    private static final Logger LOGGER = Logger.getLogger(CsrfProtector.class.getName(), null);
+    private static final Logger LOGGER = 
+            Logger.getLogger(CsrfProtector.class.getName(), null);
     private static final String CSRFFIELD = "csrfKey";
 
     public String getName() {
@@ -23,7 +25,8 @@ public class CsrfProtector implements SecureProxyPlugin {
     }
 
     public void run(EPICRequest request) {
-
+        LOGGER.entering(CsrfProtector.class.getName(), "run", request);
+        
         if (request.getType() == RequestType.POST) {
             if (!validateReferer(request)) {
                 //Referer header invalid!
@@ -31,6 +34,8 @@ public class CsrfProtector implements SecureProxyPlugin {
                 //CSRF key invalid!
             }
         }
+        
+        LOGGER.exiting(CsrfProtector.class.getName(), "run");
     }
 
     public void run(EPICTextResponse response) {
@@ -41,6 +46,8 @@ public class CsrfProtector implements SecureProxyPlugin {
 
     //no need to modify binary responses
     public void run(EPICBinaryResponse response) {
+        LOGGER.log(Level.WARNING, 
+                   "CsrfProtector.run() was called with EPICBinaryResponse.");
     }
 
     /**
@@ -52,7 +59,9 @@ public class CsrfProtector implements SecureProxyPlugin {
      * @return true if referer is valid, false otherwise.
      */
     public boolean validateReferer(EPICRequest request) {
-        LOGGER.entering(CsrfProtector.class.getName(), "validateReferer", request);
+        LOGGER.entering(CsrfProtector.class.getName(), 
+                        "validateReferer", 
+                        request);
         
         Map<String, String> originalHeaders = request.getHeaders();
         String referer = originalHeaders.get("referer");
@@ -70,7 +79,9 @@ public class CsrfProtector implements SecureProxyPlugin {
             retVal = false;
         }
         
-        LOGGER.entering(CsrfProtector.class.getName(), "validateReferer", retVal);
+        LOGGER.entering(CsrfProtector.class.getName(), 
+                        "validateReferer", 
+                        retVal);
         return retVal;
     }
 
@@ -81,7 +92,9 @@ public class CsrfProtector implements SecureProxyPlugin {
      * @return true if CSRF key is valid, false otherwise.
      */
     public boolean validateCsrfKey(EPICRequest request) {
-        LOGGER.entering(CsrfProtector.class.getName(), "validateCsrfKey", request);
+        LOGGER.entering(CsrfProtector.class.getName(), 
+                        "validateCsrfKey", 
+                        request);
         
         String requestBody = request.getBody();
         String[] postParameters = requestBody.split("&");
@@ -113,10 +126,13 @@ public class CsrfProtector implements SecureProxyPlugin {
      * @return Parsed CSRF key
      */
     public String getCsrfKeyFromHeaders(EPICRequest request) {
-        LOGGER.entering(CsrfProtector.class.getName(), "getCsrfKeyFromHeaders", request);
+        LOGGER.entering(CsrfProtector.class.getName(), 
+                        "getCsrfKeyFromHeaders", 
+                        request);
         
         String csrfKey = "";
-        HashMap<String, String> headers = new HashMap<String, String>(request.getHeaders());
+        HashMap<String, String> headers = 
+                new HashMap<String, String>(request.getHeaders());
         
         String cookieHeader = headers.get("cookie");
         String[] cookies = cookieHeader.split(";");
@@ -130,7 +146,9 @@ public class CsrfProtector implements SecureProxyPlugin {
             }
         }
         
-        LOGGER.exiting(CsrfProtector.class.getName(), "getCsrfKeyFromHeaders", csrfKey);
+        LOGGER.exiting(CsrfProtector.class.getName(), 
+                       "getCsrfKeyFromHeaders", 
+                       csrfKey);
         return csrfKey;
     }
     
@@ -150,9 +168,12 @@ public class CsrfProtector implements SecureProxyPlugin {
      * @param csrfKey CSRF key to be injected into all forms
      */
     public void injectCsrfKeyField(EPICTextResponse response, String csrfKey) {
-        LOGGER.entering(CsrfProtector.class.getName(), "injectCsrfKeyField", response);
+        LOGGER.entering(CsrfProtector.class.getName(), 
+                        "injectCsrfKeyField", 
+                        response);
         
-        String csrfField = "<input type=\"hidden\" name=\"csrfKey\" value=\""+ csrfKey +"\">";
+        String csrfField = 
+                "<input type=\"hidden\" name=\"csrfKey\" value=\""+ csrfKey +"\">";
         String responseBody = response.getBody();
         String newResponseBody = "";
         
@@ -193,7 +214,8 @@ public class CsrfProtector implements SecureProxyPlugin {
                         "updateCookieWithCsrfKey", 
                         new Object[] { response, csrfKey });
         
-        HashMap<String, String> headers = new HashMap<String, String>(response.getHeaders());
+        HashMap<String, String> headers = 
+                new HashMap<String, String>(response.getHeaders());
         String cookie = headers.get("Set-Cookie");
         if (cookie == null) {
             cookie = CSRFFIELD + "=" + csrfKey;
