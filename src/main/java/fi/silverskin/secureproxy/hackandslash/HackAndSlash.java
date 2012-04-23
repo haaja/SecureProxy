@@ -100,12 +100,12 @@ public class HackAndSlash {
         for(String cookie: cookies){
             String[] cookieParts = cookie.split("=");
             cookieParts[0] = cookieParts[0].trim();
-            String originalCookie = cookieStore.fetchOriginal(cookieParts[0]);
+            String originalCookie = cookieStore.fetchKey(cookieParts[0]);
             if(originalCookie.length() > 0) cookieParts[0] = originalCookie;
             cookieTag += cookieParts[0]+"="; 
             if(cookieParts.length > 1){
                 cookieParts[1] = cookieParts[1].trim();
-                originalCookie = cookieStore.fetchOriginal(cookieParts[1]);
+                originalCookie = cookieStore.fetchKey(cookieParts[1]);
                 if(originalCookie.length() > 0) cookieParts[1] = originalCookie;
                 cookieTag += cookieParts[1];
             }
@@ -171,7 +171,7 @@ public class HackAndSlash {
         headers.put("Set-Cookie", newCookie);
         cookieStore.addLink(cookies[0].trim(), cookieName);
         cookieStore.addLink(cookies[1].trim(), cookieValue);
-        LOGGER.info("testing "+newCookie+":"+cookieStore.fetchOriginal(cookieName));
+        LOGGER.info("testing "+newCookie+":"+cookieStore.fetchKey(cookieName));
     }
 
 
