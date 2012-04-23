@@ -26,7 +26,6 @@ public class LinkDB extends BaseRedis {
 			return retval;
         } finally {
             pool.returnResource(jedis);
-			return false;
         }
     }
 
@@ -51,17 +50,21 @@ public class LinkDB extends BaseRedis {
 			return retval;
         } finally {
             pool.returnResource(jedis);
-			return false;
         }
     }
 
     private boolean insertLink(Jedis con, String key, String original, String modified) {
         Long retval = con.hsetnx(key, original, modified);
-		if (retval == 1)
-			return true;
-		else
-			return false;
+		System.out.println(retval);
 
+		if (retval == 0) {
+			System.out.println("Field already existed.");
+			return false;
+		}
+		else {
+			System.out.println("Field was inserted.");
+			return true;
+		}
     }
 
     
