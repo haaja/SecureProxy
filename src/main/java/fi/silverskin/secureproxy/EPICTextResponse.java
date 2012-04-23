@@ -2,11 +2,13 @@ package fi.silverskin.secureproxy;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Logger;
 
 
 public class EPICTextResponse extends EPICResponse {
     private String body;
-
+    private static final Logger LOGGER = 
+            Logger.getLogger(EPICTextResponse.class.getName(), null);
     
     public EPICTextResponse() {
         super();
@@ -34,6 +36,7 @@ public class EPICTextResponse extends EPICResponse {
      */
     public void setBody(String body) {
         this.body = body;
+        updateContentLength();
     }
   
     /**
@@ -51,5 +54,26 @@ public class EPICTextResponse extends EPICResponse {
         }
         sb.append("Body:\n").append(getBody());
         return sb.toString();
+    }
+    
+    /**
+     * Updates Content-Length header with a new value after masking the urls.
+     *
+     * See: https://en.wikipedia.org/wiki/Chunked_transfer_encoding
+     */
+    private void updateContentLength() {
+        LOGGER.entering(EPICTextResponse.class.getName(), "updateContentLength");
+
+        //if the http server uses chunked encoding
+        if (!this.getHeaders().containsKey("Transfer-Encoding")) {
+            //Update Content-Lenght with new size
+            HashMap<String, String> headers = 
+                    new HashMap<String, String>(this.getHeaders());
+            headers.put("Content-Length", 
+                        Integer.toString(this.getBody().getBytes().length));
+            this.setHeaders(headers);
+        }
+
+        LOGGER.exiting(EPICTextResponse.class.getName(), "updateContentLength");
     }
 }

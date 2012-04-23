@@ -128,7 +128,6 @@ public class HackAndSlash {
         oldResponse = convertTags(oldResponse);
         oldResponse = convertAbsoluteUrlsInText(oldResponse);
         response.setBody(oldResponse);
-        response = updateContentLength(response);
         HashMap<String, String> headers =
                 new HashMap<String, String>(response.getHeaders());
         mutilateCookiesOut(headers);
@@ -458,31 +457,5 @@ public class HackAndSlash {
         }
         LOGGER.exiting(HackAndSlash.class.getName(), "convertUrlInTag", tag);
         return tag;
-    }
-
-    /**
-     * Updates Content-Length header with a new value after masking the urls.
-     *
-     * See: https://en.wikipedia.org/wiki/Chunked_transfer_encoding
-     *
-     * @param response Response with modified Content-Length value or unmodified
-     * response in case chunked encoding is used
-     * @return Response containing updated Content-Length header
-     */
-    private EPICTextResponse updateContentLength(EPICTextResponse response) {
-        LOGGER.entering(HackAndSlash.class.getName(), "updateContentLength", response);
-
-        //if the http server uses chunked encoding
-        if (!response.getHeaders().containsKey("Transfer-Encoding")) {
-            /*
-             * Update Content-Lenght with new size
-             */
-            HashMap<String, String> headers = new HashMap<String, String>(response.getHeaders());
-            headers.put("Content-Length", Integer.toString(response.getBody().getBytes().length));
-            response.setHeaders(headers);
-        }
-
-        LOGGER.exiting(HackAndSlash.class.getName(), "updateContentLength", response);
-        return response;
     }
 }
