@@ -1,17 +1,10 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package fi.silverskin.secureproxy.redis;
 
 import fi.silverskin.secureproxy.redis.LinkDB;
 import static org.junit.Assert.*;
 import org.junit.*;
 
-/**
- *
- * @author orva
- */
+
 public class LinkDBTest {
 
     private LinkDB linkDB;
@@ -37,24 +30,22 @@ public class LinkDBTest {
         linkDB.flushAll();
     }
 
-	@Ignore
     @Test
     public void testGlobalLinkDB() {
         linkDB.addLink("first_key", "first_value");
         assertEquals("Link pair should have been set.",
-                "first_key", linkDB.fetchValue("first_value"));
+                "first_key", linkDB.fetchKey("first_value"));
 
         linkDB.addLink("first_key", "modified_value");
         assertEquals("Already added link pair should not be modified.",
-                "first_key", linkDB.fetchValue("first_value"));
+                "first_key", linkDB.fetchKey("first_value"));
         assertEquals("When adding with existing key, querying new value should give empty string.",
-                "", linkDB.fetchValue("modified_value"));
+                "", linkDB.fetchKey("modified_value"));
 
         assertEquals("Not existing value should give empty string",
-                "", linkDB.fetchValue("not existing value"));
+                "", linkDB.fetchKey("not existing value"));
     }
 
-	@Ignore
     @Test
     public void testSessionLinkDB() {
         String session1 = "session00001";
@@ -63,32 +54,39 @@ public class LinkDBTest {
         linkDB.addLink("second_key", "second_value", session2, 6000);
 
         assertEquals("Link pair should have been set.",
-                "first_key", linkDB.fetchValue("first_value", session1));
+                "first_key", linkDB.fetchKey("first_value", session1));
         assertEquals("Link pair should not be reached from global storage.",
-                "", linkDB.fetchValue("first_value"));
+                "", linkDB.fetchKey("first_value"));
         assertEquals("Link pair should not be reached from not existing session.",
-                "", linkDB.fetchValue("first_value"));
+                "", linkDB.fetchKey("first_value"));
         assertEquals("Link pair should not be reached from another session.",
-                "", linkDB.fetchValue("first_value", session2));
+                "", linkDB.fetchKey("first_value", session2));
     }
 
-	@Ignore
     @Test
     public void testSessionLinkDBTimeouts() throws InterruptedException {
         linkDB.addLink("first_key", "first_value", "sessionid", 1);
         Thread.sleep(2000);
         assertEquals("Session should have expired.",
-                "", linkDB.fetchValue("first_value", "sessionid"));
+                "", linkDB.fetchKey("first_value", "sessionid"));
     }
 
 
 	@Test
 	public void testAddLinkReturnValue() {
         boolean retval = linkDB.addLink("1_key", "first_value");
-		System.out.println(retval);
 		assertTrue("Retval should be true when insert stores something.", retval);
 
         retval = linkDB.addLink("1_key", "first_value");
 		assertFalse("Retval should be false when insert doesn't store..", retval);
+	}
+
+
+	@Test
+	public void testFetchValue() {
+        linkDB.addLink("first_key", "first_value");
+		String actual = linkDB.fetchValue("first_key");
+
+		assertEquals("first_value", actual);
 	}
 }

@@ -55,27 +55,40 @@ public class LinkDB extends BaseRedis {
 
     private boolean insertLink(Jedis con, String id, String key, String values) {
         Long retval = con.hsetnx(id, key, values);
-		System.out.println(retval);
 
 		if (retval == 0) {
-			System.out.println("Field already existed.");
 			return false;
 		}
 		else {
-			System.out.println("Field was inserted.");
-			return true;
+		return true;
 		}
     }
 
-    
+
+	public String fetchValue(String key) {
+		return fetchValue("GLOBAL", key);
+	}
+
+
+	public String fetchValue(String id, String key) {
+		Jedis jedis = pool.getResource();
+		try {
+			jedis.select(type);
+			return jedis.hget(id, key);
+		} finally {
+			pool.returnResource(jedis);
+		}
+	}
+
+
     /**
      * Fetch original link associated with modified link from global storage.
      * 
      * @param value Modified link
      * @return Unmodified link or empty String
      */
-    public String fetchValue(String value) {
-        return fetchValue(value, "GLOBAL");
+    public String fetchKey(String value) {
+        return fetchKey(value, "GLOBAL");
     }
 
     /**
@@ -85,7 +98,7 @@ public class LinkDB extends BaseRedis {
      * @param id Session key
      * @return Unmodified link or empty String
      */
-    public String fetchValue(String value, String id) {
+    public String fetchKey(String value, String id) {
         Jedis jedis = pool.getResource();
         try {
             jedis.select(type);
