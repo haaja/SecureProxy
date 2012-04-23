@@ -14,7 +14,7 @@ import java.util.regex.Pattern;
 
 public class CsrfProtector implements SecureProxyPlugin {
 
-    private static final String PLUGINNAME = "CrfsProtector";
+    private static final String PLUGINNAME = "CsrfProtector";
     private static final Logger LOGGER = Logger.getLogger(CsrfProtector.class.getName(), null);
     private static final String CSRFFIELD = "csrfKey";
 
@@ -52,17 +52,17 @@ public class CsrfProtector implements SecureProxyPlugin {
      * @param request HTTP request
      * @return true if referer is valid, false otherwise.
      */
-    private boolean validateReferer(EPICRequest request) {
+    public boolean validateReferer(EPICRequest request) {
         LOGGER.entering(CsrfProtector.class.getName(), "validateReferer", request);
         
         Map<String, String> originalHeaders = request.getHeaders();
         String referer = originalHeaders.get("referer");
         URI refererUri = SecureProxyUtilities.makeUriFromString(referer);
-        boolean retVal = false;
+        boolean retVal;
 
         ProxyConfigurer conf = new ProxyConfigurer();
         Properties configuration = conf.getConfigurationProperties();
-        String protectedUrl = configuration.getProperty("privateURI");
+        String protectedUrl = configuration.getProperty("publicURI");
         URI protectedUri = SecureProxyUtilities.makeUriFromString(protectedUrl);
 
         if (SecureProxyUtilities.isProtectedUrl(protectedUri, refererUri)) {
@@ -81,7 +81,7 @@ public class CsrfProtector implements SecureProxyPlugin {
      * @param request Incoming HTTP request
      * @return true if CSRF key is valid, false otherwise.
      */
-    private boolean validateCsrfKey(EPICRequest request) {
+    public boolean validateCsrfKey(EPICRequest request) {
         LOGGER.entering(CsrfProtector.class.getName(), "validateCsrfKey", request);
         
         String requestBody = request.getBody();
@@ -150,7 +150,7 @@ public class CsrfProtector implements SecureProxyPlugin {
      * @param response HTTP response
      * @param csrfKey CSRF key to be injected into all forms
      */
-    private void injectCsrfKeyField(EPICTextResponse response, String csrfKey) {
+    public void injectCsrfKeyField(EPICTextResponse response, String csrfKey) {
         LOGGER.entering(CsrfProtector.class.getName(), "injectCsrfKeyField", response);
         
         String csrfField = "<input type=\"hidden\" name=\"csrfKey\" value=\""+ csrfKey +"\">";
@@ -163,22 +163,19 @@ public class CsrfProtector implements SecureProxyPlugin {
         int index = 0;
         
         while (formMatcher.find()) {
-            
-            if (formMatcher.find()) {
-                if (formMatcher.start() > index) {
-                    newResponseBody += responseBody.substring(index, 
-                                                              formMatcher.start());
-                }
-                
-                String form = formMatcher.group();
-                index = formMatcher.end();
-                form = form + csrfField;
-                
-                if (index == 0) {
-                    newResponseBody = responseBody;
-                } else if (index < responseBody.length()) {
-                    newResponseBody += form + responseBody.substring(index);
-                }
+            if (formMatcher.start() > index) {
+                newResponseBody += responseBody.substring(index, 
+                                                          formMatcher.start());
+            }
+
+            String form = formMatcher.group();
+            index = formMatcher.end();
+            form = form + csrfField;
+
+            if (index == 0) {
+                newResponseBody = responseBody;
+            } else if (index < responseBody.length()) {
+                newResponseBody += form + responseBody.substring(index);
             }
         }
         
@@ -192,7 +189,7 @@ public class CsrfProtector implements SecureProxyPlugin {
      * @param response HTTP response
      * @param csrfKey generated CSRF key to be inserted into cookie header
      */
-    private void updateCookieWithCsrfKey(EPICTextResponse response, String csrfKey) {
+    public void updateCookieWithCsrfKey(EPICTextResponse response, String csrfKey) {
         LOGGER.entering(CsrfProtector.class.getName(), 
                         "updateCookieWithCsrfKey", 
                         new Object[] { response, csrfKey });
@@ -200,10 +197,11 @@ public class CsrfProtector implements SecureProxyPlugin {
         HashMap<String, String> headers = new HashMap<String, String>(response.getHeaders());
         String cookie = headers.get("Set-Cookie");
         if (cookie == null) {
-            cookie = "";
+            cookie = CSRFFIELD + "=" + csrfKey;
+        } else {
+            cookie += ";" + CSRFFIELD + "=" + csrfKey;
         }
         
-        cookie += ";" + CSRFFIELD + "=" + csrfKey;
         headers.put("Set-Cookie", cookie);
         
         response.setHeaders(headers);
@@ -219,7 +217,7 @@ public class CsrfProtector implements SecureProxyPlugin {
      * response in case chunked encoding is used
      * @return Response containing updated Content-Length header
      */
-    private EPICTextResponse updateContentLength(EPICTextResponse response) {
+    public EPICTextResponse updateContentLength(EPICTextResponse response) {
         LOGGER.entering(CsrfProtector.class.getName(), "updateContentLength", response);
 
         //if the http server uses chunked encoding
