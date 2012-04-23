@@ -31,9 +31,19 @@ public class EPICTomcat {
     public void handleRequest(HttpServletRequest request, HttpServletResponse response) {
         LOGGER.entering(EPICTomcat.class.getName(), "handleRequest", new Object[] {request, response});
         EPICRequest convertedRequest = convertToEPICRequest(request);
-        EPICResponse epic = proxy.handleRequest(convertedRequest);
-
-        fillResponse(response, epic);
+        
+        try {
+            EPICResponse epic = proxy.handleRequest(convertedRequest);
+            
+            fillResponse(response, epic);
+        } catch (EPICException e) {
+            try {
+                response.sendError(404);
+            } catch (IOException ex) {
+                Logger.getLogger(EPICTomcat.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        
         LOGGER.exiting(EPICTomcat.class.getName(), "handleRequest");
     }
 
