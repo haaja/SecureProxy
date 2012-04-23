@@ -14,15 +14,15 @@ public class LinkDB extends BaseRedis {
      * Link pair is inserted only if it doesn't exist already, more importantly:
      * original link is used as key and its existence is tested.
      *
-     * @param original Original link
-     * @param modified Modified link
+     * @param key
+     * @param value Modified link
 	 * @return true if something was inserted, false otherwise.
      */
-    public boolean addLink(String original, String modified) {
+    public boolean addLink(String key, String value) {
         Jedis jedis = pool.getResource();
         try {
             jedis.select(type);
-            boolean retval = insertLink(jedis, "GLOBAL", original, modified);
+            boolean retval = insertLink(jedis, "GLOBAL", key, value);
 			return retval;
         } finally {
             pool.returnResource(jedis);
@@ -30,31 +30,31 @@ public class LinkDB extends BaseRedis {
     }
 
     /**
-     * Add link pair into session hash, will create session if it doesn't exist.
+     * Add link pair into id hash, will create id if it doesn't exist.
      *
-     * Notice that timeout key is given to session, not to individual link. This
-     * method also makes sure that links are inserted into session only once.
+     * Notice that timeout key id given to id, not to individual link. This
+     * method also makes sure that links are inserted into id only once.
      *
-     * @param original Original link
-     * @param modified Modified link
-     * @param session Session key
+     * @param key Original link
+     * @param value Modified link
+     * @param id Session key
      * @param timeout Timeout in seconds until SESSION will expire.
 	 * @return true if something was inserted, false otherwise.
      */
-    public boolean addLink(String original, String modified, String session, int timeout) {
+    public boolean addLink(String key, String value, String id, int timeout) {
         Jedis jedis = pool.getResource();
         try {
             jedis.select(type);
-            boolean retval = insertLink(jedis, session, original, modified);
-            jedis.expire(session, timeout);
+            boolean retval = insertLink(jedis, id, key, value);
+            jedis.expire(id, timeout);
 			return retval;
         } finally {
             pool.returnResource(jedis);
         }
     }
 
-    private boolean insertLink(Jedis con, String key, String original, String modified) {
-        Long retval = con.hsetnx(key, original, modified);
+    private boolean insertLink(Jedis con, String id, String key, String values) {
+        Long retval = con.hsetnx(id, key, values);
 		System.out.println(retval);
 
 		if (retval == 0) {
@@ -71,28 +71,28 @@ public class LinkDB extends BaseRedis {
     /**
      * Fetch original link associated with modified link from global storage.
      * 
-     * @param modified Modified link
+     * @param value Modified link
      * @return Unmodified link or empty String
      */
-    public String fetchOriginal(String modified) {
-        return fetchOriginal(modified, "GLOBAL");
+    public String fetchValue(String value) {
+        return fetchValue(value, "GLOBAL");
     }
 
     /**
      * Fetch original link associated with modified link in given session.
      * 
-     * @param modified Modified link
-     * @param session Session key
+     * @param value Modified link
+     * @param id Session key
      * @return Unmodified link or empty String
      */
-    public String fetchOriginal(String modified, String session) {
+    public String fetchValue(String value, String id) {
         Jedis jedis = pool.getResource();
         try {
             jedis.select(type);
-            Map<String, String> values = jedis.hgetAll(session);
+            Map<String, String> values = jedis.hgetAll(id);
             
-            if (values.containsValue(modified))
-                return iterateValues(values, modified);
+            if (values.containsValue(value))
+                return iterateValues(values, value);
             else 
                 return "";
         } finally {
@@ -108,7 +108,8 @@ public class LinkDB extends BaseRedis {
         }
         return "";
     }
-    
+
+
     /**
      * Flush LinkDB data.
      */

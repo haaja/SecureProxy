@@ -42,16 +42,16 @@ public class LinkDBTest {
     public void testGlobalLinkDB() {
         linkDB.addLink("first_key", "first_value");
         assertEquals("Link pair should have been set.",
-                "first_key", linkDB.fetchOriginal("first_value"));
+                "first_key", linkDB.fetchValue("first_value"));
 
         linkDB.addLink("first_key", "modified_value");
         assertEquals("Already added link pair should not be modified.",
-                "first_key", linkDB.fetchOriginal("first_value"));
+                "first_key", linkDB.fetchValue("first_value"));
         assertEquals("When adding with existing key, querying new value should give empty string.",
-                "", linkDB.fetchOriginal("modified_value"));
+                "", linkDB.fetchValue("modified_value"));
 
         assertEquals("Not existing value should give empty string",
-                "", linkDB.fetchOriginal("not existing value"));
+                "", linkDB.fetchValue("not existing value"));
     }
 
 	@Ignore
@@ -63,13 +63,13 @@ public class LinkDBTest {
         linkDB.addLink("second_key", "second_value", session2, 6000);
 
         assertEquals("Link pair should have been set.",
-                "first_key", linkDB.fetchOriginal("first_value", session1));
+                "first_key", linkDB.fetchValue("first_value", session1));
         assertEquals("Link pair should not be reached from global storage.",
-                "", linkDB.fetchOriginal("first_value"));
+                "", linkDB.fetchValue("first_value"));
         assertEquals("Link pair should not be reached from not existing session.",
-                "", linkDB.fetchOriginal("first_value"));
+                "", linkDB.fetchValue("first_value"));
         assertEquals("Link pair should not be reached from another session.",
-                "", linkDB.fetchOriginal("first_value", session2));
+                "", linkDB.fetchValue("first_value", session2));
     }
 
 	@Ignore
@@ -78,7 +78,7 @@ public class LinkDBTest {
         linkDB.addLink("first_key", "first_value", "sessionid", 1);
         Thread.sleep(2000);
         assertEquals("Session should have expired.",
-                "", linkDB.fetchOriginal("first_value", "sessionid"));
+                "", linkDB.fetchValue("first_value", "sessionid"));
     }
 
 
