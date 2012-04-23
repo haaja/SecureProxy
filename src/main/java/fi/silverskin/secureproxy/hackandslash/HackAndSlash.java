@@ -93,29 +93,26 @@ public class HackAndSlash {
     }
     
     public void mutilateCookiesIn(HashMap<String, String> headers){
-        String cookieTag = headers.get("cookie");
-        if(cookieTag == null) return;
+        String cookieTag = headers.get("cookie");LOGGER.info("testing in1:"+cookieTag);
+        if(cookieTag == null) return; 
         String[] cookies = cookieTag.split(";");
         cookieTag = "";
         for(String cookie: cookies){
             String[] cookieParts = cookie.split("=");
             cookieParts[0] = cookieParts[0].trim();
-            if(cookieParts[0].length() > 3 && (cookieParts[0].substring(0, 3)).
-                    equals("xxx")){
-                cookieParts[0] = cookieParts[0].substring(3);
-            }   
-            cookieTag += cookieParts[0]+"=";
+            String originalCookie = cookieStore.fetchOriginal(cookieParts[0]);
+            if(originalCookie.length() > 0) cookieParts[0] = originalCookie;
+            cookieTag += cookieParts[0]+"="; 
             if(cookieParts.length > 1){
                 cookieParts[1] = cookieParts[1].trim();
-                if(cookieParts[1].length() > 3 && (cookieParts[1].substring(0, 3)).
-                    equals("yyy")){
-                    cookieParts[1] = cookieParts[1].substring(3);
-                    cookieTag += cookieParts[1];
-                }
+                originalCookie = cookieStore.fetchOriginal(cookieParts[1]);
+                if(originalCookie.length() > 0) cookieParts[1] = originalCookie;
+                cookieTag += cookieParts[1];
             }
-            cookieTag += "; ";
+            cookieTag += "; "; LOGGER.info("testing in2:"+cookieTag);
         }
         cookieTag = cookieTag.substring(0, cookieTag.length()-2);
+        headers.put("cookie", cookieTag);
     }
 
     /**
@@ -143,13 +140,39 @@ public class HackAndSlash {
     }
     
     public void mutilateCookiesOut(HashMap<String, String> headers){
+        String cookieName, cookieValue = "", newCookie, attributes, domain;
         String cookie = headers.get("Set-Cookie");
-        if(cookie==null) return;
-        String[] cookies = cookie.split("=");
-        String newCookie = "xxx"+cookies[0]+"=";
-        if(cookies.length > 1) newCookie += "yyy" + cookies[1];
+        if(cookie==null) return;LOGGER.info("pretesting"+cookie);
+        //cookie = cookie.trim();
+        Pattern cookiePattern = Pattern.compile("[^\\s;]*");
+        Matcher cookieMatcher = cookiePattern.matcher(cookie);
+        if(!(cookieMatcher.find())) return;
+        String[] cookies = (cookieMatcher.group()).split("=");
+        cookieName = "xxx"+cookies[0].trim();
+        newCookie = cookieName;
+        if(cookies.length > 1){
+            cookieValue = "yyy" + cookies[1].trim();
+            newCookie += "=" + cookieValue;
+        }
+        
+        if(cookie.length() > cookieMatcher.end()){
+            attributes = cookie.substring(cookieMatcher.end());
+            cookiePattern = Pattern.compile("domain[^\\s;]*[\\s;]?");
+            cookieMatcher = cookiePattern.matcher(attributes);
+            if(!(cookieMatcher.find())) newCookie += attributes;
+            else {
+                domain = cookieMatcher.group();
+                if(cookieMatcher.start() > 0) newCookie += attributes.
+                        substring(0, cookieMatcher.start());
+                if(cookieMatcher.end() < attributes.length()) newCookie += 
+                        attributes.substring(cookieMatcher.end());
+            }
+        }
+        
         headers.put("Set-Cookie", newCookie);
-        cookieStore.addLink(cookie, newCookie);
+        cookieStore.addLink(cookies[0].trim(), cookieName);
+        cookieStore.addLink(cookies[1].trim(), cookieValue);
+        LOGGER.info("testing "+newCookie+":"+cookieStore.fetchOriginal(cookieName));
     }
 
 
