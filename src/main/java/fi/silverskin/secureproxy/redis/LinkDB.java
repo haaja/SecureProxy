@@ -16,13 +16,14 @@ public class LinkDB extends BaseRedis {
      *
      * @param original Original link
      * @param modified Modified link
+	 * @return true if something was inserted, false otherwise.
      */
-    public void addLink(String original, String modified) {
+    public boolean addLink(String original, String modified) {
         Jedis jedis = pool.getResource();
         try {
             jedis.select(type);
-            insertLink(jedis, "GLOBAL", original, modified);
-
+            boolean retval = insertLink(jedis, "GLOBAL", original, modified);
+			return retval;
         } finally {
             pool.returnResource(jedis);
         }
@@ -38,20 +39,32 @@ public class LinkDB extends BaseRedis {
      * @param modified Modified link
      * @param session Session key
      * @param timeout Timeout in seconds until SESSION will expire.
+	 * @return true if something was inserted, false otherwise.
      */
-    public void addLink(String original, String modified, String session, int timeout) {
+    public boolean addLink(String original, String modified, String session, int timeout) {
         Jedis jedis = pool.getResource();
         try {
             jedis.select(type);
-            insertLink(jedis, session, original, modified);
+            boolean retval = insertLink(jedis, session, original, modified);
             jedis.expire(session, timeout);
+			return retval;
         } finally {
             pool.returnResource(jedis);
         }
     }
 
-    private void insertLink(Jedis con, String key, String original, String modified) {
-        con.hsetnx(key, original, modified);
+    private boolean insertLink(Jedis con, String key, String original, String modified) {
+        Long retval = con.hsetnx(key, original, modified);
+		System.out.println(retval);
+
+		if (retval == 0) {
+			System.out.println("Field already existed.");
+			return false;
+		}
+		else {
+			System.out.println("Field was inserted.");
+			return true;
+		}
     }
 
     

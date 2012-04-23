@@ -2,10 +2,10 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package fi.silverskin.secureproxy.redis.integration;
+package fi.silverskin.secureproxy.redis;
 
 import fi.silverskin.secureproxy.redis.LinkDB;
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 import org.junit.*;
 
 /**
@@ -37,7 +37,7 @@ public class LinkDBTest {
         linkDB.flushAll();
     }
 
-    @Ignore
+	@Ignore
     @Test
     public void testGlobalLinkDB() {
         linkDB.addLink("first_key", "first_value");
@@ -54,7 +54,7 @@ public class LinkDBTest {
                 "", linkDB.fetchOriginal("not existing value"));
     }
 
-    @Ignore
+	@Ignore
     @Test
     public void testSessionLinkDB() {
         String session1 = "session00001";
@@ -72,7 +72,7 @@ public class LinkDBTest {
                 "", linkDB.fetchOriginal("first_value", session2));
     }
 
-    @Ignore
+	@Ignore
     @Test
     public void testSessionLinkDBTimeouts() throws InterruptedException {
         linkDB.addLink("first_key", "first_value", "sessionid", 1);
@@ -80,4 +80,15 @@ public class LinkDBTest {
         assertEquals("Session should have expired.",
                 "", linkDB.fetchOriginal("first_value", "sessionid"));
     }
+
+
+	@Test
+	public void testAddLinkReturnValue() {
+        boolean retval = linkDB.addLink("1_key", "first_value");
+		System.out.println(retval);
+		assertTrue("Retval should be true when insert stores something.", retval);
+
+        retval = linkDB.addLink("1_key", "first_value");
+		assertFalse("Retval should be false when insert doesn't store..", retval);
+	}
 }
