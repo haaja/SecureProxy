@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package fi.silverskin.secureproxy.redis.integration;
+package fi.silverskin.secureproxy.redis;
 
 import fi.silverskin.secureproxy.redis.LinkDB;
 import static org.junit.Assert.assertEquals;
