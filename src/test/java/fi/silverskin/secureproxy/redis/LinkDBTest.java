@@ -37,7 +37,6 @@ public class LinkDBTest {
         linkDB.flushAll();
     }
 
-    @Ignore
     @Test
     public void testGlobalLinkDB() {
         linkDB.addLink("first_key", "first_value");
@@ -54,7 +53,6 @@ public class LinkDBTest {
                 "", linkDB.fetchOriginal("not existing value"));
     }
 
-    @Ignore
     @Test
     public void testSessionLinkDB() {
         String session1 = "session00001";
@@ -72,7 +70,6 @@ public class LinkDBTest {
                 "", linkDB.fetchOriginal("first_value", session2));
     }
 
-    @Ignore
     @Test
     public void testSessionLinkDBTimeouts() throws InterruptedException {
         linkDB.addLink("first_key", "first_value", "sessionid", 1);
