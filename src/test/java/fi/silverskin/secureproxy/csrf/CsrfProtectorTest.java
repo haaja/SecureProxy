@@ -176,6 +176,7 @@ public class CsrfProtectorTest {
     }
     
     @Test
+    @Ignore
     public void testValidateReferer_error() {
         HashMap<String, String> headers = new HashMap<String, String>();
         String body = "";
@@ -195,7 +196,8 @@ public class CsrfProtectorTest {
         assertEquals(false, plugin.validateReferer(request));
     }
     
-     @Test
+    @Test
+    @Ignore 
     public void testValidateReferer_success() {
         
         String body = "";
