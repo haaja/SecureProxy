@@ -16,7 +16,7 @@ public class LinkDB extends BaseRedis {
      *
      * @param key
      * @param value Modified link
-	 * @return true if something was inserted, false otherwise.
+     * @return true if something was inserted, false otherwise.
      */
     public boolean addLink(String key, String value) {
         Jedis jedis = pool.getResource();
@@ -39,7 +39,7 @@ public class LinkDB extends BaseRedis {
      * @param value Modified link
      * @param id Session key
      * @param timeout Timeout in seconds until SESSION will expire.
-	 * @return true if something was inserted, false otherwise.
+     * @return true if something was inserted, false otherwise.
      */
     public boolean addLink(String key, String value, String id, int timeout) {
         Jedis jedis = pool.getResource();
@@ -47,7 +47,7 @@ public class LinkDB extends BaseRedis {
             jedis.select(type);
             boolean retval = insertLink(jedis, id, key, value);
             jedis.expire(id, timeout);
-			return retval;
+            return retval;
         } finally {
             pool.returnResource(jedis);
         }
@@ -56,28 +56,28 @@ public class LinkDB extends BaseRedis {
     private boolean insertLink(Jedis con, String id, String key, String values) {
         Long retval = con.hsetnx(id, key, values);
 
-		if (retval == 0) {
-			return false;
-		}
-		else {
-		return true;
-		}
+        if (retval == 0) {
+            return false;
+        }
+        else {
+            return true;
+        }
     }
 
 
 	public String fetchValue(String key) {
-		return fetchValue("GLOBAL", key);
+            return fetchValue("GLOBAL", key);
 	}
 
 
 	public String fetchValue(String id, String key) {
-		Jedis jedis = pool.getResource();
-		try {
-			jedis.select(type);
-			return jedis.hget(id, key);
-		} finally {
-			pool.returnResource(jedis);
-		}
+            Jedis jedis = pool.getResource();
+            try {
+                jedis.select(type);
+                return jedis.hget(id, key);
+            } finally {
+                pool.returnResource(jedis);
+            }
 	}
 
 
