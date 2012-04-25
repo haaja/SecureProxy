@@ -37,9 +37,6 @@ public class SecureProxyUtilities {
                     tempURL.getQuery(),
                     tempURL.getRef());
         } catch (MalformedURLException ex) {
-            LOGGER.log(Level.FINE,
-                    "Received MalformedURLException with: " + url,
-                    ex);
             try {
                 uri = new URI(url);
             } catch (URISyntaxException e) {
