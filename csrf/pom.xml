@@ -2,16 +2,33 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
+
+	<parent>
+		<groupId>Ohtuk2012-palomuuri</groupId>
+		<artifactId>SecureProxy</artifactId>
+		<version>1.0</version>
+	</parent>
+
+
+
+
     <groupId>Ohtuk2012-palomuuri</groupId>
-    <artifactId>SecureProxy</artifactId>
-    <packaging>war</packaging>
+    <artifactId>CsrfPlugin</artifactId>
+    <packaging>jar</packaging>
     <version>1.0-SNAPSHOT</version>
 
-    <name>SecureProxy</name>
+    <name>CsrfPlugin</name>
     <url>http://maven.apache.org</url>
 
     <dependencies>
-        <dependency>
+
+		<dependency>
+			<groupId>Ohtuk2012-palomuuri</groupId>
+			<artifactId>ProxyServletStuff</artifactId>
+			<version>1.0-SNAPSHOT</version>
+		</dependency>
+
+       <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>servlet-api</artifactId>
             <version>2.5</version>

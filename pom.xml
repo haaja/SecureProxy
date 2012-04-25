@@ -15,6 +15,7 @@
 
     <modules>
         <module>./proxy</module>
+        <module>./proxy_stuff</module>
         <module>./xss</module>
         <module>./csrf</module>
         <module>./paramcheck</module>

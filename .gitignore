@@ -10,3 +10,8 @@ src/main/webapp/WEB-INF/glassfish-web.xml
 /dist/
 /target/
 ~
+/proxy/target/
+/xss/target/
+/paramcheck/target/
+/proxy_stuff/target/
+/csrf/target/
