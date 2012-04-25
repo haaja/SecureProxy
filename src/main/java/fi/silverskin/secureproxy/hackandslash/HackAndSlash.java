@@ -13,7 +13,7 @@ import java.util.regex.Pattern;
 
 public class HackAndSlash {
 
-    private final LinkDB cookieStore = new LinkDB();
+    private final LinkDB db = new LinkDB();
     private final String[][] tagsAndAttributes = {
         {"a", "href"}, {"applet", "codebase", "archive"}, {"area", "href"},
         {"audio", "src"},
@@ -62,13 +62,13 @@ public class HackAndSlash {
             modifiedUri = uri.getScheme() + "://"
                     + privateURI.getHost()
                     + ":" + port
-                    + uri.getPath();
+                    + db.fetchValue(uri.getPath());
         } else {
             LOGGER.info("hackAndSlashIn got relative url as param");
             modifiedUri = "http://"
                     + privateURI.getHost()
                     + ":" + privateHttpPort
-                    + uri.getPath();
+                    + db.fetchValue(uri.getPath());
         }
 
         if (uri.getQuery() != null) {
@@ -82,35 +82,43 @@ public class HackAndSlash {
         HashMap<String, String> headers =
                 new HashMap<String, String>(request.getHeaders());
         mutilateCookiesIn(headers);
-        
+
         request.setHeaders(headers);
-       
+
         LOGGER.info("HackAndSlashIn modified URI: " + request.getUri().toString());
         LOGGER.exiting(HackAndSlash.class.getName(), "hackAndSlashIn", request);
 
         return request;
     }
-    
-    public void mutilateCookiesIn(HashMap<String, String> headers){
-        String cookieTag = headers.get("cookie");LOGGER.info("testing in1:"+cookieTag);
-        if(cookieTag == null) return; 
+
+    public void mutilateCookiesIn(HashMap<String, String> headers) {
+        String cookieTag = headers.get("cookie");
+        LOGGER.info("testing in1:" + cookieTag);
+        if (cookieTag == null) {
+            return;
+        }
         String[] cookies = cookieTag.split(";");
         cookieTag = "";
-        for(String cookie: cookies){
+        for (String cookie : cookies) {
             String[] cookieParts = cookie.split("=");
             cookieParts[0] = cookieParts[0].trim();
-            String originalCookie = cookieStore.fetchKey(cookieParts[0]);
-            if(originalCookie.length() > 0) cookieParts[0] = originalCookie;
-            cookieTag += cookieParts[0]+"="; 
-            if(cookieParts.length > 1){
+            String originalCookie = db.fetchKey(cookieParts[0]);
+            if (originalCookie.length() > 0) {
+                cookieParts[0] = originalCookie;
+            }
+            cookieTag += cookieParts[0] + "=";
+            if (cookieParts.length > 1) {
                 cookieParts[1] = cookieParts[1].trim();
-                originalCookie = cookieStore.fetchKey(cookieParts[1]);
-                if(originalCookie.length() > 0) cookieParts[1] = originalCookie;
+                originalCookie = db.fetchKey(cookieParts[1]);
+                if (originalCookie.length() > 0) {
+                    cookieParts[1] = originalCookie;
+                }
                 cookieTag += cookieParts[1];
             }
-            cookieTag += "; "; LOGGER.info("testing in2:"+cookieTag);
+            cookieTag += "; ";
+            LOGGER.info("testing in2:" + cookieTag);
         }
-        cookieTag = cookieTag.substring(0, cookieTag.length()-2);
+        cookieTag = cookieTag.substring(0, cookieTag.length() - 2);
         headers.put("cookie", cookieTag);
     }
 
@@ -130,49 +138,57 @@ public class HackAndSlash {
         HashMap<String, String> headers =
                 new HashMap<String, String>(response.getHeaders());
         mutilateCookiesOut(headers);
-        
+
         response.setHeaders(headers);
-        
+
         LOGGER.exiting(HackAndSlash.class.getName(), "hackAndSlashOut", response);
         return response;
     }
-    
-    public void mutilateCookiesOut(HashMap<String, String> headers){
+
+    public void mutilateCookiesOut(HashMap<String, String> headers) {
         String cookieName, cookieValue = "", newCookie, attributes, domain;
         String cookie = headers.get("Set-Cookie");
-        if(cookie==null) return;LOGGER.info("pretesting"+cookie);
+        if (cookie == null) {
+            return;
+        }
+        LOGGER.info("pretesting" + cookie);
         //cookie = cookie.trim();
         Pattern cookiePattern = Pattern.compile("[^\\s;]*");
         Matcher cookieMatcher = cookiePattern.matcher(cookie);
-        if(!(cookieMatcher.find())) return;
+        if (!(cookieMatcher.find())) {
+            return;
+        }
         String[] cookies = (cookieMatcher.group()).split("=");
-        cookieName = "xxx"+cookies[0].trim();
+        cookieName = "xxx" + cookies[0].trim();
         newCookie = cookieName;
-        if(cookies.length > 1){
+        if (cookies.length > 1) {
             cookieValue = "yyy" + cookies[1].trim();
             newCookie += "=" + cookieValue;
         }
-        
-        if(cookie.length() > cookieMatcher.end()){
+
+        if (cookie.length() > cookieMatcher.end()) {
             attributes = cookie.substring(cookieMatcher.end());
             cookiePattern = Pattern.compile("domain[^\\s;]*[\\s;]?");
             cookieMatcher = cookiePattern.matcher(attributes);
-            if(!(cookieMatcher.find())) newCookie += attributes;
-            else {
+            if (!(cookieMatcher.find())) {
+                newCookie += attributes;
+            } else {
                 domain = cookieMatcher.group();
-                if(cookieMatcher.start() > 0) newCookie += attributes.
-                        substring(0, cookieMatcher.start());
-                if(cookieMatcher.end() < attributes.length()) newCookie += 
-                        attributes.substring(cookieMatcher.end());
+                if (cookieMatcher.start() > 0) {
+                    newCookie += attributes.substring(0, cookieMatcher.start());
+                }
+                if (cookieMatcher.end() < attributes.length()) {
+                    newCookie +=
+                            attributes.substring(cookieMatcher.end());
+                }
             }
         }
-        
-        headers.put("Set-Cookie", newCookie);
-        cookieStore.addLink(cookies[0].trim(), cookieName);
-        cookieStore.addLink(cookies[1].trim(), cookieValue);
-        LOGGER.info("testing "+newCookie+":"+cookieStore.fetchKey(cookieName));
-    }
 
+        headers.put("Set-Cookie", newCookie);
+        db.addLink(cookies[0].trim(), cookieName);
+        db.addLink(cookies[1].trim(), cookieValue);
+        LOGGER.info("testing " + newCookie + ":" + db.fetchKey(cookieName));
+    }
 
     /**
      * Changes protected URIs outside of tags and css
@@ -184,7 +200,7 @@ public class HackAndSlash {
         LOGGER.entering(HackAndSlash.class.getName(),
                 "convertAbsoluteUrlsInText", oldResponse);
 
-        Pattern urlPattern = Pattern.compile("(("+privateURI.getScheme() + "|http|https)://)?"
+        Pattern urlPattern = Pattern.compile("((" + privateURI.getScheme() + "|http|https)://)?"
                 + privateURI.getHost() + "[^<\\s]*");
         Matcher urlMatcher = urlPattern.matcher(oldResponse.toLowerCase());
         String newResponse = "";
@@ -195,7 +211,9 @@ public class HackAndSlash {
             }
             index = urlMatcher.end();
             String url = urlMatcher.group();
-            if(!url.contains("://")) url = "http://"+url;
+            if (!url.contains("://")) {
+                url = "http://" + url;
+            }
             // Convert URL if needed
             url = getMaskedUrl(url);
             newResponse += url;
@@ -258,10 +276,9 @@ public class HackAndSlash {
         LOGGER.entering(HackAndSlash.class.getName(), "getMaskedUrl", url);
         LOGGER.info("getMaskedUrl's param: " + url);
 
+        String realPath, maskedPath = "", maskedUri, port;
         //fixing common mistakes in page sources
         url = url.trim().replace(" ", "%20");
-        String maskedUri;
-
         if (hasInvalidProtocol(url)) {
             return url;
         }
@@ -273,14 +290,22 @@ public class HackAndSlash {
 
         if (parsedUri.isAbsolute()) {
 
-            String port = parsedUri.getScheme().equals("http")
+            port = parsedUri.getScheme().equals("http")
                     ? publicHttpPort : publicHttpsPort;
             LOGGER.info("PORT: " + port);
 
             maskedUri = parsedUri.getScheme() + "://"
-                    + publicURI.getHost() + ":" + port
-                    + parsedUri.getPath();
-
+                    + publicURI.getHost() + ":" + port;
+            realPath = parsedUri.getPath();
+            if (db.fetchValue(realPath) != "") {
+                maskedUri += db.fetchValue(realPath);
+            } else {
+                do {
+                    maskedPath = SecureProxyUtilities.getRandomString(10);
+                } while (db.fetchKey(maskedPath) != "");
+                maskedUri += maskedPath;
+                db.addLink(realPath, maskedPath);
+            }
             //if url has query part
             if (parsedUri.getQuery() != null) {
                 maskedUri = maskedUri + "?" + parsedUri.getQuery();
@@ -317,13 +342,11 @@ public class HackAndSlash {
          */
         if (url.startsWith("mailto:")) {
             retVal = true;
-        } 
-        /*
+        } /*
          * Quick fix for <img
          * src="file:///C:/Users/TVIKBE~1.003/AppData/Local/Temp/moz-screenshot.png"
          * alt="" /> in page: http://www.cs.helsinki.fi/alumni
-         */ 
-        else if (url.startsWith("file:")) {
+         */ else if (url.startsWith("file:")) {
             retVal = true;
         } else if (url.startsWith("news:")) {
             retVal = true;
@@ -333,12 +356,10 @@ public class HackAndSlash {
             retVal = true;
         } else if (url.startsWith("javascript")) {
             retVal = true;
-        } 
-        /*
+        } /*
          * Thank you CS department for your awesome www pages
          * http://www.cs.helsinki.fi/story/63467/windows-phone-7-tutuksi-koodausleirill
-         */ 
-        else if (url.startsWith("http:///")) {
+         */ else if (url.startsWith("http:///")) {
             retVal = true;
         }
 

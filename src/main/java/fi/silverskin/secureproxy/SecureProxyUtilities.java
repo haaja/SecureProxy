@@ -69,7 +69,7 @@ public class SecureProxyUtilities {
      * @param length length of the string
      * @return an empty string, if length = 0, a random string otherwise
      */
-    public static String randomString(int length){
+    public static String getRandomString(int length){
         String rs = "";
         Random generator = new Random();
         if(length == 0) return rs;
