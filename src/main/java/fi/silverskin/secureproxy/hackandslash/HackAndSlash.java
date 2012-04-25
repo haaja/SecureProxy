@@ -61,14 +61,18 @@ public class HackAndSlash {
             LOGGER.info("hackAndSlashIn port: " + port);
             modifiedUri = uri.getScheme() + "://"
                     + privateURI.getHost()
-                    + ":" + port
-                    + db.fetchValue(uri.getPath());
+                    + ":" + port;
+            String path = db.fetchValue(uri.getPath());
+            if(path == null) path = uri.getPath();
+            modifiedUri += path;
         } else {
             LOGGER.info("hackAndSlashIn got relative url as param");
             modifiedUri = "http://"
                     + privateURI.getHost()
-                    + ":" + privateHttpPort
-                    + db.fetchValue(uri.getPath());
+                    + ":" + privateHttpPort;
+            String path = db.fetchValue(uri.getPath());
+            if(path == null) path = uri.getPath();
+            modifiedUri += path;
         }
 
         if (uri.getQuery() != null) {
@@ -295,14 +299,15 @@ public class HackAndSlash {
             LOGGER.info("PORT: " + port);
 
             maskedUri = parsedUri.getScheme() + "://"
-                    + publicURI.getHost() + ":" + port;
+                    + publicURI.getHost() + ":" + port+"/";
             realPath = parsedUri.getPath();
-            if (db.fetchValue(realPath) != "") {
+            if (!(db.fetchValue(realPath).equals(""))) {
                 maskedUri += db.fetchValue(realPath);
             } else {
-                do {
+                
                     maskedPath = SecureProxyUtilities.getRandomString(10);
-                } while (db.fetchKey(maskedPath) != "");
+                    LOGGER.info("Loopissa '"+db.fetchKey(maskedPath)+"'");
+                
                 maskedUri += maskedPath;
                 db.addLink(realPath, maskedPath);
             }

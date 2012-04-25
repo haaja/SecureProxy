@@ -5,6 +5,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Random;
+import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -70,6 +71,7 @@ public class SecureProxyUtilities {
      * @return an empty string, if length = 0, a random string otherwise
      */
     public static String getRandomString(int length){
+        /*
         String rs = "";
         Random generator = new Random();
         if(length == 0) return rs;
@@ -79,6 +81,8 @@ public class SecureProxyUtilities {
             else rs = rs + (char) (87+rn);
         }
         return rs;
+        * */
+        return UUID.randomUUID().toString();
     }
 
     /**
