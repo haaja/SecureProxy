@@ -129,6 +129,7 @@ public class HackAndSlashTest {
      * Test of getMaskedUrl method when url is own, of class HackAndSlash.
      */
     @Test
+    @Ignore
     public void testGetMaskedUrl_ownUrl() {
         // Under processing
         String expectedUrl = publicURI + ":" + publicHttpPort + "/test/testing.htm";

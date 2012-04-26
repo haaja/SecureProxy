@@ -301,12 +301,12 @@ public class HackAndSlash {
             maskedUri = parsedUri.getScheme() + "://"
                     + publicURI.getHost() + ":" + port+"/";
             realPath = parsedUri.getPath();
-            if (!(db.fetchValue(realPath).equals(""))) {
+            if (db.fetchValue(realPath) != null) {
                 maskedUri += db.fetchValue(realPath);
             } else {
                 
                     maskedPath = SecureProxyUtilities.getRandomString(10);
-                    LOGGER.info("Loopissa '"+db.fetchKey(maskedPath)+"'");
+                    
                 
                 maskedUri += maskedPath;
                 db.addLink(realPath, maskedPath);
