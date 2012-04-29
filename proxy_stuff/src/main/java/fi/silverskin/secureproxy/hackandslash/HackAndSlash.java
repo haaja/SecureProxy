@@ -61,7 +61,7 @@ public class HackAndSlash {
             LOGGER.info("hackAndSlashIn port: " + port);
             modifiedUri = uri.getScheme() + "://"
                     + privateURI.getHost()
-                    + ":" + port;
+                    + ":" + port + "/";
             String path = db.fetchValue(uri.getPath());
             if(path == null) path = uri.getPath();
             modifiedUri += path;
@@ -69,7 +69,7 @@ public class HackAndSlash {
             LOGGER.info("hackAndSlashIn got relative url as param");
             modifiedUri = "http://"
                     + privateURI.getHost()
-                    + ":" + privateHttpPort;
+                    + ":" + privateHttpPort + "/";
             String path = db.fetchValue(uri.getPath());
             if(path == null) path = uri.getPath();
             modifiedUri += path;
