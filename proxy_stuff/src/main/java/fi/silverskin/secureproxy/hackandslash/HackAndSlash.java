@@ -55,26 +55,37 @@ public class HackAndSlash {
 
         URI uri = request.getUri();
         String modifiedUri;
+        String path;
 
         if (uri.getScheme() != null) {
             String port = uri.getScheme().equals("http") ? privateHttpPort : privateHttpsPort;
             LOGGER.info("hackAndSlashIn port: " + port);
             modifiedUri = uri.getScheme() + "://"
                     + privateURI.getHost()
-                    + ":" + port + "/";
-            String path = db.fetchValue(uri.getPath());
-            if(path == null) path = uri.getPath();
-            modifiedUri += path;
+                    + ":" + port;
+            path = db.fetchValue(uri.getPath());
+            if(path == null || path.length() == 0) {
+                path = uri.getPath();
+            }
         } else {
-            LOGGER.info("hackAndSlashIn got relative url as param");
+            LOGGER.info("hackAndSlashIn got relative url as param. Assuming "
+                    + "HTTP protocol");
             modifiedUri = "http://"
                     + privateURI.getHost()
-                    + ":" + privateHttpPort + "/";
-            String path = db.fetchValue(uri.getPath());
-            if(path == null) path = uri.getPath();
-            modifiedUri += path;
+                    + ":" + privateHttpPort;
+            path = db.fetchValue(uri.getPath());
+            if(path == null || path.length() == 0) {
+                path = uri.getPath();
+            }
         }
 
+        LOGGER.info("PATH: "+ path);
+        if (path.startsWith("/")) {
+            modifiedUri += path;
+        } else {
+            modifiedUri += "/" + path;
+        }
+        
         if (uri.getQuery() != null) {
             modifiedUri = modifiedUri + "?" + uri.getQuery();
         }
