@@ -34,6 +34,7 @@ public class PluginRunner {
 
     public void run(EPICRequest epic) {
         for (SecureProxyPlugin p : plugins) {
+			LOGGER.log(Level.SEVERE, "EPICTextResponse.run");
 			LOGGER.entering(EPICRequest.class.getName(), "EPICRequest.run");
             p.run(epic);
 			LOGGER.exiting(EPICRequest.class.getName(), "EPICRequest.run");
@@ -42,6 +43,7 @@ public class PluginRunner {
 
     public void run(EPICTextResponse epic) {
         for (SecureProxyPlugin p : plugins) {
+			LOGGER.log(Level.SEVERE, "EPICTextResponse.run");
 			LOGGER.entering(EPICRequest.class.getName(), "EPICTextResponse.run");
             p.run(epic);
 			LOGGER.exiting(EPICRequest.class.getName(), "EPICTextResponse.run");
@@ -50,6 +52,7 @@ public class PluginRunner {
 
     public void run(EPICBinaryResponse epic) {
         for (SecureProxyPlugin p : plugins) {
+			LOGGER.log(Level.SEVERE, "EPICTextResponse.run");
 			LOGGER.entering(EPICRequest.class.getName(), "EPICBinaryResponse.run");
             p.run(epic);
 			LOGGER.exiting(EPICRequest.class.getName(), "EPICBinaryResponse.run");
