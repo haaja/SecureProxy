@@ -6,6 +6,7 @@ import fi.silverskin.secureproxy.SecureProxyUtilities;
 import fi.silverskin.secureproxy.redis.LinkDB;
 import java.net.URI;
 import java.util.HashMap;
+import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
@@ -55,26 +56,37 @@ public class HackAndSlash {
 
         URI uri = request.getUri();
         String modifiedUri;
+        String path;
 
         if (uri.getScheme() != null) {
             String port = uri.getScheme().equals("http") ? privateHttpPort : privateHttpsPort;
             LOGGER.info("hackAndSlashIn port: " + port);
             modifiedUri = uri.getScheme() + "://"
                     + privateURI.getHost()
-                    + ":" + port + "/";
-            String path = db.fetchValue(uri.getPath());
-            if(path == null) path = uri.getPath();
-            modifiedUri += path;
+                    + ":" + port;
+            path = db.fetchKey(uri.getPath());
+            if(path == null || path.length() == 0) {
+                path = uri.getPath();
+            }
         } else {
-            LOGGER.info("hackAndSlashIn got relative url as param");
+            LOGGER.info("hackAndSlashIn got relative url as param. Assuming "
+                    + "HTTP protocol");
             modifiedUri = "http://"
                     + privateURI.getHost()
-                    + ":" + privateHttpPort + "/";
-            String path = db.fetchValue(uri.getPath());
-            if(path == null) path = uri.getPath();
-            modifiedUri += path;
+                    + ":" + privateHttpPort;
+            path = db.fetchKey(uri.getPath());
+            if(path == null || path.length() == 0) {
+                path = uri.getPath();
+            }
         }
 
+        LOGGER.info("PATH: "+ path);
+        if (path.startsWith("/")) {
+            modifiedUri += path;
+        } else {
+            modifiedUri += "/" + path;
+        }
+        
         if (uri.getQuery() != null) {
             modifiedUri = modifiedUri + "?" + uri.getQuery();
         }
@@ -155,18 +167,18 @@ public class HackAndSlash {
         if (cookie == null) {
             return;
         }
-        LOGGER.info("pretesting" + cookie);
-        //cookie = cookie.trim();
+        
+        
         Pattern cookiePattern = Pattern.compile("[^\\s;]*");
         Matcher cookieMatcher = cookiePattern.matcher(cookie);
         if (!(cookieMatcher.find())) {
             return;
         }
         String[] cookies = (cookieMatcher.group()).split("=");
-        cookieName = "xxx" + cookies[0].trim();
+        cookieName = UUID.randomUUID().toString();
         newCookie = cookieName;
         if (cookies.length > 1) {
-            cookieValue = "yyy" + cookies[1].trim();
+            cookieValue = UUID.randomUUID().toString();
             newCookie += "=" + cookieValue;
         }
 
@@ -191,7 +203,7 @@ public class HackAndSlash {
         headers.put("Set-Cookie", newCookie);
         db.addLink(cookies[0].trim(), cookieName);
         db.addLink(cookies[1].trim(), cookieValue);
-        LOGGER.info("testing " + newCookie + ":" + db.fetchKey(cookieName));
+        
     }
 
     /**
@@ -305,7 +317,7 @@ public class HackAndSlash {
                 maskedUri += db.fetchValue(realPath);
             } else {
                 
-                    maskedPath = SecureProxyUtilities.getRandomString(10);
+                    maskedPath = UUID.randomUUID().toString();
                     
                 
                 maskedUri += maskedPath;
