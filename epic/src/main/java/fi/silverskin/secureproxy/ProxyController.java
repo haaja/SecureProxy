@@ -13,7 +13,7 @@ public class ProxyController {
 
     private ResourceFetcher fetcher;
     private HackAndSlash hackAndSlash;
-    private PluginRunner pluginRunner;
+    //private PluginRunner pluginRunner;
     private static final Logger LOGGER = 
             Logger.getLogger(ProxyController.class.getName(), null);
     private ProxyConfigurer configurer;
@@ -26,12 +26,12 @@ public class ProxyController {
         HackAndSlashConfig conf = new HackAndSlashConfig(configuration);
         hackAndSlash = new HackAndSlash(conf);
         
-        File confFile = configurer.getConfigFile();
+        /*File confFile = configurer.getConfigFile();
         if (confFile == null) {
             LOGGER.info("Missing configuration file.");
         }
         pluginRunner = new PluginRunner(confFile);
-        
+        */
     }
 
     /**
@@ -46,14 +46,14 @@ public class ProxyController {
         request = HeaderCleaner.cleanHeaders(request, configuration);
         
         LOGGER.info("Runnin security plugins with request");
-        pluginRunner.run(request);
+        //pluginRunner.run(request);
        
         EPICResponse response = fetcher.handleRequest(request);
         LOGGER.log(Level.INFO, response.toString());
 
         if (response.isText()) {
             LOGGER.info("Running security plugins with text response");
-            pluginRunner.run((EPICTextResponse)response);
+            //pluginRunner.run((EPICTextResponse)response);
             
             LOGGER.info("Sending response to HackAndSlash");
             response = hackAndSlash.hackAndSlashOut((EPICTextResponse) response);
@@ -63,7 +63,7 @@ public class ProxyController {
         
         else {
             LOGGER.info("Running security plugins with binary response");
-            pluginRunner.run((EPICBinaryResponse)response);
+            //pluginRunner.run((EPICBinaryResponse)response);
         }
 
         //Change location header in case it exists
