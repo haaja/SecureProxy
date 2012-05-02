@@ -4,18 +4,33 @@ import java.io.File;
 import java.io.FileFilter;
 import java.io.FileReader;
 import java.io.IOException;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 
+
 public class PluginLoader {
 
     private static final Logger LOGGER = 
             Logger.getLogger(PluginLoader.class.getName(), null);
+	private ClassLoader loader;
+
+	public PluginLoader() {
+		loader = PluginLoader.class.getClassLoader();
+	}
+
+	public ClassLoader getLoader() {
+		return loader;
+	}
+
+
 
     /**
      * Load plugins given in config sorted by load order.
@@ -25,16 +40,24 @@ public class PluginLoader {
      * @throws PluginLoadException if something goes wrong while loading plugins.
      */
     public static SecureProxyPlugin[] loadPlugins(File pluginConfig) 
-            throws PluginLoadException {
+            throws PluginLoadException, InvocationTargetException, SecurityException, NoSuchMethodException {
         Properties conf = loadConfig(pluginConfig);
 
         try {
+			/*
             PluginClassLoader loader = new PluginClassLoader(getPluginURLs(conf));
+			*/
+			PluginLoader meh = new PluginLoader();
+			ClassLoader loader = new URLClassLoader(getPluginURLs(conf), meh.getLoader());
             ArrayList<SecureProxyPlugin> plugins = new ArrayList<SecureProxyPlugin>();
 
             for (String plugin : getPluginNames(conf)) {
-                Class<SecureProxyPlugin> clas = loader.findClass(plugin);
-                plugins.add(clas.newInstance());
+                Class<?> clas = Class.forName(plugin, true, loader);
+
+				Class<? extends SecureProxyPlugin> duh = clas.asSubclass(SecureProxyPlugin.class);
+				Constructor<? extends SecureProxyPlugin> ctor = duh.getConstructor();
+				SecureProxyPlugin plug = ctor.newInstance();
+				plugins.add(plug);
             }
 
             return plugins.toArray(new SecureProxyPlugin[plugins.size()]);
@@ -161,7 +184,6 @@ public class PluginLoader {
         return retval;
     }
 }
-
 class JarFilter implements FileFilter {
 
     private static final Logger LOGGER = Logger.getLogger(PluginLoader.class.getName(), null);

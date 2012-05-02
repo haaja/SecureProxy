@@ -13,7 +13,7 @@ public class ProxyController {
 
     private ResourceFetcher fetcher;
     private HackAndSlash hackAndSlash;
-    //private PluginRunner pluginRunner;
+    private PluginRunner pluginRunner;
     private static final Logger LOGGER = 
             Logger.getLogger(ProxyController.class.getName(), null);
     private ProxyConfigurer configurer;
@@ -26,12 +26,11 @@ public class ProxyController {
         HackAndSlashConfig conf = new HackAndSlashConfig(configuration);
         hackAndSlash = new HackAndSlash(conf);
         
-        /*File confFile = configurer.getConfigFile();
+        File confFile = configurer.getConfigFile();
         if (confFile == null) {
             LOGGER.info("Missing configuration file.");
         }
         pluginRunner = new PluginRunner(confFile);
-        */
     }
 
     /**
