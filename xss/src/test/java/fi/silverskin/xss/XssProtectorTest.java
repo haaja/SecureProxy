@@ -46,6 +46,17 @@ public class XssProtectorTest {
 	}
 
 	@Test
+	public void testWithoutGetQuery() {
+		req = new EPICRequest(EPICRequest.RequestType.GET);
+		String uri = "http://example.com";
+		req.setUri(uri);
+		plugin.run(req);
+
+		assertEquals(uri, req.getUri().toString());
+	}
+
+
+	@Test
 	public void testDirtyGetQueryValue() {
 		req = new EPICRequest(EPICRequest.RequestType.GET);
 		String uri = "http://example.com?first=<script>&second=value";
@@ -75,6 +86,16 @@ public class XssProtectorTest {
 
 		assertEquals(body, req.getBody());
 	}
+
+	@Test
+	public void testEmptyPostRequest() {
+		String body = null;
+		req.setBody(body);
+		plugin.run(req);
+
+		assertEquals(body, req.getBody());
+	}
+
 
 	@Test
 	public void testDirtyPostKey() {
@@ -108,6 +129,20 @@ public class XssProtectorTest {
 
 		assertEquals(body, req.getBody());
 	}
+
+	@Test
+	public void testEmptyPutRequest() {
+		req = new EPICRequest(EPICRequest.RequestType.PUT);
+		String uri = "http://example.com";
+		req.setUri(uri);
+
+		String body = null;
+		req.setBody(body);
+		plugin.run(req);
+
+		assertEquals(body, req.getBody());
+	}
+
 
 	@Test
 	public void testDirtyPutKey() {
