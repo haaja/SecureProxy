@@ -23,7 +23,7 @@
 
 		<dependency>
 			<groupId>Ohtuk2012-palomuuri</groupId>
-			<artifactId>ProxyServletStuff</artifactId>
+			<artifactId>EPIC</artifactId>
 			<version>1.0-SNAPSHOT</version>
 		</dependency>
 
