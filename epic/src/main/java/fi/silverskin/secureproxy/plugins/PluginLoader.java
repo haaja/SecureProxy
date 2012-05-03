@@ -16,24 +16,36 @@ import java.util.logging.Logger;
 
 
 
+/**
+ * Collection of static methods to perform plugin loading.
+ * 
+ * @author Iivari Äikäs
+ */
 public class PluginLoader {
 
     private static final Logger LOGGER = 
             Logger.getLogger(PluginLoader.class.getName(), null);
 	private ClassLoader loader;
 
-	public PluginLoader() {
+
+	/**
+	 * These are needed for access to existing ClassLoader.
+	 */
+	private PluginLoader() {
 		loader = PluginLoader.class.getClassLoader();
 	}
 
-	public ClassLoader getLoader() {
+	protected ClassLoader getLoader() {
 		return loader;
 	}
 
 
 
     /**
-     * Load plugins given in config sorted by load order.
+     * Load plugins given in config, sorted by load order.
+     * 
+     * Throws PluginLoadException if something fails during plugin loading, note
+     * that no plugins to load is NOT error condition.
      *
      * @param pluginConfig
      * @return SecureProxyPlugin[] with
@@ -131,10 +143,10 @@ public class PluginLoader {
     }
 
     /**
-     * Validates that config has all needed keys.
+     * Validates that config has all needed keys. Doesn't validate values!
      *
-     * @param pluginConfig file to validate
-     * @return true if file can be used to try load
+     * @param pluginConfig file to validate.
+     * @return true if file can be used to try loading.
      */
     public static boolean validateConfig(Properties pluginConfig) {
         LOGGER.entering(PluginLoader.class.getName(), "validateConfig", pluginConfig);
@@ -159,11 +171,10 @@ public class PluginLoader {
     }
 
     /**
-     * Get plugin names mentioned in config. Note, this namelist is NOT queried
-     * from actual plugins!
-     *
+     * Get plugin names mentioned in config. 
+     * 
      * @param pluginConfig Properties made from configuration file.
-     * @return List of plugin names, in loading order.
+     * @return List of plugin names, in loading order or null if list didn't exist or was empty.
      */
     public static String[] getPluginNames(Properties pluginConfig) {
         LOGGER.entering(PluginLoader.class.getName(), "getPluginNames", pluginConfig);
@@ -198,6 +209,9 @@ public class PluginLoader {
         return retval;
     }
 }
+
+
+
 class JarFilter implements FileFilter {
 
     private static final Logger LOGGER = Logger.getLogger(PluginLoader.class.getName(), null);
@@ -225,5 +239,4 @@ class PluginLoadException extends RuntimeException {
 
     public PluginLoadException() {
     }
-
 }
