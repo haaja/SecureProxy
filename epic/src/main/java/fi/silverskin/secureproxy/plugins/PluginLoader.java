@@ -54,8 +54,18 @@ public class PluginLoader {
     public static SecureProxyPlugin[] loadPlugins(File pluginConfig) 
             throws PluginLoadException, InvocationTargetException, SecurityException, NoSuchMethodException {
         Properties conf = loadConfig(pluginConfig);
+		return loadPlugins(conf);
+    }
 
-        try {
+
+	public static SecureProxyPlugin[] loadPlugins(Properties conf) 
+			throws NoSuchMethodException, IllegalArgumentException, InvocationTargetException {
+		if (!validateConfig(conf)) {
+			LOGGER.log(Level.SEVERE, "Plugin loader config was not valid!");
+			throw new PluginLoadException("Given config was not valid!");
+		}
+
+		try {
             ArrayList<SecureProxyPlugin> plugins = new ArrayList<SecureProxyPlugin>();
 			PluginLoader plugLoad = new PluginLoader();
 			ClassLoader clsLoader = new URLClassLoader(getPluginURLs(conf), 
@@ -93,7 +103,8 @@ public class PluginLoader {
             LOGGER.log(Level.SEVERE, "IllegalAccessException during plugin load.");
             throw new PluginLoadException("IllegalAccessException during plugin load.");
         }
-    }
+
+	}
 
 
     private static Properties loadConfig(File pluginConfig) throws 
@@ -102,10 +113,6 @@ public class PluginLoader {
         try {
             conf = new Properties();
             conf.load(new FileReader(pluginConfig));
-            if (!validateConfig(conf)) {
-                LOGGER.log(Level.SEVERE, "Plugin loader config was not valid!");
-                throw new PluginLoadException("Given config was not valid!");
-            }
         } catch (IOException ex) {
             Logger.getLogger(PluginLoader.class.getName()).log(Level.SEVERE, null, ex);
             throw new PluginLoadException("IOException while loading config.");
@@ -159,7 +166,7 @@ public class PluginLoader {
         if (!pluginConfig.containsKey("plugin_dir")) {
             isValid = false;
         }
-        if (!getPluginDirFile(pluginConfig).isDirectory()) {
+        if (isValid && !getPluginDirFile(pluginConfig).isDirectory()) {
             isValid = false;
         }
         if (!pluginConfig.containsKey("load_order")) {
