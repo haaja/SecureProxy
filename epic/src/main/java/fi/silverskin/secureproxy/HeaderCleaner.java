@@ -10,7 +10,7 @@ public class HeaderCleaner {
 
     private static final Logger LOGGER = 
             Logger.getLogger(HeaderCleaner.class.getName(), null);
-    private static String[] headersToBePreserved = { "cookie", "content-type" };
+    private static String[] headersToBePreserved = { "cookie", "content-type", "referer" };
 
     /**
      * Cleans request headers of everything else except the required ones.
