@@ -13,10 +13,7 @@ public class PluginLoaderTest {
 
     private Properties config;
 
-    public PluginLoaderTest() throws IOException {
-        InputStream in = getClass().getClassLoader().getResourceAsStream("plugin_loader_test.properties");
-        this.config = new Properties();
-        this.config.load(in);
+    public PluginLoaderTest() {
     }
 
     @BeforeClass
@@ -28,7 +25,10 @@ public class PluginLoaderTest {
     }
 
     @Before
-    public void setUp() {
+    public void setUp() throws IOException {
+        InputStream in = getClass().getClassLoader().getResourceAsStream("plugin_loader_test.properties");
+        this.config = new Properties();
+        this.config.load(in);
     }
 
     @After
@@ -58,6 +58,25 @@ public class PluginLoaderTest {
         result = PluginLoader.getPluginNames(null);
         assertEquals(0, result.length);
     }
+
+	@Test
+    public void testGetPluginNamesWithNoNames() throws IOException {
+		config.remove("load_order");
+
+		boolean valid = PluginLoader.validateConfig(config);
+		assertFalse(valid);
+
+        String[] result = PluginLoader.getPluginNames(config);
+		assertNull(result);
+    }
+
+	@Test
+    public void testGetPluginNamesWithEmptyNames() throws IOException {
+		config.setProperty("load_order", "");
+        String[] result = PluginLoader.getPluginNames(config);
+		assertNull(result);
+    }
+
 
     @Test
     public void testGetPluginDir() throws IOException {

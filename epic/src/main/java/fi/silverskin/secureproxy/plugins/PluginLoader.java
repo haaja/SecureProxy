@@ -44,21 +44,28 @@ public class PluginLoader {
         Properties conf = loadConfig(pluginConfig);
 
         try {
-			/*
-            PluginClassLoader loader = new PluginClassLoader(getPluginURLs(conf));
-			*/
-			PluginLoader meh = new PluginLoader();
-			ClassLoader loader = new URLClassLoader(getPluginURLs(conf), meh.getLoader());
             ArrayList<SecureProxyPlugin> plugins = new ArrayList<SecureProxyPlugin>();
+			PluginLoader plugLoad = new PluginLoader();
+			ClassLoader clsLoader = new URLClassLoader(getPluginURLs(conf), 
+														plugLoad.getLoader());
 
-            for (String plugin : getPluginNames(conf)) {
-                Class<?> clas = Class.forName(plugin, true, loader);
+			String[] pluginNames = getPluginNames(conf);
 
-				Class<? extends SecureProxyPlugin> duh = clas.asSubclass(SecureProxyPlugin.class);
-				Constructor<? extends SecureProxyPlugin> ctor = duh.getConstructor();
-				SecureProxyPlugin plug = ctor.newInstance();
-				plugins.add(plug);
-            }
+			if (pluginNames != null) {
+				LOGGER.log(Level.INFO, "Loading plugins..");
+				for (String plugin : pluginNames) {
+					Class<?> clas = Class.forName(plugin, true, clsLoader);
+					
+					Class<? extends SecureProxyPlugin> duh = clas.asSubclass(SecureProxyPlugin.class);
+					Constructor<? extends SecureProxyPlugin> ctor = duh.getConstructor();
+					SecureProxyPlugin plug = ctor.newInstance();
+					plugins.add(plug);
+
+					LOGGER.log(Level.INFO, "\tSuccesfully loaded plugin '{0}'", plugin);
+				}
+			} else {
+				LOGGER.log(Level.INFO, "There was no plugins to load!");
+			}
 
             return plugins.toArray(new SecureProxyPlugin[plugins.size()]);
         } catch (MalformedURLException ex) {
@@ -76,7 +83,9 @@ public class PluginLoader {
         }
     }
 
-    private static Properties loadConfig(File pluginConfig) throws PluginLoadException {
+
+    private static Properties loadConfig(File pluginConfig) throws 
+	    PluginLoadException {
         Properties conf;
         try {
             conf = new Properties();
@@ -164,10 +173,15 @@ public class PluginLoader {
         }
         
         String names = pluginConfig.getProperty("load_order");
-        String tmp[] = names.split(", ");
-
-        LOGGER.exiting(PluginLoader.class.getName(), "getPluginNames", tmp);
-        return tmp;
+		if (names != null && !names.equals("")) {
+			String tmp[] = names.split(", ");
+			
+			LOGGER.exiting(PluginLoader.class.getName(), "getPluginNames", tmp);
+			return tmp;
+		} else {
+			LOGGER.exiting(PluginLoader.class.getName(), "getPluginNames", null);
+			return null;
+		}
     }
 
     public static File getPluginDirFile(Properties pluginConfig) {
