@@ -4,6 +4,7 @@ import fi.silverskin.secureproxy.EPICBinaryResponse;
 import fi.silverskin.secureproxy.EPICRequest;
 import fi.silverskin.secureproxy.EPICTextResponse;
 import java.io.File;
+import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -14,7 +15,18 @@ public class PluginRunner {
             Logger.getLogger(PluginLoader.class.getName(), null);
     private SecureProxyPlugin[] plugins;
 
+
+
     public PluginRunner(File pluginConfig) {
+		try {
+			this.plugins = PluginLoader.loadPlugins(pluginConfig);
+		} catch (Exception ex) {
+			LOGGER.log(Level.SEVERE, ex.toString());
+			LOGGER.log(Level.WARNING, "PluginLoader failed, there is no plugins to run! NOT bailing out though..");
+		}
+    }
+
+    public PluginRunner(Properties pluginConfig) {
 		try {
 			this.plugins = PluginLoader.loadPlugins(pluginConfig);
 		} catch (Exception ex) {
