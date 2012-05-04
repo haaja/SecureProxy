@@ -64,7 +64,7 @@ public class HackAndSlash {
             modifiedUri = uri.getScheme() + "://"
                     + privateURI.getHost()
                     + ":" + port;
-            path = db.fetchKey(uri.getPath());
+            path = db.fetchKey(uri.getPath().substring(1));
             if(path == null || path.length() == 0) {
                 path = uri.getPath();
             }
@@ -74,7 +74,7 @@ public class HackAndSlash {
             modifiedUri = "http://"
                     + privateURI.getHost()
                     + ":" + privateHttpPort;
-            path = db.fetchKey(uri.getPath());
+            path = db.fetchKey(uri.getPath().substring(1));
             if(path == null || path.length() == 0) {
                 path = uri.getPath();
             }
@@ -332,9 +332,19 @@ public class HackAndSlash {
                 maskedUri = maskedUri + "#" + parsedUri.getFragment();
             }
         } else {
-            maskedUri = url;
+            maskedUri = "http://"+
+                    publicURI.getHost() + ":" + publicHttpPort+"/";
+            if (db.fetchValue(url) != null) {
+                maskedUri += db.fetchValue(url);
+            } else {
+                
+                    maskedPath = UUID.randomUUID().toString();
+                    
+                
+                maskedUri += maskedPath;
+                db.addLink(url, maskedPath);
+            }
         }
-
         LOGGER.log(Level.INFO, "Returning masked url: {0}", maskedUri);
         LOGGER.exiting(HackAndSlash.class.getName(), "getMaskedUrl", maskedUri);
 

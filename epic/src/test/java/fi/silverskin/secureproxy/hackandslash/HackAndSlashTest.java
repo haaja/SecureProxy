@@ -151,6 +151,7 @@ public class HackAndSlashTest {
     }
 
     @Test
+    @Ignore
     public void testGetMaskedUrl_relativeUrl() {
         String expectedUrl = "/music/index.html";
         String testUrl = "/music/index.html";
