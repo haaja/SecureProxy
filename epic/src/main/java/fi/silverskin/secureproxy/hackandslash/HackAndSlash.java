@@ -117,17 +117,12 @@ public class HackAndSlash {
         cookieTag = "";
         for (String cookie : cookies) {
             String[] cookieParts = cookie.split("=");
-            cookieParts[0] = cookieParts[0].trim();
-            String originalCookie = db.fetchKey(cookieParts[0]);
-            if (originalCookie.length() > 0) {
-                cookieParts[0] = originalCookie;
-            }
             cookieTag += cookieParts[0] + "=";
             if (cookieParts.length > 1) {
                 cookieParts[1] = cookieParts[1].trim();
-                originalCookie = db.fetchKey(cookieParts[1]);
-                if (originalCookie.length() > 0) {
-                    cookieParts[1] = originalCookie;
+                String cookieValue = db.fetchKey(cookieParts[1]);
+                if (cookieValue.length() > 0) {
+                    cookieParts[1] = cookieValue;
                 }
                 cookieTag += cookieParts[1];
             }
@@ -162,26 +157,22 @@ public class HackAndSlash {
     }
 
     public void mutilateCookiesOut(HashMap<String, String> headers) {
-        String cookieName, cookieValue = "", newCookie, attributes, domain;
+        String cookieValue = "", newCookie, attributes, domain;
         String cookie = headers.get("Set-Cookie");
         if (cookie == null) {
             return;
         }
-        
-        
         Pattern cookiePattern = Pattern.compile("[^\\s;]*");
         Matcher cookieMatcher = cookiePattern.matcher(cookie);
         if (!(cookieMatcher.find())) {
             return;
         }
         String[] cookies = (cookieMatcher.group()).split("=");
-        cookieName = UUID.randomUUID().toString();
-        newCookie = cookieName;
+        newCookie = cookies[0];
         if (cookies.length > 1) {
             cookieValue = UUID.randomUUID().toString();
             newCookie += "=" + cookieValue;
         }
-
         if (cookie.length() > cookieMatcher.end()) {
             attributes = cookie.substring(cookieMatcher.end());
             cookiePattern = Pattern.compile("domain[^\\s;]*[\\s;]?");
@@ -199,11 +190,8 @@ public class HackAndSlash {
                 }
             }
         }
-
         headers.put("Set-Cookie", newCookie);
-        db.addLink(cookies[0].trim(), cookieName);
         db.addLink(cookies[1].trim(), cookieValue);
-        
     }
 
     /**
