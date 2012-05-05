@@ -59,12 +59,15 @@ public class HackAndSlash {
         String path;
 
         if (uri.getScheme() != null) {
+            System.out.println("Qöh"+uri);
             String port = uri.getScheme().equals("http") ? privateHttpPort : privateHttpsPort;
             LOGGER.info("hackAndSlashIn port: " + port);
             modifiedUri = uri.getScheme() + "://"
                     + privateURI.getHost()
                     + ":" + port;
-            path = db.fetchKey(uri.getPath().substring(1));
+            String[] temp = uri.getPath().split("/");
+            if(temp.length == 0) path = "";
+            else path = db.fetchKey(temp[temp.length-1]);
             if(path == null || path.length() == 0) {
                 path = uri.getPath();
             }
@@ -320,8 +323,8 @@ public class HackAndSlash {
                 maskedUri = maskedUri + "#" + parsedUri.getFragment();
             }
         } else {
-            maskedUri = "http://"+
-                    publicURI.getHost() + ":" + publicHttpPort+"/";
+            maskedUri = "";//http://"+
+                    //publicURI.getHost() + ":" + publicHttpPort+"/";
             if (db.fetchValue(url) != null) {
                 maskedUri += db.fetchValue(url);
             } else {
