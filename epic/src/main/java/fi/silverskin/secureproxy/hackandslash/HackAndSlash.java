@@ -12,6 +12,16 @@ import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * A class for hiding the resources of the protected server.
+ * It contains methods for converting url paths to random strings in responses
+ * and for restoring them in requests, for converting cookie values, that might
+ * contain unsafe information, to random strings, and for restoring them to 
+ * original values. All absolute paths in the document refering to the server and
+ * all paths in attributes of tags in the document refering to the server are hided.
+ * 
+ * @author Hannu Kärnä
+ */
 public class HackAndSlash {
 
     private final LinkDB db = new LinkDB();
@@ -36,6 +46,11 @@ public class HackAndSlash {
     private String publicHttpPort;
     private String publicHttpsPort;
 
+    /**
+     * The constructor.
+     * 
+     * @param conf configuration file
+     */
     public HackAndSlash(HackAndSlashConfig conf) {
         privateURI = conf.getPrivateURI();
         privateHttpPort = conf.getPrivateHttpPort();
@@ -53,13 +68,11 @@ public class HackAndSlash {
      */
     public EPICRequest hackAndSlashIn(EPICRequest request) {
         LOGGER.entering(HackAndSlash.class.getName(), "hackAndSlashIn", request);
-
         URI uri = request.getUri();
         String modifiedUri;
         String path;
 
         if (uri.getScheme() != null) {
-            System.out.println("Qöh"+uri);
             String port = uri.getScheme().equals("http") ? privateHttpPort : privateHttpsPort;
             LOGGER.info("hackAndSlashIn port: " + port);
             modifiedUri = uri.getScheme() + "://"
@@ -89,27 +102,27 @@ public class HackAndSlash {
         } else {
             modifiedUri += "/" + path;
         }
-        
         if (uri.getQuery() != null) {
             modifiedUri = modifiedUri + "?" + uri.getQuery();
         }
         if (uri.getFragment() != null) {
             modifiedUri = modifiedUri + "#" + uri.getFragment();
         }
-
         request.setUri(modifiedUri);
         HashMap<String, String> headers =
                 new HashMap<String, String>(request.getHeaders());
         mutilateCookiesIn(headers);
-
         request.setHeaders(headers);
-
         LOGGER.info("HackAndSlashIn modified URI: " + request.getUri().toString());
         LOGGER.exiting(HackAndSlash.class.getName(), "hackAndSlashIn", request);
-
         return request;
     }
 
+    /**
+     * Restore mutilated cookies back to original cookies
+     * 
+     * @param headers incoming headers
+     */
     public void mutilateCookiesIn(HashMap<String, String> headers) {
         String cookieTag = headers.get("cookie");
         LOGGER.info("testing in1:" + cookieTag);
@@ -152,13 +165,16 @@ public class HackAndSlash {
         HashMap<String, String> headers =
                 new HashMap<String, String>(response.getHeaders());
         mutilateCookiesOut(headers);
-
         response.setHeaders(headers);
-
         LOGGER.exiting(HackAndSlash.class.getName(), "hackAndSlashOut", response);
         return response;
     }
 
+    /**
+     * Converts cookie values to random strings
+     * 
+     * @param headers outgoing headers
+     */
     public void mutilateCookiesOut(HashMap<String, String> headers) {
         String cookieValue = "", newCookie, attributes, domain;
         String cookie = headers.get("Set-Cookie");
@@ -273,9 +289,7 @@ public class HackAndSlash {
 
     /**
      * Generates the pseudo URI from original URI
-     *
-     * TODO: Actual masking of the url and filesystem.
-     *
+     * 
      * @param url Original URI
      * @return Masked URI
      */
@@ -307,10 +321,7 @@ public class HackAndSlash {
             if (db.fetchValue(realPath) != null) {
                 maskedUri += db.fetchValue(realPath);
             } else {
-                
                     maskedPath = UUID.randomUUID().toString();
-                    
-                
                 maskedUri += maskedPath;
                 db.addLink(realPath, maskedPath);
             }
@@ -328,17 +339,13 @@ public class HackAndSlash {
             if (db.fetchValue(url) != null) {
                 maskedUri += db.fetchValue(url);
             } else {
-                
                     maskedPath = UUID.randomUUID().toString();
-                    
-                
                 maskedUri += maskedPath;
                 db.addLink(url, maskedPath);
             }
         }
         LOGGER.log(Level.INFO, "Returning masked url: {0}", maskedUri);
         LOGGER.exiting(HackAndSlash.class.getName(), "getMaskedUrl", maskedUri);
-
         return maskedUri;
     }
 
@@ -380,14 +387,13 @@ public class HackAndSlash {
          */ else if (url.startsWith("http:///")) {
             retVal = true;
         }
-
         LOGGER.exiting(HackAndSlash.class.getName(), "hasInvalidProtocol", retVal);
         return retVal;
     }
 
     /**
      * Changes protected URIs in CSS code
-     *
+     * 
      * @param oldResponse HTML page or CSS style sheet
      * @return HTML page or CSS style sheet with masked URIs
      */
@@ -426,7 +432,6 @@ public class HackAndSlash {
      */
     public String convertUrlInCss(String urlAttribute) {
         LOGGER.entering(HackAndSlash.class.getName(), "convertUrlInCss", urlAttribute);
-
         Pattern sourcePattern = Pattern.compile("('[^']*')|(\"[^\"]*)\"|"
                 + "(\\([^'\"\\)][^\\)]*[^'\"\\)]\\))");
         Matcher sourceMatcher = sourcePattern.matcher(urlAttribute);
@@ -439,7 +444,6 @@ public class HackAndSlash {
                 urlAttribute = urlAttribute.substring(0, sourceMatcher.start() + 1) + url + urlAttribute.substring(sourceMatcher.end() - 1);
             }
         }
-
         LOGGER.exiting(HackAndSlash.class.getName(), "convertUrlInCss", urlAttribute);
         return urlAttribute;
     }
