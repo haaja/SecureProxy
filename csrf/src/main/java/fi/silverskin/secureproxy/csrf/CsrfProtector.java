@@ -29,9 +29,17 @@ public class CsrfProtector implements SecureProxyPlugin {
         
         if (request.getType() == RequestType.POST) {
             if (!validateReferer(request)) {
-                //Referer header invalid!
-            } else if (!validateCsrfKey(request)) {
-                //CSRF key invalid!
+                //Referer header invalid! Throw exception
+                LOGGER.info("Referer header valid!");
+            } else {
+                LOGGER.info("Referer header invalid!");
+            }
+                
+            if (!validateCsrfKey(request)) {
+                LOGGER.info("Csrfkey invalid!");
+                //CSRF key invalid! Throw exception
+            } else {
+                LOGGER.info("Csrfkey valid!");
             }
         }
         
@@ -39,9 +47,10 @@ public class CsrfProtector implements SecureProxyPlugin {
     }
 
     public void run(EPICTextResponse response) {
+        LOGGER.entering(CsrfProtector.class.getName(), "run", response);
         String csrfKey = generateCsrfKey();
         injectCsrfKeyField(response, csrfKey);
-        updateCookieWithCsrfKey(response, csrfKey);
+        LOGGER.exiting(CsrfProtector.class.getName(), "run");
     }
 
     //no need to modify binary responses
@@ -162,7 +171,12 @@ public class CsrfProtector implements SecureProxyPlugin {
     }
     
     /**
-     * Injects hidden input field to all forms
+     * Injects hidden input field to containing csrfKey to all forms.
+     * 
+     * NOTE:
+     * This is a lazy implementation which uses the same csrfKey for all the
+     * forms in HTTP response.
+     * 
      * 
      * @param response HTTP response
      * @param csrfKey CSRF key to be injected into all forms
@@ -171,11 +185,12 @@ public class CsrfProtector implements SecureProxyPlugin {
         LOGGER.entering(CsrfProtector.class.getName(), 
                         "injectCsrfKeyField", 
                         response);
-        
+                
         String csrfField = 
                 "<input type=\"hidden\" name=\"csrfKey\" value=\""+ csrfKey +"\">";
         String responseBody = response.getBody();
-        String newResponseBody = "";
+        StringBuilder injectedBody = new StringBuilder();
+        boolean isInjected = false;
         
         //match <form tags
         Pattern formPattern = Pattern.compile("<[\\s]*form[^>]*>");
@@ -184,27 +199,30 @@ public class CsrfProtector implements SecureProxyPlugin {
         
         while (formMatcher.find()) {
             if (formMatcher.start() > index) {
-                newResponseBody += responseBody.substring(index, 
-                                                          formMatcher.start());
+                injectedBody.append(responseBody.substring(index, formMatcher.start()));
             }
 
             String form = formMatcher.group();
+            form += csrfField;
+            injectedBody.append(form);
             index = formMatcher.end();
-            form = form + csrfField;
-
-            if (index == 0) {
-                newResponseBody = responseBody;
-            } else if (index < responseBody.length()) {
-                newResponseBody += form + responseBody.substring(index);
-            }
+            isInjected = true;
         }
         
-        response.setBody(newResponseBody);
+        //update cookie header only if new csrfKey was injected
+        if (isInjected) {
+            injectedBody.append(responseBody.substring(index));
+            updateCookieWithCsrfKey(response, csrfKey);
+            response.setBody(injectedBody.toString());
+        }
+        
+        formMatcher.reset();
         LOGGER.exiting(CsrfProtector.class.getName(), "injectCsrfKeyField");
     }
     
     /**
-     * Sets the injected CSRF key into cookie.
+     * Updates the cookie with the injected CSRF key or inserts new one if no
+     * previous key exists.
      * 
      * @param response HTTP response
      * @param csrfKey generated CSRF key to be inserted into cookie header
@@ -216,14 +234,28 @@ public class CsrfProtector implements SecureProxyPlugin {
         
         HashMap<String, String> headers = 
                 new HashMap<String, String>(response.getHeaders());
-        String cookie = headers.get("Set-Cookie");
+        String newCookie = "";
+        String cookie = headers.get("cookie");
         if (cookie == null) {
-            cookie = CSRFFIELD + "=" + csrfKey;
+            newCookie = CSRFFIELD + "=" + csrfKey;
         } else {
-            cookie += ";" + CSRFFIELD + "=" + csrfKey;
+            String[] cookieParams = cookie.split(";");
+            
+            for (String c : cookieParams) {
+                String[] valuePair = c.split("=");
+                
+                if (valuePair.length > 1) {
+                    if (valuePair[0].trim().equals(CSRFFIELD)) {
+                        newCookie += valuePair[0] + "=" + csrfKey + "; ";
+                    } else {
+                        newCookie += valuePair[0].trim() + "=" 
+                                     + valuePair[1].trim() + "; ";
+                    }
+                }
+            }
         }
         
-        headers.put("Set-Cookie", cookie);
+        headers.put("Set-Cookie", newCookie);
         
         response.setHeaders(headers);
         LOGGER.exiting(CsrfProtector.class.getName(), "updateCookieWithCsrfKey");

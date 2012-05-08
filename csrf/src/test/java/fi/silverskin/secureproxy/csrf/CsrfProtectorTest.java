@@ -136,6 +136,19 @@ public class CsrfProtectorTest {
                 + "<p><input type=\"radio\" name=\"valittuaanestys\" "
                 + "value=\"Ken on maassa ilkehin\"> Ken on maassa ilkehin </p>"
                 + "<input type=\"submit\" value=\"Katsele tuloksia\" /></form>"
+                
+                + "<form action=\"raportti.php\" method=\"post\">"
+                + "<p><input type=\"radio\" name=\"valittuaanestys\" "
+                + "value=\"Mikä on paras vuodenaika?\"> Mikä on paras vuodenaika? "
+                + "</p><p><input type=\"radio\" name=\"valittuaanestys\" "
+                + "value=\"Mikä on paras Tsohan aihe?\"> Mikä on paras Tsohan "
+                + "aihe? </p><p><input type=\"radio\" name=\"valittuaanestys\" "
+                + "value=\"Mikä on paras väri?\"> Mikä on paras väri? </p>"
+                + "<p><input type=\"radio\" name=\"valittuaanestys\" "
+                + "value=\"Ken on maassa kaunehin\"> Ken on maassa kaunehin </p>"
+                + "<p><input type=\"radio\" name=\"valittuaanestys\" "
+                + "value=\"Ken on maassa ilkehin\"> Ken on maassa ilkehin </p>"
+                + "<input type=\"submit\" value=\"Katsele tuloksia\" /></form>"
                 + "</body></html>";
         
         HashMap<String, String> headers = new HashMap<String, String>();
@@ -153,6 +166,20 @@ public class CsrfProtectorTest {
         plugin.injectCsrfKeyField(response, csrfKey);
         
         String expectedBody = "<html><head></head><body>"
+                + "<form action=\"raportti.php\" method=\"post\">"
+                + "<input type=\"hidden\" name=\"csrfKey\" value=\""+ csrfKey +"\">"
+                + "<p><input type=\"radio\" name=\"valittuaanestys\" "
+                + "value=\"Mikä on paras vuodenaika?\"> Mikä on paras vuodenaika? "
+                + "</p><p><input type=\"radio\" name=\"valittuaanestys\" "
+                + "value=\"Mikä on paras Tsohan aihe?\"> Mikä on paras Tsohan "
+                + "aihe? </p><p><input type=\"radio\" name=\"valittuaanestys\" "
+                + "value=\"Mikä on paras väri?\"> Mikä on paras väri? </p>"
+                + "<p><input type=\"radio\" name=\"valittuaanestys\" "
+                + "value=\"Ken on maassa kaunehin\"> Ken on maassa kaunehin </p>"
+                + "<p><input type=\"radio\" name=\"valittuaanestys\" "
+                + "value=\"Ken on maassa ilkehin\"> Ken on maassa ilkehin </p>"
+                + "<input type=\"submit\" value=\"Katsele tuloksia\" /></form>"
+                
                 + "<form action=\"raportti.php\" method=\"post\">"
                 + "<input type=\"hidden\" name=\"csrfKey\" value=\""+ csrfKey +"\">"
                 + "<p><input type=\"radio\" name=\"valittuaanestys\" "
