@@ -10,10 +10,12 @@ public class HeaderCleaner {
 
     private static final Logger LOGGER = 
             Logger.getLogger(HeaderCleaner.class.getName(), null);
-    private static String[] headersToBePreserved = { "cookie", "content-type", "referer" };
+    private static String[] headersToBePreserved = 
+            { "cookie", "content-type", "referer" };
 
     /**
-     * Cleans request headers of everything else except the required ones.
+     * Removes all headers of the HTTP request, except the once specified in
+     * headersToBePreserved variable.
      * 
      * @param request Original HTTP request
      * @return HTTP request with cleaned headers
@@ -34,14 +36,33 @@ public class HeaderCleaner {
             }
         }
 
-        cleanedHeaders.put("host",
-                           configuration.getProperty("protectedHost"));
-        request.setHeaders(cleanedHeaders);
+        request = changeHostHeader(request, configuration, cleanedHeaders);
         
         LOGGER.exiting(HeaderCleaner.class.getName(), "cleanHeaders", request);
         return request;
     }
-
+    
+    /**
+     * Changes the host header of the HTTP request to the real service.
+     * 
+     * @param request HTTP request
+     * @param configuration Our proxy configuration
+     * @param cleanHeaders Headers cleaned with cleanHeaders method
+     * @return HTTP request with changed host header
+     */
+    public static EPICRequest changeHostHeader(EPICRequest request, 
+                                               Properties configuration, 
+                                               HashMap<String, String> cleanHeaders) {
+        
+        String protectedHost = configuration.getProperty("protectedHost");
+        cleanHeaders.put("host", protectedHost);
+        request.setHeaders(cleanHeaders);
+        
+        return request;
+      
+    }
+    
+    
     /**
      * Masks Location header url if it contains our protected url
      * 
@@ -68,15 +89,18 @@ public class HeaderCleaner {
                         buildMaskedLocationUrl(locationUri, configuration);
                 HashMap<String, String> mutilatedHeaders = 
                         new HashMap(originalHeaders);
+                
                 mutilatedHeaders.put("Location", mutilatedUrl);
                 response.setHeaders(mutilatedHeaders);
             }
                     
 
         }
+        
         LOGGER.exiting(HeaderCleaner.class.getName(), 
                        "maskLocationHeader", 
                        response);
+        
         return response;
     }
 

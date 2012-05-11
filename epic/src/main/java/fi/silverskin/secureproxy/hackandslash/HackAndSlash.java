@@ -111,7 +111,7 @@ public class HackAndSlash {
         request.setUri(modifiedUri);
         HashMap<String, String> headers =
                 new HashMap<String, String>(request.getHeaders());
-        mutilateCookiesIn(headers);
+        //mutilateCookiesIn(headers);
         request.setHeaders(headers);
         LOGGER.info("HackAndSlashIn modified URI: " + request.getUri().toString());
         LOGGER.exiting(HackAndSlash.class.getName(), "hackAndSlashIn", request);
@@ -164,7 +164,7 @@ public class HackAndSlash {
         response.setBody(oldResponse);
         HashMap<String, String> headers =
                 new HashMap<String, String>(response.getHeaders());
-        mutilateCookiesOut(headers);
+        //mutilateCookiesOut(headers);
         response.setHeaders(headers);
         LOGGER.exiting(HackAndSlash.class.getName(), "hackAndSlashOut", response);
         return response;
@@ -339,7 +339,7 @@ public class HackAndSlash {
             if (db.fetchValue(url) != null) {
                 maskedUri += db.fetchValue(url);
             } else {
-                    maskedPath = UUID.randomUUID().toString();
+                maskedPath = UUID.randomUUID().toString();
                 maskedUri += maskedPath;
                 db.addLink(url, maskedPath);
             }
@@ -367,11 +367,13 @@ public class HackAndSlash {
          */
         if (url.startsWith("mailto:")) {
             retVal = true;
-        } /*
+        } 
+        /*
          * Quick fix for <img
          * src="file:///C:/Users/TVIKBE~1.003/AppData/Local/Temp/moz-screenshot.png"
          * alt="" /> in page: http://www.cs.helsinki.fi/alumni
-         */ else if (url.startsWith("file:")) {
+         */ 
+        else if (url.startsWith("file:")) {
             retVal = true;
         } else if (url.startsWith("news:")) {
             retVal = true;
@@ -381,10 +383,12 @@ public class HackAndSlash {
             retVal = true;
         } else if (url.startsWith("javascript")) {
             retVal = true;
-        } /*
+        } 
+        /*
          * Thank you CS department for your awesome www pages
          * http://www.cs.helsinki.fi/story/63467/windows-phone-7-tutuksi-koodausleirill
-         */ else if (url.startsWith("http:///")) {
+         */ 
+        else if (url.startsWith("http:///")) {
             retVal = true;
         }
         LOGGER.exiting(HackAndSlash.class.getName(), "hasInvalidProtocol", retVal);

@@ -100,7 +100,6 @@ public class ProxyLogger {
             LOGGER.log(Level.SEVERE,
                        "Unable to create config file with default values.",
                        ex);
-            ex.printStackTrace();
         }
         LOGGER.exiting(ProxyLogger.class.getName(), "initLogConfigFile");
     }
@@ -124,6 +123,7 @@ public class ProxyLogger {
             if (!configFile.exists()) {
                 LOGGER.log(Level.SEVERE, "Config file does not exists.");
                 LOGGER.log(Level.SEVERE, "Catalina base dir: {0}", System.getProperty("catalina.base"));
+                
                 //no config file returning empty configuration
                 return configuration;
             }
@@ -133,16 +133,12 @@ public class ProxyLogger {
             input.close();
         } catch (IOException ex) {
             LOGGER.log(Level.SEVERE, "Received IOException", ex);
-            ex.printStackTrace();
         } catch (SecurityException ex) {
             LOGGER.log(Level.SEVERE, "Received SecurityException", ex);
-            ex.printStackTrace();
         } catch (NullPointerException ex) {
             LOGGER.log(Level.SEVERE, "Received Exception", ex);
-            ex.printStackTrace();
         } catch (IllegalArgumentException ex) {
             LOGGER.log(Level.SEVERE, "Received IllegalArgumentException", ex);
-            ex.printStackTrace();
         }
 
         LOGGER.exiting(ProxyLogger.class.getName(),

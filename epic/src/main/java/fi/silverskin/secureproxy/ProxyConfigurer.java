@@ -115,7 +115,6 @@ public class ProxyConfigurer {
      * 
      * @return config's file
      */
-    
     public File getConfigFile() {
         if (configFile == null) 
             return null;

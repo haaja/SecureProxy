@@ -31,11 +31,11 @@ public interface SecureProxyPlugin {
      */
     public void run(EPICRequest epic);
 
-	/**
-	 * Call this plugin for EPICResponse
-	 *
-	 * @param epic to be checked/handled by this plugin.
-	 */
+    /**
+     * Call this plugin for EPICResponse
+     *
+     * @param epic to be checked/handled by this plugin.
+     */
     public void run(EPICTextResponse epic);
 
     /**

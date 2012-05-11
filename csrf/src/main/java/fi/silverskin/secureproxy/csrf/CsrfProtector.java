@@ -8,7 +8,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 import java.util.UUID;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -20,10 +19,23 @@ public class CsrfProtector implements SecureProxyPlugin {
             Logger.getLogger(CsrfProtector.class.getName(), null);
     private static final String CSRFFIELD = "csrfKey";
 
+    /**
+     * Returns the name of the plugin.
+     * 
+     * @return Name of the plugin 
+     */
     public String getName() {
         return PLUGINNAME;
     }
 
+    /**
+     * Run method for HTTP requests.
+     * 
+     * TODO:
+     *  - Implement throwing exceptions when requests do not pass validation.
+     * 
+     * @param request 
+     */
     public void run(EPICRequest request) {
         LOGGER.entering(CsrfProtector.class.getName(), "run", request);
         
@@ -46,6 +58,11 @@ public class CsrfProtector implements SecureProxyPlugin {
         LOGGER.exiting(CsrfProtector.class.getName(), "run");
     }
 
+    /**
+     * Run method of HTTP responses with text payload.
+     * 
+     * @param response HTTP response with textual payload
+     */
     public void run(EPICTextResponse response) {
         LOGGER.entering(CsrfProtector.class.getName(), "run", response);
         String csrfKey = generateCsrfKey();
@@ -53,16 +70,24 @@ public class CsrfProtector implements SecureProxyPlugin {
         LOGGER.exiting(CsrfProtector.class.getName(), "run");
     }
 
-    //no need to modify binary responses
+
+    /**
+     * Run method for HTTP responses with binary payload.
+     * 
+     * NOTE: This plugin does nothing to HTTP responses with binary payload.
+     * 
+     * @param response HTTP response with binary data payload
+     */
     public void run(EPICBinaryResponse response) {
-        LOGGER.log(Level.WARNING, 
-                   "CsrfProtector.run() was called with EPICBinaryResponse.");
+        LOGGER.info("CsrfProtector.run(): was called with EPICBinaryResponse. "
+                + "Skipping.");
     }
 
     /**
      * Validates request header
      * 
-     * POST requests should always have our public url as a referer value
+     * Validates that the referer header value matches to the public url of the
+     * service.
      * 
      * @param request HTTP request
      * @return true if referer is valid, false otherwise.
@@ -95,7 +120,10 @@ public class CsrfProtector implements SecureProxyPlugin {
     }
 
     /**
-     * Validates CSRF key value
+     * Validates CSRF key
+     * 
+     * Checks that CSRF key coming as a POST parameter matches the one in the
+     * cookies.
      * 
      * @param request Incoming HTTP request
      * @return true if CSRF key is valid, false otherwise.
@@ -164,7 +192,7 @@ public class CsrfProtector implements SecureProxyPlugin {
     /**
      * Generates random CSRF key
      * 
-     * @return CSRF key
+     * @return Generated CSRF key
      */
     private String generateCsrfKey() {
         return UUID.randomUUID().toString();
@@ -177,6 +205,8 @@ public class CsrfProtector implements SecureProxyPlugin {
      * This is a lazy implementation which uses the same csrfKey for all the
      * forms in HTTP response.
      * 
+     * TODO:
+     *  - FIXBUG: CsrfKey in cookies are updated too often
      * 
      * @param response HTTP response
      * @param csrfKey CSRF key to be injected into all forms
