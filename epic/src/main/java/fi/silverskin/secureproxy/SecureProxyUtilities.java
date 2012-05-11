@@ -4,8 +4,6 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.Random;
-import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -19,6 +17,9 @@ public class SecureProxyUtilities {
      *
      * Null return value should only occur in case of non standard compliant
      * www page.
+     * 
+     * TODO: implement proper way to url encode input string (or the path part
+     * of it).
      *
      * @param url URL from which we are creating the URI
      * @return URI created from the supplied parameter or null if the method
@@ -58,29 +59,10 @@ public class SecureProxyUtilities {
         LOGGER.exiting(SecureProxyUtilities.class.getName(),
                 "makeUriFromString",
                 uri);
+        
         return uri;
     }
     
-    /**
-     * Generate a random string containing charachters a..z and 0..9
-     * 
-     * @param length length of the string
-     * @return an empty string, if length = 0, a random string otherwise
-     */
-    public static String getRandomString(int length){
-        /*
-        String rs = "";
-        Random generator = new Random();
-        if(length == 0) return rs;
-        for(int i=0; i<length; i++){
-            int rn = generator.nextInt(36);
-            if(rn < 10) rs = rs + (char) (48+rn);
-            else rs = rs + (char) (87+rn);
-        }
-        return rs;
-        * */
-        return UUID.randomUUID().toString();
-    }
 
     /**
      * Checks if uri is protected uri
@@ -103,8 +85,6 @@ public class SecureProxyUtilities {
 
         boolean retVal = false;
         String hostname = locationUri.getHost();
-        LOGGER.log(Level.INFO, "Public host: ''{0}''", locationUri.getHost());
-        LOGGER.log(Level.INFO, "Private host: ''{0}''", privateUri.getHost());
 
         if (hostname.equals(privateUri.getHost())) {
             retVal = true;
