@@ -1,8 +1,0 @@
-fi.silverskin.paramcheck
-fi.silverskin.secureproxy
-fi.silverskin.secureproxy.csrf
-fi.silverskin.secureproxy.hackandslash
-fi.silverskin.secureproxy.plugins
-fi.silverskin.secureproxy.redis
-fi.silverskin.secureproxy.resourcefetcher
-fi.silverskin.xss
