@@ -25,20 +25,19 @@ public class PluginLoader {
 
     private static final Logger LOGGER = 
             Logger.getLogger(PluginLoader.class.getName(), null);
-	private ClassLoader loader;
+    private ClassLoader loader;
 
 
-	/**
-	 * These are needed for access to existing ClassLoader.
-	 */
-	private PluginLoader() {
-		loader = PluginLoader.class.getClassLoader();
-	}
+    /**
+     * These are needed to access existing ClassLoader
+     */
+    private PluginLoader() {
+        loader = PluginLoader.class.getClassLoader();
+    }
 
-	protected ClassLoader getLoader() {
-		return loader;
-	}
-
+    protected ClassLoader getLoader() {
+        return loader;
+    }
 
 
     /**
@@ -52,44 +51,53 @@ public class PluginLoader {
      * @throws PluginLoadException if something goes wrong while loading plugins.
      */
     public static SecureProxyPlugin[] loadPlugins(File pluginConfig) 
-            throws PluginLoadException, InvocationTargetException, SecurityException, NoSuchMethodException {
-        Properties conf = loadConfig(pluginConfig);
-		return loadPlugins(conf);
+            throws PluginLoadException, InvocationTargetException, 
+                   SecurityException, NoSuchMethodException {
+        
+        Properties conf = loadConfig(pluginConfig); 
+        return loadPlugins(conf);
     }
 
 
-	public static SecureProxyPlugin[] loadPlugins(Properties conf) 
-			throws NoSuchMethodException, IllegalArgumentException, InvocationTargetException {
-		if (!validateConfig(conf)) {
-			LOGGER.log(Level.SEVERE, "Plugin loader config was not valid!");
-			throw new PluginLoadException("Given config was not valid!");
-		}
+    public static SecureProxyPlugin[] loadPlugins(Properties conf) 
+            throws NoSuchMethodException, IllegalArgumentException, 
+                                          InvocationTargetException {
+        if (!validateConfig(conf)) {
+            LOGGER.log(Level.SEVERE, "Plugin loader config was not valid!");
+            throw new PluginLoadException("Given config was not valid!");
+        }
 
-		try {
+        try {
             ArrayList<SecureProxyPlugin> plugins = new ArrayList<SecureProxyPlugin>();
-			PluginLoader plugLoad = new PluginLoader();
-			ClassLoader clsLoader = new URLClassLoader(getPluginURLs(conf), 
-														plugLoad.getLoader());
+            PluginLoader plugLoad = new PluginLoader();
+            ClassLoader clsLoader = new URLClassLoader(getPluginURLs(conf), 
+                                                       plugLoad.getLoader());
 
-			String[] pluginNames = getPluginNames(conf);
+            String[] pluginNames = getPluginNames(conf);
 
-			if (pluginNames != null) {
-				LOGGER.log(Level.INFO, "Loading plugins..");
-				for (String plugin : pluginNames) {
-					Class<?> clas = Class.forName(plugin, true, clsLoader);
-					
-					Class<? extends SecureProxyPlugin> duh = clas.asSubclass(SecureProxyPlugin.class);
-					Constructor<? extends SecureProxyPlugin> ctor = duh.getConstructor();
-					SecureProxyPlugin plug = ctor.newInstance();
-					plugins.add(plug);
+            if (pluginNames != null) {
+                LOGGER.log(Level.INFO, "Loading plugins..");
+                
+                for (String plugin : pluginNames) {
+                    Class<?> clas = Class.forName(plugin, true, clsLoader);
+                    Class<? extends SecureProxyPlugin> duh = 
+                            clas.asSubclass(SecureProxyPlugin.class);
+                    
+                    Constructor<? extends SecureProxyPlugin> ctor = 
+                            duh.getConstructor();
+                    
+                    SecureProxyPlugin plug = ctor.newInstance();
+                    plugins.add(plug);
 
-					LOGGER.log(Level.INFO, "\tSuccesfully loaded plugin '{0}'", plugin);
-				}
-			} else {
-				LOGGER.log(Level.INFO, "There was no plugins to load!");
-			}
+                    LOGGER.log(Level.INFO, "\tSuccesfully loaded plugin '{0}'", 
+                               plugin);
+                }
+            } else {
+                LOGGER.log(Level.INFO, "There was no plugins to load!");
+            }
 
             return plugins.toArray(new SecureProxyPlugin[plugins.size()]);
+        
         } catch (MalformedURLException ex) {
             LOGGER.log(Level.SEVERE, "MalformedURLException during plugin load.");
             throw new PluginLoadException("MalformedURLException during plugin load.");
@@ -103,12 +111,19 @@ public class PluginLoader {
             LOGGER.log(Level.SEVERE, "IllegalAccessException during plugin load.");
             throw new PluginLoadException("IllegalAccessException during plugin load.");
         }
+    }
 
-	}
 
-
-    private static Properties loadConfig(File pluginConfig) throws 
-	    PluginLoadException {
+    /**
+     * Parases the configuration provided as a parameter
+     * 
+     * @param pluginConfig File pointing to configuration file
+     * @return Parsed configuration
+     * @throws PluginLoadException Throws exception if IOException is caught
+     * during reading the file
+     */
+    private static Properties loadConfig(File pluginConfig) 
+            throws PluginLoadException {
         Properties conf;
         try {
             conf = new Properties();
@@ -117,6 +132,7 @@ public class PluginLoader {
             Logger.getLogger(PluginLoader.class.getName()).log(Level.SEVERE, null, ex);
             throw new PluginLoadException("IOException while loading config.");
         }
+        
         return conf;
     }
     
@@ -191,16 +207,17 @@ public class PluginLoader {
         }
         
         String names = pluginConfig.getProperty("load_order");
-		if (names != null && !names.equals("")) {
-			String tmp[] = names.split(", ");
-			
-			LOGGER.exiting(PluginLoader.class.getName(), "getPluginNames", tmp);
-			return tmp;
-		} else {
-			LOGGER.exiting(PluginLoader.class.getName(), "getPluginNames", null);
-			return null;
-		}
+        if (names != null && !names.equals("")) {
+            String tmp[] = names.split(", ");
+
+            LOGGER.exiting(PluginLoader.class.getName(), "getPluginNames", tmp);
+            return tmp;
+        } else {
+            LOGGER.exiting(PluginLoader.class.getName(), "getPluginNames", null);
+            return null;
+        }
     }
+    
 
     public static File getPluginDirFile(Properties pluginConfig) {
         LOGGER.entering(PluginLoader.class.getName(), "getPluginDirFile", pluginConfig);

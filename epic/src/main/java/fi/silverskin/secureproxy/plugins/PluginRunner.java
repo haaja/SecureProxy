@@ -18,71 +18,68 @@ public class PluginRunner {
 
 
     public PluginRunner(File pluginConfig) {
-		try {
-			this.plugins = PluginLoader.loadPlugins(pluginConfig);
-		} catch (Exception ex) {
-			LOGGER.log(Level.SEVERE, ex.toString());
-			LOGGER.log(Level.WARNING, "PluginLoader failed, there is no plugins to run! NOT bailing out though..");
-		}
+        try {
+            this.plugins = PluginLoader.loadPlugins(pluginConfig);
+        } catch (Exception ex) {
+            LOGGER.log(Level.SEVERE, ex.toString());
+            LOGGER.log(Level.WARNING, "PluginLoader failed, there is no plugins to run! NOT bailing out though..");
+        }
     }
 
     public PluginRunner(Properties pluginConfig) {
-		try {
-			this.plugins = PluginLoader.loadPlugins(pluginConfig);
-		} catch (Exception ex) {
-			LOGGER.log(Level.SEVERE, ex.toString());
-			LOGGER.log(Level.WARNING, "PluginLoader failed, there is no plugins to run! NOT bailing out though..");
-		}
+        try {
+            this.plugins = PluginLoader.loadPlugins(pluginConfig);
+        } catch (Exception ex) {
+            LOGGER.log(Level.SEVERE, ex.toString());
+            LOGGER.log(Level.WARNING, "PluginLoader failed, there is no plugins to run! NOT bailing out though..");
+        }
     }
 
 
 
     public void run(EPICRequest epic) {
-		if (!checkPluginsAvailable()) {
-			return;
-		}
+        if (!checkPluginsAvailable()) {
+            return;
+        }
 
         for (SecureProxyPlugin p : plugins) {
-			LOGGER.log(Level.INFO, "EPICTextResponse.run");
-			LOGGER.entering(EPICRequest.class.getName(), "EPICRequest.run");
+            LOGGER.entering(EPICRequest.class.getName(), "EPICRequest.run");
             p.run(epic);
-			LOGGER.exiting(EPICRequest.class.getName(), "EPICRequest.run");
-		}
+            LOGGER.exiting(EPICRequest.class.getName(), "EPICRequest.run");
+        }
     }
 
     public void run(EPICTextResponse epic) {
- 		if (!checkPluginsAvailable()) {
-			return;
-		}
+        if (!checkPluginsAvailable()) {
+            return;
+        }
 
-		for (SecureProxyPlugin p : plugins) {
-			LOGGER.log(Level.INFO, "EPICTextResponse.run");
-			LOGGER.entering(EPICRequest.class.getName(), "EPICTextResponse.run");
+        for (SecureProxyPlugin p : plugins) {
+            LOGGER.entering(EPICRequest.class.getName(), "EPICTextResponse.run");
             p.run(epic);
-			LOGGER.exiting(EPICRequest.class.getName(), "EPICTextResponse.run");
-		}
+            LOGGER.exiting(EPICRequest.class.getName(), "EPICTextResponse.run");
+        }
     }
 
     public void run(EPICBinaryResponse epic) {
-		if (!checkPluginsAvailable()) {
-			return;
-		}
-		
-		for (SecureProxyPlugin p : plugins) {
-			LOGGER.log(Level.INFO, "EPICTextResponse.run");
-			LOGGER.entering(EPICRequest.class.getName(), "EPICBinaryResponse.run");
+        if (!checkPluginsAvailable()) {
+            return;
+        }
+
+        for (SecureProxyPlugin p : plugins) {
+            LOGGER.entering(EPICRequest.class.getName(), "EPICBinaryResponse.run");
             p.run(epic);
-			LOGGER.exiting(EPICRequest.class.getName(), "EPICBinaryResponse.run");
-		}
+            LOGGER.exiting(EPICRequest.class.getName(), "EPICBinaryResponse.run");
+        }
     }
 
 
-	private boolean checkPluginsAvailable() {
-		if (plugins == null) {
-			LOGGER.log(Level.INFO, "There was no plugins to run!");
-			return false;
-		} else {
-			return true;
-		}
-	}
+    private boolean checkPluginsAvailable() {
+        if (plugins == null) {
+            LOGGER.log(Level.INFO, "There was no plugins to run!");
+            return false;
+        } else {
+            return true;
+        }
+    }
 }
